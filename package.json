@@ -1,0 +1,44 @@
+{
+  "name": "@libertech-fr/teaket",
+  "version": "0.0.1",
+  "repository": "https://github.com/Libertech-FR/teaket.git",
+  "contributors": [
+    {
+      "name": "Libertech",
+      "email": "contact@libertech.fr",
+      "url": "https://libertech.fr"
+    },
+    {
+      "name": "RICHARD-Quentin",
+      "email": "richard.quentin88@gmail.com",
+      "url": "https://github.com/RICHARD-Quentin"
+    },
+    {
+      "name": " tacxou",
+      "email": "12997062+tacxou@users.noreply.github.com",
+      "url": "https://github.com/tacxou"
+    }
+  ],
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "service",
+    "app",
+    "common"
+  ],
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "radash": "^11.0.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.2"
+  }
+}
