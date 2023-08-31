@@ -6,12 +6,9 @@ export default defineNuxtConfig({
   telemetry: false,
   devtools: {
     enabled: true,
-
     timeline: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
-  modules: [
-    ...extensions.setup.app(),
-  ],
+  modules: [...extensions.setup.app()],
 })

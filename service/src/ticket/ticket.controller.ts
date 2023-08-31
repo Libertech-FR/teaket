@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
 import { TicketService } from './ticket.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { TicketCreateDto, TicketUpdateDto } from './dto/ticket.dto'
+import { TicketCreateDto, TicketUpdateDto } from './_dto/ticket.dto'
 import { Request, Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
@@ -30,11 +30,7 @@ export class TicketController extends AbstractController {
   }
 
   @Get()
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ) {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions) {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, this.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

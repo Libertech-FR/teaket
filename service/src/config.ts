@@ -1,9 +1,9 @@
-import { JwtModuleOptions } from "@nestjs/jwt"
-import { MongooseModuleOptions } from "@nestjs/mongoose"
-import { IAuthModuleOptions } from "@nestjs/passport"
-import { SwaggerCustomOptions } from "@nestjs/swagger"
-import { HelmetOptions } from "helmet"
-import { RedisOptions } from "ioredis"
+import { JwtModuleOptions } from '@nestjs/jwt'
+import { MongooseModuleOptions } from '@nestjs/mongoose'
+import { IAuthModuleOptions } from '@nestjs/passport'
+import { SwaggerCustomOptions } from '@nestjs/swagger'
+import { HelmetOptions } from 'helmet'
+import { RedisOptions } from 'ioredis'
 
 export interface ConfigInstance {
   helmet: HelmetOptions
@@ -52,8 +52,7 @@ export default (): ConfigInstance => ({
   },
   mongoose: {
     uri: process.env.TEAKET_MONGOOSE_URI,
-    options: {
-    },
+    options: {},
     plugins: {
       muv: {
         options: {

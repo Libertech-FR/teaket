@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { TicketSchema, Ticket } from './schemas/ticket.schema'
+import { TicketSchema, Ticket } from './_schemas/ticket.schema'
 import { TicketService } from './ticket.service'
 import { TicketController } from './ticket.controller'
 import { RouterModule } from '@nestjs/core'
@@ -25,10 +25,10 @@ export class TicketModule {
         RouterModule.register([
           {
             path: 'ticket',
-            children: [...Reflect.getMetadata('imports', this)]
-          }
-        ])
-      ]
+            children: [...Reflect.getMetadata('imports', this)],
+          },
+        ]),
+      ],
     }
   }
 }

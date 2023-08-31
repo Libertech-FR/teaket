@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common"
-import { ModuleRef } from "@nestjs/core"
+import { Injectable, Logger } from '@nestjs/common'
+import { ModuleRef } from '@nestjs/core'
 
 export interface AbstractServiceContext {
   [key: string | number]: any
@@ -15,8 +15,8 @@ export abstract class AbstractService {
   protected request?: Request & { user?: any }
 
   protected constructor(context?: AbstractServiceContext) {
-    this.moduleRef = context!.moduleRef
-    this.request = context.request
+    this.moduleRef = context?.moduleRef
+    this.request = context?.request
     this.logger = new Logger(this.serviceName)
   }
 

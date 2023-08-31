@@ -2,7 +2,7 @@ import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
 import { TicketService } from './ticket.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Ticket } from './schemas/ticket.schema'
+import { Ticket } from './_schemas/ticket.schema'
 import { Model, Types } from 'mongoose'
 
 describe('TicketService', () => {

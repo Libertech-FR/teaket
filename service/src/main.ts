@@ -5,7 +5,7 @@ import { json } from 'body-parser'
 import { Response } from 'express'
 import { join } from 'path'
 import { AppModule } from './app.module'
-import passport from 'passport'
+import * as passport from 'passport'
 
 declare const module: any
 ;(async (): Promise<void> => {
@@ -23,8 +23,8 @@ declare const module: any
   if (process.env.production !== 'production') {
     require('./swagger').default(app)
   }
-  await app.listen(4000, async (): Promise<void> => {
-    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:4000/> !')
+  await app.listen(9000, async (): Promise<void> => {
+    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:9000/> !', 'Bootstrap')
   })
   if (module.hot) {
     module.hot.accept()
