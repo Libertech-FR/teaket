@@ -1,6 +1,6 @@
 import { ModuleRef } from '@nestjs/core'
 import { ApiExtraModels } from '@nestjs/swagger'
-import { PaginatedDto } from '~/_common/dto/paginated.dto'
+import { PaginatedResponseDto } from '~/_common/dto/paginated-response.dto'
 
 export interface AbstractControllerContext {
   [key: string | number]: any
@@ -8,7 +8,7 @@ export interface AbstractControllerContext {
   moduleRef?: ModuleRef
 }
 
-@ApiExtraModels(PaginatedDto)
+@ApiExtraModels(PaginatedResponseDto)
 export abstract class AbstractController {
   protected moduleRef?: ModuleRef
 

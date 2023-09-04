@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Types } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
+import { Types } from 'mongoose'
 
 @Schema({
   collection: 'categories',
@@ -14,17 +14,17 @@ export class Categories extends AbstractSchema {
   public name: string
 
   @Prop({
-    required: true,
     type: String,
   })
   public description: string
 
   @Prop({ type: Types.ObjectId })
-  public parent?: Types.ObjectId
+  public parentId?: Types.ObjectId
 
   @Prop({
     required: true,
     type: Number,
+    default: 0,
   })
   public order: number
 
@@ -59,3 +59,4 @@ export class Categories extends AbstractSchema {
 }
 
 export const CategoriesSchema = SchemaFactory.createForClass(Categories)
+  .index({ name: 1, parentId: 1 }, { unique: true })

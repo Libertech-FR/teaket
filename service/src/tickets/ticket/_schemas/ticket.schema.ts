@@ -55,7 +55,7 @@ export class Ticket extends AbstractSchema {
   public lifestep: number
 
   @Prop({ type: Types.ObjectId })
-  public parent?: Types.ObjectId
+  public parentId?: Types.ObjectId
 
   @Prop({
     type: IdnamePartSchema,

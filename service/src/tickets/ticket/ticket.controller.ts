@@ -6,9 +6,9 @@ import { Request, Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
-import { ApiBadRequestResponse, ApiParam, getSchemaPath } from '@nestjs/swagger'
-import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator'
-import { ApiPaginatedResponse } from '~/_common/decorators/api-paginated-response.decorator'
+import { ApiCreatedResponse, ApiParam, getSchemaPath } from '@nestjs/swagger'
+import { ApiPaginatedResponseDecorator } from '~/_common/decorators/api-paginated-response.decorator'
+import { AppInfoDto } from '~/_dto/app.dto'
 
 @Controller('ticket')
 export class TicketController extends AbstractController {
@@ -23,6 +23,12 @@ export class TicketController extends AbstractController {
   }
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'The record has been successfully created.',
+    schema: {
+      $ref: getSchemaPath(AppInfoDto),
+    },
+  })
   public async create(@Req() req: Request, @Res() res: Response, @Body() body: TicketCreateDto) {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
@@ -32,10 +38,7 @@ export class TicketController extends AbstractController {
   }
 
   @Get()
-  @ApiPaginatedResponse(TicketDto)
-  @ApiOkResponse({
-    description: 'Search tickets with pagination',
-  })
+  @ApiPaginatedResponseDecorator(TicketDto)
   public async search(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
