@@ -7,3 +7,6 @@ yarn-debug.log*
 yarn-error.log*
 extensions.yml
 .vscode/
+.env
+.env.*
+!.env.example
