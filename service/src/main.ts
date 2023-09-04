@@ -7,13 +7,19 @@ import { join } from 'path'
 import { AppModule } from './app.module'
 import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
+import { ShutdownService } from '~/shutdown.service'
+import * as process from 'process'
 
 declare const module: any
 ;(async (): Promise<void> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   })
-  app.use((_, res: Response, next: () => void) => {
+  app.get(ShutdownService).subscribeToShutdown(async () => {
+    await app.close()
+    process.exit(0)
+  })
+  app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by')
     next()
   })
