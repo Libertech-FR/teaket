@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Types } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-
-export type CategoriesDocument = Categories & Document
 
 @Schema({
   collection: 'categories',
@@ -33,12 +31,14 @@ export class Categories extends AbstractSchema {
   @Prop({
     required: true,
     type: Boolean,
+    default: true,
   })
   public selectable: boolean
 
   @Prop({
     required: true,
     type: Boolean,
+    default: false,
   })
   public disabled: boolean
 
