@@ -1,4 +1,3 @@
-
 export enum UserType {
   CONSOLE = 0,
   OPERATOR = 1,

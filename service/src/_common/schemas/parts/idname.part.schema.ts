@@ -5,13 +5,13 @@ import { Document, Types } from 'mongoose'
 export class IdnamePart extends Document {
   @Prop({
     type: Types.ObjectId,
-    required: [true, 'Identifiant obligatoire'],
+    required: true,
   })
   public id: Types.ObjectId
 
   @Prop({
     type: String,
-    required: [true, 'Nom obligatoire'],
+    required: true,
   })
   public name: string
 }

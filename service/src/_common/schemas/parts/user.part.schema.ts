@@ -4,11 +4,10 @@ import { UserTypeList } from '~/_common/enum/user-type.enum'
 
 @Schema({ _id: false })
 export class UserPart extends IdnamePart {
-
   @Prop({
     type: Number,
     enum: UserTypeList,
-    required: [true, 'Type obligatoire'],
+    required: true,
   })
   public type: number
 }

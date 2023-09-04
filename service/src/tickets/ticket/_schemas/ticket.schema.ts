@@ -2,7 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin'
 import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface'
-import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
+import { IdnamePart, IdnamePartSchema } from '~/_common/schemas/parts/idname.part.schema'
+import { TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
+import { TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
+import { Types } from 'mongoose'
+import { SlaPart, SlaPartSchema } from '~/tickets/ticket/_schemas/parts/sla.part.schema'
 
 @Schema({
   collection: 'tickets',
@@ -23,28 +27,66 @@ export class Ticket extends AbstractSchema {
   public subject: string
 
   @Prop({
-    type: IdnamePart,
-    required: [true, 'Le status du ticket doit être spécifié'],
+    type: Number,
+    enum: TicketTypeList,
+    required: true,
+  })
+  public type: number
+
+  public envelope
+
+  @Prop({
+    type: Number,
+    enum: TicketLifestepList,
+    required: true,
+  })
+  public lifestep: number
+
+  @Prop({ type: Types.ObjectId })
+  public parent?: Types.ObjectId
+
+  @Prop({
+    type: IdnamePartSchema,
+    required: true,
   })
   public state: IdnamePart
 
   @Prop({
-    type: IdnamePart,
-    required: [true, 'Le projet du ticket doit être spécifié'],
+    type: IdnamePartSchema,
+    required: true,
   })
   public project: IdnamePart
 
   @Prop({
-    type: IdnamePart,
-    required: [true, 'La priorité du ticket doit être spécifié'],
+    type: IdnamePartSchema,
+    required: true,
   })
   public priority: IdnamePart
 
   @Prop({
-    type: IdnamePart,
-    required: [true, 'L\'impact du ticket doit être spécifié'],
+    type: IdnamePartSchema,
+    required: true,
   })
   public impact: IdnamePart
+
+  @Prop({
+    type: SlaPartSchema,
+    required: true,
+  })
+  public sla: SlaPart
+
+  @Prop({
+    type: Number,
+    required: true,
+    default: 0,
+  })
+  public totalTime: number
+
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  public readFlags: string[]
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket)
@@ -55,7 +97,7 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket)
   })
   .pre('save', function(next) {
     if (this.isNew) {
-      this.sequence = 'LT' + this.sequence.padStart(6, '0')
+      this.sequence = 'LT' + this.sequence.padStart(6, '0') //TODO: get prefix from config
     }
     next()
   })
