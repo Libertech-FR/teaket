@@ -11,6 +11,7 @@ import { Request, Response } from 'express'
 export class CategoriesController extends AbstractController {
   protected readonly projection = {
     name: 1,
+    description: 1,
     color: 1,
     icon: 1,
   }
