@@ -4,7 +4,10 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 
 export type ProjectDocument = Project & Document
 
-@Schema({ versionKey: false })
+@Schema({
+  collection: 'projects',
+  versionKey: false,
+})
 export class Project extends AbstractSchema {
   @Prop({
     required: true,
