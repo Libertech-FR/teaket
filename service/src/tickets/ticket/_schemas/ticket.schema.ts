@@ -7,6 +7,8 @@ import { TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
 import { TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { Types } from 'mongoose'
 import { SlaPart, SlaPartSchema } from '~/tickets/ticket/_schemas/parts/sla.part.schema'
+import { TagPart, TagPartSchema } from '~/tickets/ticket/_schemas/parts/tag.part.schema'
+import { EnvelopePart, EnvelopePartSchema } from '~/tickets/ticket/_schemas/parts/envelope.part.schema'
 
 @Schema({
   collection: 'tickets',
@@ -21,6 +23,12 @@ export class Ticket extends AbstractSchema {
   public sequence: string
 
   @Prop({
+    type: EnvelopePartSchema,
+    required: true,
+  })
+  public envelope: EnvelopePart
+
+  @Prop({
     required: true,
     type: String,
   })
@@ -33,7 +41,11 @@ export class Ticket extends AbstractSchema {
   })
   public type: number
 
-  public envelope
+  @Prop({
+    type: [TagPartSchema],
+    required: true,
+  })
+  public tags: TagPart[]
 
   @Prop({
     type: Number,
@@ -87,6 +99,11 @@ export class Ticket extends AbstractSchema {
     default: [],
   })
   public readFlags: string[]
+
+  @Prop({
+    type: Object,
+  })
+  public customFields: object
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket)
