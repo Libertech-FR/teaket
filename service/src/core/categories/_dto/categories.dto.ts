@@ -44,7 +44,7 @@ export class CategoriesCreateDto extends AbstractCustomFieldsDto {
 }
 
 export class CategoriesDto extends CategoriesCreateDto {
-  @IsString()
+  @IsMongoId()
   @ApiProperty()
   public _id: string
 }

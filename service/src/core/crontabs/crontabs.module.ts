@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { CrontabsSchema, Crontabs } from './_schemas/crontabs.schema'
+import { Crontabs, CrontabsSchema } from './_schemas/crontabs.schema'
 import { CrontabsService } from './crontabs.service'
 import { CrontabsController } from './crontabs.controller'
 

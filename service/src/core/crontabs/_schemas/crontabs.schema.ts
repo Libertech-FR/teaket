@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, ObjectId, Types } from 'mongoose'
+import { ObjectId, Types } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-
-export type CrontabsDocument = Crontabs & Document
 
 @Schema({
   collection: 'crontabs',
@@ -15,33 +13,28 @@ export class Crontabs extends AbstractSchema {
   })
   public name: string
 
-  @Prop({
-    required: true,
-    type: String,
-  })
+  @Prop({ type: String })
   public description: string
 
   @Prop({
     required: true,
-    type: Object,
+    type: String,
+    //TODO: validate cron expression
   })
-  public interval: { [key: string]: any }
+  public interval: string
 
   @Prop({
     required: true,
-    type: Object,
+    type: [Object],
   })
-  public actions: { [key: string]: any }
+  public actions: { [key: string]: any }[]
+
+  @Prop({ type: Types.ObjectId })
+  public pluginId?: ObjectId
 
   @Prop({
-    required: true,
-    type: Types.ObjectId,
-  })
-  public pluginId: ObjectId
-
-  @Prop({
-    required: true,
     type: Boolean,
+    default: false,
   })
   public disabled: boolean
 }

@@ -6,7 +6,7 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 
 @Injectable()
 export class CrontabsService extends AbstractServiceSchema {
-  constructor(@InjectModel(Crontabs.name) protected _model: Model<Crontabs>) {
+  public constructor(@InjectModel(Crontabs.name) protected _model: Model<Crontabs>) {
     super()
   }
 }
