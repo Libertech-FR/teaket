@@ -2,7 +2,7 @@ import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CrontabsService } from './crontabs.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Crontabs } from './schemas/crontabs.schema'
+import { Crontabs } from './_schemas/crontabs.schema'
 import { Model, Types } from 'mongoose'
 
 describe('CrontabsService', () => {

@@ -4,7 +4,10 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 
 export type CrontabsDocument = Crontabs & Document
 
-@Schema({ versionKey: false })
+@Schema({
+  collection: 'crontabs',
+  versionKey: false,
+})
 export class Crontabs extends AbstractSchema {
   @Prop({
     required: true,
