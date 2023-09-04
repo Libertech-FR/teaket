@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Identities } from './schemas/identities.schema'
+import { Identities } from '~/core/identities/_schemas/identities.schema'
 import { Model } from 'mongoose'
 import { AbstractService } from '~/_common/abstracts/abstract.service'
 

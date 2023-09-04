@@ -9,7 +9,7 @@ import { TriggersModule } from './triggers/triggers.module'
 import { CrontabsModule } from './crontabs/crontabs.module'
 import { PreferencesModule } from './preferences/preferences.module'
 import { FilestorageModule } from './filestorage/filestorage.module'
-import { EntitesModule } from '~/core/entites/entites.module'
+import { EntitiesModule } from '~/core/entities/entities.module'
 import { IdentitiesModule } from '~/core/identities/identities.module'
 
 @Module({
@@ -25,7 +25,7 @@ import { IdentitiesModule } from '~/core/identities/identities.module'
     ProjectModule,
     TriggersModule,
     CrontabsModule,
-    EntitesModule,
+    EntitiesModule,
     IdentitiesModule,
   ],
   providers: [CoreService],

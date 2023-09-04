@@ -17,7 +17,7 @@ definePageMeta({ auth: true })
 import { useApiFetch } from '~/composables/useApiFetch'
 
 const { signIn, signOut, session, status, cookies, getProviders, user, sessionToken } = useAuth()
-// type TicketCreateDto = components['schemas']['TicketCreateDto']
+// type TicketCreateDto = components['_schemas']['TicketCreateDto']
 
 const formData = {
   subject: 'toto'

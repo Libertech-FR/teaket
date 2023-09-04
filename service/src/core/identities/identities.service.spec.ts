@@ -2,7 +2,7 @@ import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
 import { IdentitiesService } from './identities.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Identities } from './schemas/identities.schema'
+import { Identities } from '~/core/identities/_schemas/identities.schema'
 import { Model, Types } from 'mongoose'
 
 describe('IdentitiesService', () => {

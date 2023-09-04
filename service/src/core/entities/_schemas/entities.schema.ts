@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-import { ProfilePart, ProfilePartSchema } from '~/core/entites/_schemas/parts/profile.part.schema'
+import { ProfilePart, ProfilePartSchema } from '~/core/entities/_schemas/parts/profile.part.schema'
+import { StatePart, StatePartSchema } from '~/core/entities/_schemas/parts/state.part.schema'
 
 @Schema({
-  collection: 'entites',
+  collection: 'entities',
   versionKey: false,
 })
 export class Entity extends AbstractSchema {
@@ -18,6 +19,17 @@ export class Entity extends AbstractSchema {
     required: true,
   })
   public profile: ProfilePart
+
+  @Prop({
+    type: StatePartSchema,
+    required: true,
+  })
+  public state: StatePart
+
+  @Prop({
+    type: Object,
+  })
+  public customFields: object
 }
 
 export const EntitySchema = SchemaFactory.createForClass(Entity)

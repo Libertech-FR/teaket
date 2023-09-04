@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { IdentitiesSchema, Identities } from './schemas/identities.schema'
+import { IdentitiesSchema, Identities } from '~/core/identities/_schemas/identities.schema'
 import { IdentitiesService } from './identities.service'
 import { IdentitiesController } from './identities.controller'
 

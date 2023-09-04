@@ -1,22 +1,22 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
-import { EntitesService } from './entites.service'
+import { EntitiesService } from './entities.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
 import { ApiParam } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
-import { EntitiesCreateDto, EntitiesUpdateDto } from '~/core/entites/_dto/entites.dto'
+import { EntitiesCreateDto, EntitiesUpdateDto } from '~/core/entities/_dto/entites.dto'
 
-@Controller('entites')
-export class EntitesController extends AbstractController {
+@Controller('entities')
+export class EntitiesController extends AbstractController {
   protected readonly projection = {
     name: 1,
     color: 1,
     icon: 1,
   }
 
-  public constructor(private readonly _service: EntitesService) {
+  public constructor(private readonly _service: EntitiesService) {
     super()
   }
 

@@ -1,12 +1,12 @@
 import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
-import { EntitesService } from './entites.service'
+import { EntitiesService } from './entities.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Users } from '~/core/entites/_schemas/entites.schema'
+import { Users } from '~/core/entities/_schemas/entities.schema'
 import { Model, Types } from 'mongoose'
 
 describe('UsersService', () => {
-  let service: EntitesService
+  let service: EntitiesService
   let model: Model<Users>
   const _id = new Types.ObjectId()
   const date = new Date()
@@ -24,14 +24,14 @@ describe('UsersService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        EntitesService,
+        EntitiesService,
         {
           provide: getModelToken(Users.name),
           useValue: Model,
         },
       ],
     }).compile()
-    service = module.get<EntitesService>(EntitesService)
+    service = module.get<EntitiesService>(EntitiesService)
     model = module.get<Model<Users>>(getModelToken(Users.name))
   })
 
