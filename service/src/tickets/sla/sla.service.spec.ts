@@ -2,7 +2,7 @@ import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
 import { SlaService } from './sla.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Sla } from '~/tickets/sla/_schemas/sla.schema'
+import { Sla } from './schemas/sla.schema'
 import { Model, Types } from 'mongoose'
 
 describe('SlaService', () => {
