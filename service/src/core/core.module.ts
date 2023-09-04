@@ -12,7 +12,16 @@ import { PreferencesModule } from './preferences/preferences.module'
 import { FilestorageModule } from './filestorage/filestorage.module'
 
 @Module({
-  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule, PreferencesModule, FilestorageModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    CategoriesModule,
+    ProjectModule, 
+    TriggersModule,
+    CrontabsModule,
+    PreferencesModule,
+    FilestorageModule,
+  ],
   providers: [CoreService],
   controllers: [CoreController],
 })
