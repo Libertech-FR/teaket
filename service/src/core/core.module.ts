@@ -4,11 +4,13 @@ import { CoreService } from '~/core/core.service'
 import { CoreController } from '~/core/core.controller'
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
   AuthModule,
-  UsersModule],
+  UsersModule,
+  CategoriesModule],
   providers: [CoreService],
   controllers: [CoreController],
 })
