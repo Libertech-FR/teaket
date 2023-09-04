@@ -18,15 +18,17 @@ import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
+import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 
 @Controller('categories')
 export class CategoriesController extends AbstractController {
-  protected static readonly projection = {
+
+  protected static readonly projection: PartialProjectionType<CategoriesDto> = {
     name: 1,
     parentId: 1,
     description: 1,
     color: 1,
-    icon: 1,
+    icon: 0,
   }
 
   constructor(private readonly _service: CategoriesService) {
