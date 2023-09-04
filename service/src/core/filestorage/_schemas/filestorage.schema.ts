@@ -1,8 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-
-export type FilestorageDocument = Filestorage & Document
 
 @Schema({
   collection: 'filestorage',

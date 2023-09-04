@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, ObjectId, Types } from 'mongoose'
+import { ObjectId, Types } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-
-export type TriggersDocument = Triggers & Document
 
 @Schema({
   collection: 'triggers',
