@@ -1,16 +1,16 @@
 import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
-import { CrontabsService } from './crontabs.service'
+import { PreferencesService } from './preferences.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Crontabs } from './_schemas/crontabs.schema'
+import { Preferences } from './_schemas/preferences.schema'
 import { Model, Types } from 'mongoose'
 
-describe('CrontabsService', () => {
-  let service: CrontabsService
-  let model: Model<Crontabs>
+describe('PreferencesService', () => {
+  let service: PreferencesService
+  let model: Model<Preferences>
   const _id = new Types.ObjectId()
   const date = new Date()
-  const mockCrontabs: Crontabs = {
+  const mockPreferences: Preferences = {
     _id,
     metadata: {
       createdAt: date,
@@ -24,29 +24,29 @@ describe('CrontabsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        CrontabsService,
+        PreferencesService,
         {
-          provide: getModelToken(Crontabs.name),
+          provide: getModelToken(Preferences.name),
           useValue: Model,
         },
       ],
     }).compile()
-    service = module.get<CrontabsService>(CrontabsService)
-    model = module.get<Model<Crontabs>>(getModelToken(Crontabs.name))
+    service = module.get<PreferencesService>(PreferencesService)
+    model = module.get<Model<Preferences>>(getModelToken(Preferences.name))
   })
 
   describe('create', () => {
     it('should create a new record', async () => {
       const createTest = {}
-      jest.spyOn(model, 'create').mockImplementationOnce(() => Promise.resolve(mockCrontabs))
+      jest.spyOn(model, 'create').mockImplementationOnce(() => Promise.resolve(mockPreferences))
       const result = await service.create(createTest)
-      expect(result).toEqual(mockCrontabs)
+      expect(result).toEqual(mockPreferences)
     })
   })
 
   describe('search', () => {
     it('should return an array of records and total count', async () => {
-      const expected = [mockCrontabs]
+      const expected = [mockPreferences]
       const total = 1
       jest.spyOn(model, 'countDocuments').mockResolvedValueOnce(total)
       jest.spyOn(model, 'find').mockResolvedValueOnce(expected)
@@ -67,14 +67,14 @@ describe('CrontabsService', () => {
   })
 
   describe('read', () => {
-    it('should return a Crontabs record by ID', async () => {
-      const expected = mockCrontabs
+    it('should return a Preferences record by ID', async () => {
+      const expected = mockPreferences
       jest.spyOn(model, 'findById').mockResolvedValueOnce(expected)
       const result = await service.read(_id.toString())
       expect(result).toEqual(expected)
     })
 
-    it('should return null if Crontabs record is not found', async () => {
+    it('should return null if Preferences record is not found', async () => {
       const expected = null
       jest.spyOn(model, 'findById').mockResolvedValueOnce(expected)
       const result = await service.read('123')
@@ -83,18 +83,18 @@ describe('CrontabsService', () => {
   })
 
   describe('update', () => {
-    it('should update a Crontabs record by ID with metadata', async () => {
-      const crontabsDto = { info: { key: 'updated value' } }
-      const newObject = { ...mockCrontabs }
-      const expected = newObject.info.push(crontabsDto.info)
+    it('should update a Preferences record by ID with metadata', async () => {
+      const preferencesDto = { info: { key: 'updated value' } }
+      const newObject = { ...mockPreferences }
+      const expected = newObject.info.push(preferencesDto.info)
       jest.spyOn(model, 'findByIdAndUpdate').mockResolvedValueOnce(expected)
-      const result = await service.update(_id.toString(), crontabsDto)
+      const result = await service.update(_id.toString(), preferencesDto)
       expect(result).toEqual(expected)
     })
   })
 
   describe('remove', () => {
-    it('should remove a Crontabs record by ID', async () => {
+    it('should remove a Preferences record by ID', async () => {
       const id = '123'
       const deleteResult: DeleteResult = { acknowledged: true, deletedCount: 1 }
       jest.spyOn(model, 'deleteOne').mockResolvedValueOnce(deleteResult)

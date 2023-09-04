@@ -4,7 +4,10 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 
 export type TriggersDocument = Triggers & Document
 
-@Schema({ versionKey: false })
+@Schema({
+  collection: 'triggers',
+  versionKey: false,
+})
 export class Triggers extends AbstractSchema {
   @Prop({
     required: true,

@@ -1,16 +1,16 @@
 import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
-import { CrontabsService } from './crontabs.service'
+import { FilestorageService } from './filestorage.service'
 import { getModelToken } from '@nestjs/mongoose'
-import { Crontabs } from './_schemas/crontabs.schema'
+import { Filestorage } from './_schemas/filestorage.schema'
 import { Model, Types } from 'mongoose'
 
-describe('CrontabsService', () => {
-  let service: CrontabsService
-  let model: Model<Crontabs>
+describe('FilestorageService', () => {
+  let service: FilestorageService
+  let model: Model<Filestorage>
   const _id = new Types.ObjectId()
   const date = new Date()
-  const mockCrontabs: Crontabs = {
+  const mockFilestorage: Filestorage = {
     _id,
     metadata: {
       createdAt: date,
@@ -24,29 +24,29 @@ describe('CrontabsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        CrontabsService,
+        FilestorageService,
         {
-          provide: getModelToken(Crontabs.name),
+          provide: getModelToken(Filestorage.name),
           useValue: Model,
         },
       ],
     }).compile()
-    service = module.get<CrontabsService>(CrontabsService)
-    model = module.get<Model<Crontabs>>(getModelToken(Crontabs.name))
+    service = module.get<FilestorageService>(FilestorageService)
+    model = module.get<Model<Filestorage>>(getModelToken(Filestorage.name))
   })
 
   describe('create', () => {
     it('should create a new record', async () => {
       const createTest = {}
-      jest.spyOn(model, 'create').mockImplementationOnce(() => Promise.resolve(mockCrontabs))
+      jest.spyOn(model, 'create').mockImplementationOnce(() => Promise.resolve(mockFilestorage))
       const result = await service.create(createTest)
-      expect(result).toEqual(mockCrontabs)
+      expect(result).toEqual(mockFilestorage)
     })
   })
 
   describe('search', () => {
     it('should return an array of records and total count', async () => {
-      const expected = [mockCrontabs]
+      const expected = [mockFilestorage]
       const total = 1
       jest.spyOn(model, 'countDocuments').mockResolvedValueOnce(total)
       jest.spyOn(model, 'find').mockResolvedValueOnce(expected)
@@ -67,14 +67,14 @@ describe('CrontabsService', () => {
   })
 
   describe('read', () => {
-    it('should return a Crontabs record by ID', async () => {
-      const expected = mockCrontabs
+    it('should return a Filestorage record by ID', async () => {
+      const expected = mockFilestorage
       jest.spyOn(model, 'findById').mockResolvedValueOnce(expected)
       const result = await service.read(_id.toString())
       expect(result).toEqual(expected)
     })
 
-    it('should return null if Crontabs record is not found', async () => {
+    it('should return null if Filestorage record is not found', async () => {
       const expected = null
       jest.spyOn(model, 'findById').mockResolvedValueOnce(expected)
       const result = await service.read('123')
@@ -83,18 +83,18 @@ describe('CrontabsService', () => {
   })
 
   describe('update', () => {
-    it('should update a Crontabs record by ID with metadata', async () => {
-      const crontabsDto = { info: { key: 'updated value' } }
-      const newObject = { ...mockCrontabs }
-      const expected = newObject.info.push(crontabsDto.info)
+    it('should update a Filestorage record by ID with metadata', async () => {
+      const filestorageDto = { info: { key: 'updated value' } }
+      const newObject = { ...mockFilestorage }
+      const expected = newObject.info.push(filestorageDto.info)
       jest.spyOn(model, 'findByIdAndUpdate').mockResolvedValueOnce(expected)
-      const result = await service.update(_id.toString(), crontabsDto)
+      const result = await service.update(_id.toString(), filestorageDto)
       expect(result).toEqual(expected)
     })
   })
 
   describe('remove', () => {
-    it('should remove a Crontabs record by ID', async () => {
+    it('should remove a Filestorage record by ID', async () => {
       const id = '123'
       const deleteResult: DeleteResult = { acknowledged: true, deletedCount: 1 }
       jest.spyOn(model, 'deleteOne').mockResolvedValueOnce(deleteResult)

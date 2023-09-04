@@ -1,21 +1,21 @@
 import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
-import { CrontabsController } from './crontabs.controller'
-import { CrontabsService } from './crontabs.service'
-import { CrontabsDto } from './_dto/crontabs.dto'
-import { Crontabs } from './_schemas/crontabs.schema'
+import { FilestorageController } from './filestorage.controller'
+import { FilestorageService } from './filestorage.service'
+import { FilestorageDto } from './_dto/filestorage.dto'
+import { Filestorage } from './_schemas/filestorage.schema'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { Types } from 'mongoose'
 import { Response, Request } from 'express'
 import { getMockReq, getMockRes } from '@jest-mock/express'
 
-describe('CrontabsController', () => {
-  let controller: CrontabsController
-  let service: CrontabsService
+describe('FilestorageController', () => {
+  let controller: FilestorageController
+  let service: FilestorageService
   const date = new Date()
   const _id = new Types.ObjectId()
   const { res, mockClear } = getMockRes()
-  const object: Crontabs = {
+  const object: Filestorage = {
     _id,
     metadata: {
       createdAt: date,
@@ -29,11 +29,11 @@ describe('CrontabsController', () => {
   beforeEach(async () => {
     mockClear()
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CrontabsController],
+      controllers: [FilestorageController],
       providers: [
-        CrontabsService,
+        FilestorageService,
         {
-          provide: CrontabsService,
+          provide: FilestorageService,
           useValue: {
             search: jest.fn().mockResolvedValue([[object], 1]),
             create: jest.fn().mockResolvedValue(object),
@@ -48,29 +48,29 @@ describe('CrontabsController', () => {
       ],
     }).compile()
 
-    controller = module.get<CrontabsController>(CrontabsController)
-    service = module.get<CrontabsService>(CrontabsService)
+    controller = module.get<FilestorageController>(FilestorageController)
+    service = module.get<FilestorageService>(FilestorageService)
   })
 
   describe('search', () => {
-    it('should return an array of Crontabs objects and the total count', async () => {
+    it('should return an array of Filestorage objects and the total count', async () => {
       const req = getMockReq()
       const query = { _id: _id.toString() }
       const limit = 10
       const skip = 1
-      const expectedResult: [Crontabs[], number] = [[object], 1]
+      const expectedResult: [Filestorage[], number] = [[object], 1]
       jest.spyOn(service, 'search').mockImplementation(async () => await expectedResult)
       const response = await controller.search(req, res, query, limit.toString(), skip.toString(), null)
       expect(response.json).toHaveBeenCalledWith({ data: expectedResult[0], total: expectedResult[1] })
       expect(response.status).toHaveBeenCalledWith(HttpStatus.OK)
     })
 
-    it('should return an array of Crontabs objects with default pagination', async () => {
+    it('should return an array of Filestorage objects with default pagination', async () => {
       const req = getMockReq()
       const query = { _id: _id.toString() }
       const limit = 0
       const skip = 0
-      const expectedResult: [Crontabs[], number] = [[object], 1]
+      const expectedResult: [Filestorage[], number] = [[object], 1]
       jest.spyOn(service, 'search').mockImplementation(async () => await expectedResult)
       const response = await controller.search(req, res, query, limit.toString(), skip.toString(), null)
       expect(response.json).toHaveBeenCalledWith({ data: expectedResult[0], total: expectedResult[1] })
@@ -100,7 +100,7 @@ describe('CrontabsController', () => {
 
   describe('read', () => {
     it('should return the data successfully', async () => {
-      const expectedResult: Crontabs = object
+      const expectedResult: Filestorage = object
       jest.spyOn(service, 'read').mockImplementation(async () => await expectedResult)
       const result = await controller.read(_id.toString(), res)
       expect(res.status).toHaveBeenCalledWith(HttpStatus.OK)
@@ -121,8 +121,8 @@ describe('CrontabsController', () => {
   })
 
   describe('create', () => {
-    it('should return a Crontabs object', async () => {
-      const dto: CrontabsDto = { someProp: 'value' }
+    it('should return a Filestorage object', async () => {
+      const dto: FilestorageDto = { someProp: 'value' }
       const expectedResult = object
       jest.spyOn(service, 'create').mockImplementation(async () => await expectedResult)
       const response = await controller.create(dto, res)
@@ -131,7 +131,7 @@ describe('CrontabsController', () => {
     })
 
     it('should throw HttpException with BAD_REQUEST status when an error occurs', async () => {
-      const dto: CrontabsDto = { someProp: 'value' }
+      const dto: FilestorageDto = { someProp: 'value' }
       jest.spyOn(service, 'create').mockRejectedValue(new Error('Something went wrong'))
 
       try {
@@ -145,10 +145,10 @@ describe('CrontabsController', () => {
   })
 
   describe('update', () => {
-    it('should return a Crontabs object', async () => {
+    it('should return a Filestorage object', async () => {
       const id = _id.toString()
-      const dto: CrontabsDto = { someProp: 'value' }
-      const expectedResult: Crontabs = object
+      const dto: FilestorageDto = { someProp: 'value' }
+      const expectedResult: Filestorage = object
       jest.spyOn(service, 'update').mockImplementation(async () => await expectedResult)
       const response = await controller.update(id, dto, res)
       expect(response.status).toHaveBeenCalledWith(HttpStatus.OK)
@@ -157,7 +157,7 @@ describe('CrontabsController', () => {
 
     it('should throw HttpException with BAD_REQUEST status when an error occurs', async () => {
       const id = _id.toString()
-      const dto: CrontabsDto = { someProp: 'value' }
+      const dto: FilestorageDto = { someProp: 'value' }
       jest.spyOn(service, 'update').mockRejectedValue(new Error('Something went wrong'))
 
       try {
@@ -171,7 +171,7 @@ describe('CrontabsController', () => {
   })
 
   describe('remove', () => {
-    it('should return a Crontabs object', async () => {
+    it('should return a Filestorage object', async () => {
       const id = _id.toString()
       const expectedResult: DeleteResult = {
         acknowledged: true,
