@@ -1,27 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
-import { UserPart, UserPartSchema } from '~/_common/schemas/parts/user.part.schema'
-import { UserType } from '~/_common/enum/user-type.enum'
+import { EntityPart, EntityPartSchema } from '~/_common/schemas/parts/entity.part.schema'
+import { EntityType } from '~/_common/enum/entity-type.enum'
 
 @Schema({ _id: false })
 export class EnvelopePart extends IdnamePart {
   @Prop({
-    type: [UserPartSchema],
+    type: [EntityPartSchema],
     required: true,
   })
-  public senders: UserPart[]
+  public senders: EntityPart[]
 
   @Prop({
-    type: [UserPartSchema],
+    type: [EntityPartSchema],
     required: true,
   })
-  public observers: UserPart[]
+  public observers: EntityPart[]
 
   @Prop({
-    type: [UserPartSchema],
-    validate: (v: UserPart[]) => {
+    type: [EntityPartSchema],
+    validate: (v: EntityPart[]) => {
       for (const user of v) {
-        if (user.type !== UserType.AGENT) {
+        if (user.type !== EntityType.AGENT) {
           return false
         }
       }
@@ -29,7 +29,7 @@ export class EnvelopePart extends IdnamePart {
     },
     required: true,
   })
-  public assigned: UserPart[]
+  public assigned: EntityPart[]
 }
 
 export const EnvelopePartSchema = SchemaFactory.createForClass(EnvelopePart)

@@ -1,17 +1,17 @@
 import { DeleteResult } from 'mongodb'
 import { Test, TestingModule } from '@nestjs/testing'
-import { UsersController } from './users.controller'
-import { UsersService } from './users.service'
-import { UsersDto } from './dto/users.dto'
-import { Users } from './schemas/users.schema'
+import { EntitesController } from './entites.controller'
+import { EntitesService } from './entites.service'
+import { UsersDto } from '~/core/entites/_dto/entites.dto'
+import { Users } from '~/core/entites/_schemas/entites.schema'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { Types } from 'mongoose'
 import { Response, Request } from 'express'
 import { getMockReq, getMockRes } from '@jest-mock/express'
 
 describe('UsersController', () => {
-  let controller: UsersController
-  let service: UsersService
+  let controller: EntitesController
+  let service: EntitesService
   const date = new Date()
   const _id = new Types.ObjectId()
   const { res, mockClear } = getMockRes()
@@ -29,11 +29,11 @@ describe('UsersController', () => {
   beforeEach(async () => {
     mockClear()
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
+      controllers: [EntitesController],
       providers: [
-        UsersService,
+        EntitesService,
         {
-          provide: UsersService,
+          provide: EntitesService,
           useValue: {
             search: jest.fn().mockResolvedValue([[object], 1]),
             create: jest.fn().mockResolvedValue(object),
@@ -48,8 +48,8 @@ describe('UsersController', () => {
       ],
     }).compile()
 
-    controller = module.get<UsersController>(UsersController)
-    service = module.get<UsersService>(UsersService)
+    controller = module.get<EntitesController>(EntitesController)
+    service = module.get<EntitesService>(EntitesService)
   })
 
   describe('search', () => {

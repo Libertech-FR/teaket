@@ -1,15 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
-import { UserTypeList } from '~/_common/enum/user-type.enum'
+import { EntityTypeList } from '~/_common/enum/entity-type.enum'
 
 @Schema({ _id: false })
-export class UserPart extends IdnamePart {
+export class EntityPart extends IdnamePart {
   @Prop({
     type: Number,
-    enum: UserTypeList,
+    enum: EntityTypeList,
     required: true,
   })
   public type: number
 }
 
-export const UserPartSchema = SchemaFactory.createForClass(UserPart)
+export const EntityPartSchema = SchemaFactory.createForClass(EntityPart)
