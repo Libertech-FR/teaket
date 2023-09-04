@@ -8,9 +8,10 @@ import { CategoriesModule } from './categories/categories.module'
 import { ProjectModule } from './projects/project.module'
 import { TriggersModule } from './triggers/triggers.module';
 import { CrontabsModule } from './crontabs/crontabs.module';
+import { PreferencesModule } from './preferences/preferences.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule],
+  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule, PreferencesModule],
   providers: [CoreService],
   controllers: [CoreController],
 })
