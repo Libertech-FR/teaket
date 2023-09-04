@@ -2,15 +2,15 @@ import { DynamicModule, Module } from '@nestjs/common'
 import { RouterModule } from '@nestjs/core'
 import { CoreService } from '~/core/core.service'
 import { CoreController } from '~/core/core.controller'
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module'
+import { UsersModule } from './users/users.module'
+import { CategoriesModule } from './categories/categories.module'
+import { ProjectModule } from './projects/project.module'
+import { TriggersModule } from './triggers/triggers.module';
+import { CrontabsModule } from './crontabs/crontabs.module';
 
 @Module({
-  imports: [
-  AuthModule,
-  UsersModule,
-  CategoriesModule],
+  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule],
   providers: [CoreService],
   controllers: [CoreController],
 })
