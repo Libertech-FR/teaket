@@ -6,12 +6,13 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { CategoriesModule } from './categories/categories.module'
 import { ProjectModule } from './projects/project.module'
-import { TriggersModule } from './triggers/triggers.module';
-import { CrontabsModule } from './crontabs/crontabs.module';
-import { PreferencesModule } from './preferences/preferences.module';
+import { TriggersModule } from './triggers/triggers.module'
+import { CrontabsModule } from './crontabs/crontabs.module'
+import { PreferencesModule } from './preferences/preferences.module'
+import { FilestorageModule } from './filestorage/filestorage.module'
 
 @Module({
-  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule, PreferencesModule],
+  imports: [AuthModule, UsersModule, CategoriesModule, ProjectModule, TriggersModule, CrontabsModule, PreferencesModule, FilestorageModule],
   providers: [CoreService],
   controllers: [CoreController],
 })
