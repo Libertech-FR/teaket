@@ -4,6 +4,9 @@ import { AppService } from './app.service'
 import { Response } from 'express'
 import { Public } from './_common/decorators/public.decorator'
 import { ShutdownService } from '~/shutdown.service'
+import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator'
+import { ApiExtraModels, ApiHideProperty, getSchemaPath } from '@nestjs/swagger'
+import { AppInfoDto } from '~/_dto/app.dto'
 
 @Public()
 @Controller()
@@ -13,6 +16,13 @@ export class AppController extends AbstractController {
   }
 
   @Get()
+  @ApiExtraModels(AppInfoDto)
+  @ApiOkResponse({
+    description: 'Returns the infos of the application',
+    schema: {
+      $ref: getSchemaPath(AppInfoDto),
+    },
+  })
   public root(@Res() res: Response): Response {
     return res.json(this._service.getInfos())
   }
