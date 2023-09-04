@@ -103,7 +103,7 @@ export class Ticket extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket)

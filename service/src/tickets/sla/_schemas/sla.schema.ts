@@ -59,7 +59,7 @@ export class Sla extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const SlaSchema = SchemaFactory.createForClass(Sla)

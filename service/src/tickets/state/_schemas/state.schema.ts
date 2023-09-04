@@ -52,7 +52,7 @@ export class State extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const StateSchema = SchemaFactory.createForClass(State)

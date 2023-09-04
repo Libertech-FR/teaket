@@ -70,7 +70,7 @@ export class Identities extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities)

@@ -29,7 +29,7 @@ export class Entity extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const EntitySchema = SchemaFactory.createForClass(Entity)

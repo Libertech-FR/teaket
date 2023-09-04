@@ -43,7 +43,7 @@ export class Thread extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread)

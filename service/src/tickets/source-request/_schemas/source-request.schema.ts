@@ -52,7 +52,7 @@ export class SourceRequest extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields: object
+  public customFields?: { [key: string]: any }
 }
 
 export const SourceRequestSchema = SchemaFactory.createForClass(SourceRequest)
