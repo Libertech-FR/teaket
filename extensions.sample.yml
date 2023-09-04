@@ -1,0 +1,5 @@
+version: '1'
+
+list:
+  - path: ./extensions/template
+    enabled: true

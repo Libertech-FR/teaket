@@ -1,5 +1,5 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { AbstractSchema } from './abstract.schema'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { AbstractSchema } from './schemas/abstract.schema'
 import { FilterQuery, Model, ProjectionType, QueryOptions, Document, Query, Types, SaveOptions, UpdateQuery, ModifyResult } from 'mongoose'
 import { AbstractService, AbstractServiceContext } from './abstract.service'
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface'
@@ -8,7 +8,7 @@ import { ServiceSchemaInterface } from './interfaces/service.schema.interface'
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
   protected abstract _model: Model<AbstractSchema | Document>
 
-  public constructor(context?: AbstractServiceContext) {
+  protected constructor(context?: AbstractServiceContext) {
     super(context)
   }
 
@@ -62,10 +62,18 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     if (!data) throw new NotFoundException()
     return data
   }
-  
+
   public async create<T extends AbstractSchema | Document>(data?: any, options?: SaveOptions): Promise<Document<T, any, T>> {
     this.logger.debug(['create', JSON.stringify(Object.values(arguments))].join(' '))
-    const document: Document<T, any, T> = new this._model(data)
+    const document: Document<T, any, T> = new this._model({
+      ...data,
+      metadata: {
+        createdBy: this.request.user || 'anonymous',
+        createdAt: new Date(),
+        lastUpdatedBy: this.request.user || 'anonymous',
+        lastUpdatedAt: new Date(),
+      }
+    })
     return document.save(options)
   }
 
@@ -76,7 +84,13 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     this.logger.debug(['update', JSON.stringify(Object.values(arguments))].join(' '))
     const document = await this._model
-      .findByIdAndUpdate<Query<T | null, T, any, T>>({ _id }, update, {
+      .findByIdAndUpdate<Query<T | null, T, any, T>>({ _id }, {
+        ...update,
+        metadata: {
+          lastUpdatedBy: this.request.user || 'anonymous',
+          lastUpdatedAt: new Date(),
+        }
+      }, {
         new: true,
         runValidators: true,
         ...options,

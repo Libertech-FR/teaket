@@ -5,16 +5,18 @@ import { SwaggerCustomOptions } from '@nestjs/swagger'
 import { HelmetOptions } from 'helmet'
 import { RedisOptions } from 'ioredis'
 
+export interface MongoosePlugin {
+  package: string
+  enabled?: boolean
+  options?: Record<string, any>
+}
+
 export interface ConfigInstance {
   helmet: HelmetOptions
   mongoose: {
     uri: string
     options: MongooseModuleOptions
-    plugins: {
-      muv: {
-        options: Record<string, any>
-      }
-    }
+    plugins: MongoosePlugin[]
   }
   ioredis: {
     uri: string
@@ -53,13 +55,15 @@ export default (): ConfigInstance => ({
   mongoose: {
     uri: process.env.TEAKET_MONGOOSE_URI,
     options: {},
-    plugins: {
-      muv: {
+    plugins: [
+      {
+        package: 'mongoose-unique-validator',
+        enabled: true,
         options: {
           message: 'Erreur, expected {PATH} to be unique.',
         },
       },
-    },
+    ],
   },
   ioredis: {
     uri: process.env.TEAKET_IOREDIS_URI,

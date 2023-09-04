@@ -6,15 +6,25 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "aa-postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@libertech-fr/teaket_common": "*"
+    "@auth/core": "^0.12.0",
+    "@hebilicious/authjs-nuxt": "^0.3.0-beta.2",
+    "@libertech-fr/teaket_common": "*",
+    "@nuxtjs/auth-next": "5.0.0-1667386184.dfbbb54",
+    "@quasar/extras": "^1.16.6",
+    "cookie": "^0.5.0",
+    "quasar": "^2.12.5"
   },
   "devDependencies": {
-    "@babel/plugin-transform-class-properties": "^7.22.5",
     "@nuxt/devtools": "latest",
+    "@sidebase/nuxt-auth": "^0.6.0-beta.5",
     "@types/node": "^18.17.3",
-    "nuxt": "^3.6.5"
+    "nuxt": "^3.6.5",
+    "nuxt-api-party": "^0.17.0",
+    "nuxt-quasar-ui": "^2.0.5",
+    "openapi-typescript": "^6.5.4",
+    "vite-plugin-pug": "^0.3.2"
   }
 }

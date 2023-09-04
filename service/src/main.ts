@@ -5,6 +5,7 @@ import { json } from 'body-parser'
 import { Response } from 'express'
 import { join } from 'path'
 import { AppModule } from './app.module'
+import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
 
 declare const module: any
@@ -17,6 +18,7 @@ declare const module: any
     next()
   })
   app.use(passport.initialize())
+  app.use(cookieParser())
   app.use(json({ limit: '50mb' }))
   app.useStaticAssets(join(__dirname, 'public'))
   app.setBaseViewsDir(join(__dirname, 'templates'))

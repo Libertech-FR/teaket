@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
+import { Request } from 'express'
 
 export interface AbstractServiceContext {
   [key: string | number]: any
 
   moduleRef?: ModuleRef
-  request?: Request & { user: any }
+  request?: Request & { user?: any }
 }
 
 @Injectable()
