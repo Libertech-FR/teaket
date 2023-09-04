@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
 import { SlaService } from './sla.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { StateService } from '~/tickets/state/state.service'
 import { Request, Response } from 'express'
 import { SlaCreateDto, SlaUpdateDto } from '~/tickets/sla/_dto/sla.dto'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
