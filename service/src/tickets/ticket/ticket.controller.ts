@@ -23,36 +23,6 @@ export class TicketController extends AbstractController {
   }
 
   @Post()
-  @ApiOkResponse({
-    description: 'Search tickets with pagination',
-    schema: {
-      allOf: [
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(TicketDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Search tickets with pagination',
-    schema: {
-      allOf: [
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(TicketDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
   public async create(@Req() req: Request, @Res() res: Response, @Body() body: TicketCreateDto) {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
