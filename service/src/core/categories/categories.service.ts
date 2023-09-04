@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Categories } from './schemas/categories.schema'
+import { Categories } from './_schemas/categories.schema'
 import { Model } from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
 
