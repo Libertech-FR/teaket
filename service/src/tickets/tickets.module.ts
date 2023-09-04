@@ -6,7 +6,7 @@ import { SlaModule } from './sla/sla.module'
 import { StateModule } from '~/tickets/state/state.module'
 import { TicketModule } from '~/tickets/ticket/ticket.module'
 import { SourceRequestModule } from '~/tickets/source-request/source-request.module'
-import { ThreadModule } from './thread/thread.module';
+import { ThreadModule } from './thread/thread.module'
 
 @Module({
   imports: [

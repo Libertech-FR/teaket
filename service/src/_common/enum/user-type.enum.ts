@@ -3,6 +3,7 @@ export enum UserType {
   OPERATOR = 1,
   AGENT = 2,
   CLIENT = 3,
+  COMPANY = 4,
   OTHER = 99,
 }
 

@@ -2,13 +2,11 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res
 import { SlaService } from './sla.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
+import { SlaCreateDto, SlaUpdateDto } from '~/tickets/sla/_dto/sla.dto'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
 import { ApiParam } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
-import { SlaCreateDto, SlaDto, SlaUpdateDto } from '~/tickets/sla/_dto/sla.dto'
-import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator'
-import { ApiPaginatedResponse } from '~/_common/decorators/api-paginated-response.decorator'
 
 @Controller('sla')
 export class SlaController extends AbstractController {
@@ -32,10 +30,6 @@ export class SlaController extends AbstractController {
   }
 
   @Get()
-  @ApiOkResponse({
-    description: 'Search sla with pagination',
-  })
-  @ApiPaginatedResponse(SlaDto)
   public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions) {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, this.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
