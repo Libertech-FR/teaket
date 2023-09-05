@@ -14,7 +14,6 @@ export class Triggers extends AbstractSchema {
   public name: string
 
   @Prop({
-    required: true,
     type: String,
   })
   public description: string
@@ -26,14 +25,13 @@ export class Triggers extends AbstractSchema {
   public actions: { [key: string]: any }
 
   @Prop({
-    required: true,
     type: Types.ObjectId,
   })
-  public pluginId: ObjectId
+  public pluginId?: ObjectId
 
   @Prop({
-    required: true,
     type: Boolean,
+    default: false,
   })
   public disabled: boolean
 }

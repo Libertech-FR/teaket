@@ -29,14 +29,12 @@ export class Categories extends AbstractSchema {
   public order: number
 
   @Prop({
-    required: true,
     type: Boolean,
     default: true,
   })
   public selectable: boolean
 
   @Prop({
-    required: true,
     type: Boolean,
     default: false,
   })

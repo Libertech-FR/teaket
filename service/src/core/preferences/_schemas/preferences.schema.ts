@@ -10,20 +10,19 @@ export class Preferences extends AbstractSchema {
   @Prop({
     required: true,
     type: String,
+    //TODO: check if pattern is correct
   })
   public name: string
 
-  @Prop({
-    required: true,
-    type: Object,
-  })
-  public data: { [key: string]: any }
+  @Prop({ type: Types.ObjectId })
+  public entityId?: ObjectId
 
   @Prop({
-    required: true,
-    type: Types.ObjectId,
+    type: Object,
+    default: {},
   })
-  public personId: ObjectId
+  public data: { [key: string]: any }
 }
 
 export const PreferencesSchema = SchemaFactory.createForClass(Preferences)
+  .index({ name: 1, entityId: 1 }, { unique: true })

@@ -11,6 +11,7 @@ export class Entity extends AbstractSchema {
   @Prop({
     type: String,
     required: true,
+    unique: true,
   })
   public publicEmail: string
 
@@ -22,7 +23,7 @@ export class Entity extends AbstractSchema {
 
   @Prop({
     type: StatePartSchema,
-    required: true,
+    default: {},
   })
   public state: StatePart
 

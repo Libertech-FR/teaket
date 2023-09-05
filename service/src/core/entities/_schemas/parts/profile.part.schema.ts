@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
+import { PhonePart, PhonePartSchema } from '~/core/entities/_schemas/parts/phone.part.schema'
 
 @Schema({ _id: false })
 export class ProfilePart extends Document {
@@ -7,11 +8,15 @@ export class ProfilePart extends Document {
     type: String,
     required: true,
   })
+  public commonName: string
+
+  @Prop({
+    type: String,
+  })
   public firstName: string
 
   @Prop({
     type: String,
-    required: true,
   })
   public lastName: string
 
@@ -24,12 +29,11 @@ export class ProfilePart extends Document {
     type: String,
   })
   public avatar?: string
+
+  @Prop({
+    type: [PhonePartSchema],
+  })
+  public phones?: PhonePart[]
 }
 
 export const ProfilePartSchema = SchemaFactory.createForClass(ProfilePart)
-ProfilePartSchema.virtual('commonName').get(function (this: ProfilePart): string {
-  const commonNamePart = [this.firstName]
-  if (this.thirdName) commonNamePart.push(this.thirdName)
-  commonNamePart.push(this.lastName)
-  return commonNamePart.join(' ')
-})

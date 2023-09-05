@@ -13,16 +13,15 @@ export class Project extends AbstractSchema {
   public name: string
 
   @Prop({
-    required: true,
     type: Date,
+    default: new Date(),
   })
   public startDate: Date
 
   @Prop({
-    required: true,
     type: Date,
   })
-  public endDate: Date
+  public endDate?: Date
 
   @Prop({
     type: Object,
@@ -30,7 +29,6 @@ export class Project extends AbstractSchema {
   public rules?: { [key: string]: any }
 
   @Prop({
-    required: true,
     type: String,
   })
   public description: string

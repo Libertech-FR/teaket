@@ -28,7 +28,7 @@ export class CategoriesController extends AbstractController {
     parentId: 1,
     description: 1,
     color: 1,
-    icon: 0,
+    icon: 1,
   }
 
   constructor(private readonly _service: CategoriesService) {

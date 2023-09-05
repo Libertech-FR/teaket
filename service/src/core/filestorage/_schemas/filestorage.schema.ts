@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
+import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
 
 @Schema({
   collection: 'filestorage',
@@ -8,9 +9,10 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 export class Filestorage extends AbstractSchema {
   @Prop({
     required: true,
-    type: Number,
+    type: String,
+    enum: FsTypeList,
   })
-  public type: number
+  public type: FsType
 
   @Prop({
     required: true,
@@ -21,6 +23,7 @@ export class Filestorage extends AbstractSchema {
   @Prop({
     required: true,
     type: String,
+    //TODO: check file path ..?
   })
   public path: string
 
@@ -31,8 +34,8 @@ export class Filestorage extends AbstractSchema {
   public comments?: string
 
   @Prop({
-    required: true,
     type: Boolean,
+    default: false,
   })
   public hidden: boolean
 
@@ -56,3 +59,4 @@ export class Filestorage extends AbstractSchema {
 }
 
 export const FilestorageSchema = SchemaFactory.createForClass(Filestorage)
+  .index({ namespace: 1, path: 1 }, { unique: true })

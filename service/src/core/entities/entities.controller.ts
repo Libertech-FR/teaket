@@ -6,14 +6,20 @@ import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } 
 import { ApiParam } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
-import { EntitiesCreateDto, EntitiesUpdateDto } from '~/core/entities/_dto/entites.dto'
+import { EntitiesCreateDto, EntitiesDto, EntitiesUpdateDto } from '~/core/entities/_dto/entites.dto'
+import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
+import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
+import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
+import { PartialProjectionType } from '~/_common/types/partial-projection.type'
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
+import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
+import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
 
 @Controller('entities')
 export class EntitiesController extends AbstractController {
-  protected readonly projection = {
-    name: 1,
-    color: 1,
-    icon: 1,
+  protected static readonly projection: PartialProjectionType<EntitiesDto> = {
+    profile: 1,
+    state: 1,
   }
 
   public constructor(private readonly _service: EntitiesService) {
@@ -21,6 +27,7 @@ export class EntitiesController extends AbstractController {
   }
 
   @Post()
+  @ApiCreateDecorator(EntitiesCreateDto, EntitiesDto)
   public async create(@Req() req: Request, @Res() res: Response, @Body() body: EntitiesCreateDto) {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
@@ -30,8 +37,9 @@ export class EntitiesController extends AbstractController {
   }
 
   @Get()
+  @ApiPaginatedDecorator(PickProjectionHelper(EntitiesDto, EntitiesController.projection))
   public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions) {
-    const [data, total] = await this._service.findAndCount(searchFilterSchema, this.projection, searchFilterOptions)
+    const [data, total] = await this._service.findAndCount(searchFilterSchema, EntitiesController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
@@ -41,6 +49,7 @@ export class EntitiesController extends AbstractController {
 
   @Get(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
+  @ApiReadResponseDecorator(EntitiesDto)
   public async read(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
     const data = await this._service.findById(_id)
     return res.status(HttpStatus.OK).json({
@@ -51,6 +60,7 @@ export class EntitiesController extends AbstractController {
 
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
+  @ApiUpdateDecorator(EntitiesUpdateDto, EntitiesDto)
   public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: EntitiesUpdateDto, @Res() res: Response) {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
@@ -61,6 +71,7 @@ export class EntitiesController extends AbstractController {
 
   @Delete(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
+  @ApiDeletedResponseDecorator(EntitiesDto)
   public async remove(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
     const data = await this._service.delete(_id)
     return res.status(HttpStatus.OK).json({

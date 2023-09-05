@@ -27,6 +27,11 @@ export class Identities extends AbstractSchema {
 
   @Prop({
     type: String,
+  })
+  public displayName: string
+
+  @Prop({
+    type: String,
     required: true,
     unique: true,
   })
@@ -40,7 +45,6 @@ export class Identities extends AbstractSchema {
 
   @Prop({
     type: String,
-    required: true,
     default: DEFAULT_THIRD_PARTY_AUTH,
   })
   public thirdPartyAuth: string
@@ -68,9 +72,21 @@ export class Identities extends AbstractSchema {
   public security: SecurityPart
 
   @Prop({
+    type: Boolean,
+    default: false,
+  })
+  public hidden: boolean
+
+  @Prop({
     type: Object,
   })
   public customFields?: { [key: string]: any }
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
+  .pre('save', function (this: Identities, next: () => void): void {
+    if (this.isNew) {
+      this.displayName = this.displayName || this.username
+    }
+    next()
+  })

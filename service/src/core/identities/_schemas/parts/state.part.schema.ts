@@ -19,6 +19,9 @@ export class StatePart extends Document {
   public lastChangedAt?: Date
 
   @Prop({ type: Date })
+  public suspendedAt?: Date
+
+  @Prop({ type: Date })
   public suspendedUntil?: Date
 
   @Prop({ type: String })
