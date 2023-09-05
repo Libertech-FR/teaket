@@ -6,6 +6,7 @@ import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom
 import { IsMongoId } from 'class-validator'
 
 export class [NAME]CreateDto extends AbstractCustomFieldsDto {
+  [FIELDS_HERE...]
 }
 
 export class [NAME]Dto extends [NAME]CreateDto {
