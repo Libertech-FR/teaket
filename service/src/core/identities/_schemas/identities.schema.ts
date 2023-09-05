@@ -83,10 +83,9 @@ export class Identities extends AbstractSchema {
   public customFields?: { [key: string]: any }
 }
 
-export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
-  .pre('save', function (this: Identities, next: () => void): void {
-    if (this.isNew) {
-      this.displayName = this.displayName || this.username
-    }
-    next()
-  })
+export const IdentitiesSchema = SchemaFactory.createForClass(Identities).pre('save', function (this: Identities, next: () => void): void {
+  if (this.isNew) {
+    this.displayName = this.displayName || this.username
+  }
+  next()
+})

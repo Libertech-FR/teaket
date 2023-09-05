@@ -1,16 +1,22 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
-import { TriggersCreateDto, TriggersUpdateDto } from './_dto/triggers.dto'
-import { TriggersService } from './triggers.service'
-import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam, ApiTags } from '@nestjs/swagger'
-import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
+import { Controller, Post, Res, Body, HttpStatus, Get, Param, Patch, Delete } from '@nestjs/common'
+import { ApiTags, ApiParam } from '@nestjs/swagger'
+import { AbstractController, SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
-import { Request, Response } from 'express'
+import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
+import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
+import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
+import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
+import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
+import { PartialProjectionType } from '~/_common/types/partial-projection.type'
+import { TriggersDto, TriggersCreateDto, TriggersUpdateDto } from './_dto/triggers.dto'
+import { TriggersService } from './triggers.service'
+import { Response } from 'express'
 
 @ApiTags('core')
 @Controller('triggers')
 export class TriggersController extends AbstractController {
-  protected readonly projection = {
+  protected static readonly projection: PartialProjectionType<TriggersDto> = {
     name: 1,
     description: 1,
   }
@@ -20,7 +26,8 @@ export class TriggersController extends AbstractController {
   }
 
   @Post()
-  public async create(@Req() req: Request, @Res() res: Response, @Body() body: TriggersCreateDto) {
+  @ApiCreateDecorator(TriggersCreateDto, TriggersDto)
+  public async create(@Res() res: Response, @Body() body: TriggersCreateDto): Promise<Response> {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
@@ -29,8 +36,9 @@ export class TriggersController extends AbstractController {
   }
 
   @Get()
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions) {
-    const [data, total] = await this._service.findAndCount(searchFilterSchema, this.projection, searchFilterOptions)
+  @ApiPaginatedDecorator(PickProjectionHelper(TriggersDto, TriggersController.projection))
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
+    const [data, total] = await this._service.findAndCount(searchFilterSchema, TriggersController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
@@ -40,7 +48,8 @@ export class TriggersController extends AbstractController {
 
   @Get(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
-  public async read(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
+  @ApiReadResponseDecorator(TriggersDto)
+  public async read(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response): Promise<Response> {
     const data = await this._service.findById(_id)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -50,7 +59,8 @@ export class TriggersController extends AbstractController {
 
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
-  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: TriggersUpdateDto, @Res() res: Response) {
+  @ApiUpdateDecorator(TriggersUpdateDto, TriggersDto)
+  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: TriggersUpdateDto, @Res() res: Response): Promise<Response> {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -60,7 +70,8 @@ export class TriggersController extends AbstractController {
 
   @Delete(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
-  public async remove(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
+  @ApiDeletedResponseDecorator(TriggersDto)
+  public async remove(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response): Promise<Response> {
     const data = await this._service.delete(_id)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
