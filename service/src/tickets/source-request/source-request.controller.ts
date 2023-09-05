@@ -1,13 +1,14 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
-import { FilterOptions, SearchFilterOptions, FilterSchema, SearchFilterSchema  } from '@streamkits/nestjs_module_scrud'
-import { ApiParam } from '@nestjs/swagger'
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { SourceRequestCreateDto, SourceRequestUpdateDto } from '~/tickets/source-request/_dto/source-request.dto'
 import { SourceRequestService } from '~/tickets/source-request/source-request.service'
 
+@ApiTags('tickets')
 @Controller('source-request')
 export class SourceRequestController extends AbstractController {
   protected readonly projection = {

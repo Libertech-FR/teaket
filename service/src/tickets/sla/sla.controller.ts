@@ -4,10 +4,11 @@ import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
 import { SlaCreateDto, SlaUpdateDto } from '~/tickets/sla/_dto/sla.dto'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 
+@ApiTags('tickets')
 @Controller('sla')
 export class SlaController extends AbstractController {
   protected readonly projection = {

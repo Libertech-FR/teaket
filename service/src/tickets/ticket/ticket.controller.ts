@@ -6,10 +6,11 @@ import { Request, Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
-import { ApiCreatedResponse, ApiParam, getSchemaPath } from '@nestjs/swagger'
+import { ApiCreatedResponse, ApiParam, ApiTags, getSchemaPath } from '@nestjs/swagger'
 import { ApiPaginatedResponseDecorator } from '~/_common/decorators/api-paginated-response.decorator'
 import { AppInfoDto } from '~/_dto/app.dto'
 
+@ApiTags('tickets')
 @Controller('ticket')
 export class TicketController extends AbstractController {
   protected readonly projection = {

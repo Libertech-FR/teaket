@@ -14,6 +14,12 @@ export class Filestorage extends AbstractSchema {
   })
   public type: FsType
 
+  // text/html, application/pdf
+  @Prop({
+    type: String,
+  })
+  public mime?: string
+
   @Prop({
     required: true,
     type: String,

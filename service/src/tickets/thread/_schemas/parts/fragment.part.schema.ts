@@ -1,9 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
 import { FragmentType, FragmentTypeList } from '~/tickets/thread/_enum/fragment-type.enum'
+import { Document, Types } from 'mongoose'
+import { IdfsPart, IdfsPartSchema } from '~/_common/schemas/parts/idfs.part.schema'
 
 @Schema({ _id: false })
-export class FragmentPart extends IdnamePart {
+export class FragmentPart extends Document {
+  @Prop({
+    type: Types.ObjectId,
+    required: true,
+  })
+  public id: Types.ObjectId
+
   @Prop({
     type: String,
     enum: FragmentTypeList,
@@ -13,15 +20,13 @@ export class FragmentPart extends IdnamePart {
 
   @Prop({
     type: String,
-    required: true,
   })
-  public type: string
+  public message?: string
 
   @Prop({
-    type: String,
-    required: true,
+    type: IdfsPartSchema,
   })
-  public path: string
+  public filestorage?: IdfsPart
 
   @Prop({
     type: Object,
@@ -30,3 +35,23 @@ export class FragmentPart extends IdnamePart {
 }
 
 export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart)
+  .pre('validate', function(this: FragmentPart, next: Function): void {
+    switch (this.disposition) {
+      case FragmentType.RAW: {
+        delete this.filestorage
+        if (!this.message) {
+          next(new Error('Message is required'))
+        }
+        break
+      }
+
+      case FragmentType.FILE: {
+        delete this.message
+        if (!this.filestorage) {
+          next(new Error('Filestorage is required'))
+        }
+        break
+      }
+    }
+    next()
+  })

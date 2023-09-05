@@ -3,8 +3,8 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin'
 import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface'
 import { IdnamePart, IdnamePartSchema } from '~/_common/schemas/parts/idname.part.schema'
-import { TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
-import { TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
+import { TicketType, TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
+import { TicketLifestep, TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { Types } from 'mongoose'
 import { SlaPart, SlaPartSchema } from '~/tickets/ticket/_schemas/parts/sla.part.schema'
 import { TagPart, TagPartSchema } from '~/tickets/ticket/_schemas/parts/tag.part.schema'
@@ -16,9 +16,10 @@ import { EnvelopePart, EnvelopePartSchema } from '~/tickets/ticket/_schemas/part
 })
 export class Ticket extends AbstractSchema {
   @Prop({
-    unique: true,
     type: String,
     validate: [(sequence: string) => /[A-Za-z0-9_-]+/.test(sequence), 'Numéro de tickets invalide.'],
+    required: true,
+    unique: true,
   })
   public sequence: string
 
@@ -29,45 +30,43 @@ export class Ticket extends AbstractSchema {
   public envelope: EnvelopePart
 
   @Prop({
-    required: true,
     type: String,
+    required: true,
   })
   public subject: string
 
   @Prop({
     type: Number,
     enum: TicketTypeList,
-    required: true,
+    default: TicketType.INCIDENT,
   })
-  public type: number
+  public type: TicketType
 
   @Prop({
     type: [TagPartSchema],
-    required: true,
+    default: [],
   })
   public tags: TagPart[]
 
   @Prop({
     type: Number,
     enum: TicketLifestepList,
-    required: true,
+    default: TicketLifestep.OPEN,
   })
-  public lifestep: number
+  public lifestep: TicketLifestep
 
   @Prop({ type: Types.ObjectId })
   public parentId?: Types.ObjectId
 
   @Prop({
     type: IdnamePartSchema,
-    required: true,
   })
-  public state: IdnamePart
+  public state?: IdnamePart
 
   @Prop({
     type: IdnamePartSchema,
-    required: true,
   })
-  public project: IdnamePart
+  public project?: IdnamePart
 
   @Prop({
     type: IdnamePartSchema,
@@ -89,8 +88,9 @@ export class Ticket extends AbstractSchema {
 
   @Prop({
     type: Number,
-    required: true,
     default: 0,
+    validate: [(value: number) => value >= 0, 'Temps total invalide.'],
+    //TODO: calculate total time from threads
   })
   public totalTime: number
 

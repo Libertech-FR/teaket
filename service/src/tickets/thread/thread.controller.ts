@@ -3,11 +3,12 @@ import { ThreadService } from './thread.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
 import { FilterOptions, SearchFilterOptions, FilterSchema, SearchFilterSchema  } from '@streamkits/nestjs_module_scrud'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { ThreadCreateDto } from '~/tickets/thread/_dto/thread.dto'
 
+@ApiTags('tickets')
 @Controller('thread')
 export class ThreadController extends AbstractController {
   protected readonly projection = {

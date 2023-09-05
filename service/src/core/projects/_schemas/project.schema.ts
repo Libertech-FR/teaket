@@ -7,8 +7,9 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 })
 export class Project extends AbstractSchema {
   @Prop({
-    required: true,
     type: String,
+    required: true,
+    unique: true,
   })
   public name: string
 

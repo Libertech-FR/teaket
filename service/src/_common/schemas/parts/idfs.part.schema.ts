@@ -1,20 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types } from 'mongoose'
 import { SourceRequest } from '~/tickets/source-request/_schemas/source-request.schema'
+import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
 
 @Schema({ _id: false })
-export class IdnamePart extends Document {
+export class IdfsPart extends IdnamePart {
   @Prop({
-    type: Types.ObjectId,
+    type: String,
     required: true,
   })
-  public id: Types.ObjectId
+  public namespace: string
 
   @Prop({
     type: String,
     required: true,
   })
-  public name: string
+  public path: string
+
+  @Prop({
+    type: String,
+  })
+  public mime: string
 }
 
-export const IdnamePartSchema = SchemaFactory.createForClass(IdnamePart)
+export const IdfsPartSchema = SchemaFactory.createForClass(IdfsPart)

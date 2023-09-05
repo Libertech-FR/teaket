@@ -10,26 +10,24 @@ export class SourceRequest extends AbstractSchema {
   @Prop({
     type: String,
     required: true,
+    unique: true,
   })
   public name: string
 
   @Prop({
     type: String,
-    required: true,
   })
   public description: string
 
   @Prop({
     type: String,
-    required: true,
   })
-  public icon: string
+  public icon?: string
 
   @Prop({
     type: String,
-    required: true,
   })
-  public color: string
+  public color?: string
 
   @Prop({
     type: [RulePartSchema],
@@ -39,13 +37,12 @@ export class SourceRequest extends AbstractSchema {
 
   @Prop({
     type: String,
-    required: true,
   })
-  public backgroundColor: string
+  public backgroundColor?: string
 
   @Prop({
     type: Number,
-    required: true,
+    default: 0,
   })
   public order: number
 

@@ -3,11 +3,12 @@ import { StateService } from './state.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { StatesCreateDto, StatesUpdateDto } from '~/tickets/state/_dto/state.dto'
 
+@ApiTags('tickets')
 @Controller('state')
 export class StateController extends AbstractController {
   protected readonly projection = {

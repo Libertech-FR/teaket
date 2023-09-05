@@ -1,6 +1,6 @@
 export enum FragmentType {
-  INLINE = 'inline',
-  ATTACHMENT = 'attachment',
+  RAW = 'raw',
+  FILE = 'file',
 }
 
 export const FragmentTypeList: number[] = Object.keys(FragmentType)

@@ -8,8 +8,9 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 })
 export class Triggers extends AbstractSchema {
   @Prop({
-    required: true,
     type: String,
+    required: true,
+    unique: true,
   })
   public name: string
 
