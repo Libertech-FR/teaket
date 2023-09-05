@@ -1,18 +1,94 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsString } from 'class-validator'
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { Type } from 'class-transformer'
+import { EnvelopePartDto } from '~/tickets/ticket/_dto/parts/envelope.part.dto'
+import { TicketType, TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
+import { TagPartDto } from '~/tickets/ticket/_dto/parts/tag.part.dto'
+import { TicketLifestep, TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
+import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
+import { SlaPartDto } from '~/tickets/ticket/_dto/parts/sla.part.dto'
 
-export class TicketDto {
-  @ApiProperty()
-  public _id: string
+export class TicketCreateDto extends AbstractCustomFieldsDto {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => EnvelopePartDto)
+  @ApiProperty({ type: EnvelopePartDto })
+  public envelope: EnvelopePartDto
 
-  @ApiProperty()
-  public subject: string
-}
-
-export class TicketCreateDto {
   @IsString()
   @ApiProperty()
   public subject: string
+
+  @IsEnum(TicketTypeList)
+  @ApiProperty({ enum: TicketTypeList })
+  public type: TicketType
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagPartDto)
+  @ApiProperty({ type: [TagPartDto] })
+  public tags: TagPartDto[]
+
+  @IsEnum(TicketLifestepList)
+  @ApiProperty({ enum: TicketLifestepList })
+  public lifestep: TicketLifestep
+
+  @IsMongoId()
+  @IsOptional()
+  @ApiProperty()
+  public parentId?: string
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => IdnamePartDto)
+  @ApiProperty({ type: IdnamePartDto })
+  public state?: IdnamePartDto
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => IdnamePartDto)
+  @ApiProperty({ type: IdnamePartDto })
+  public project?: IdnamePartDto
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => IdnamePartDto)
+  @ApiProperty({ type: IdnamePartDto })
+  public priority: IdnamePartDto
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => IdnamePartDto)
+  @ApiProperty({ type: IdnamePartDto })
+  public impact: IdnamePartDto
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => SlaPartDto)
+  @ApiProperty({ type: SlaPartDto })
+  public sla: SlaPartDto
+}
+
+export class TicketDto extends TicketCreateDto {
+  @IsMongoId()
+  @ApiProperty()
+  public _id: string
+
+  @IsString()
+  @ApiProperty()
+  public sequence: string
+
+  @IsArray()
+  @IsString({ each: true })
+  @ApiProperty({ type: [String] })
+  public readFlags: string[]
+
+  @IsNumber()
+  @ApiProperty()
+  public totalTime: number
 }
 
 export class TicketUpdateDto extends PartialType(TicketCreateDto) {

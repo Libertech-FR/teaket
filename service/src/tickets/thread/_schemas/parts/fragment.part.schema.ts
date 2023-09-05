@@ -27,11 +27,6 @@ export class FragmentPart extends Document {
     type: IdfsPartSchema,
   })
   public filestorage?: IdfsPart
-
-  @Prop({
-    type: Object,
-  })
-  public metadata: object
 }
 
 export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart)
