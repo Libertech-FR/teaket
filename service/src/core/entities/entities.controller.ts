@@ -3,7 +3,7 @@ import { EntitiesService } from './entities.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Request, Response } from 'express'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { EntitiesCreateDto, EntitiesDto, EntitiesUpdateDto } from '~/core/entities/_dto/entites.dto'
@@ -15,6 +15,7 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
 
+@ApiTags('core')
 @Controller('entities')
 export class EntitiesController extends AbstractController {
   protected static readonly projection: PartialProjectionType<EntitiesDto> = {

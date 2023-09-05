@@ -11,6 +11,7 @@ import { PreferencesModule } from './preferences/preferences.module'
 import { FilestorageModule } from './filestorage/filestorage.module'
 import { EntitiesModule } from '~/core/entities/entities.module'
 import { IdentitiesModule } from '~/core/identities/identities.module'
+import { ApiTags } from '@nestjs/swagger'
 
 @Module({
   imports: [

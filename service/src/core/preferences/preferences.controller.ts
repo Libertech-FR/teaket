@@ -2,11 +2,12 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res
 import { PreferencesCreateDto, PreferencesUpdateDto } from './_dto/preferences.dto'
 import { PreferencesService } from './preferences.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { Request, Response } from 'express'
 
+@ApiTags('core')
 @Controller('preferences')
 export class PreferencesController extends AbstractController {
   public readonly projection = {

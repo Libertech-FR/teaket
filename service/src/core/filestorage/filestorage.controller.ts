@@ -2,11 +2,12 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res
 import { FilestorageCreateDto, FilestorageUpdateDto } from './_dto/filestorage.dto'
 import { FilestorageService } from './filestorage.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { Request, Response } from 'express'
 
+@ApiTags('core')
 @Controller('filestorage')
 export class FilestorageController extends AbstractController {
   protected readonly projection = {

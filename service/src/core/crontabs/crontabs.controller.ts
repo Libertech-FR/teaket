@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } fr
 import { CrontabsCreateDto, CrontabsDto, CrontabsUpdateDto } from './_dto/crontabs.dto'
 import { CrontabsService } from './crontabs.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import {
   FilterOptions,
   FilterSchema,
@@ -20,6 +20,7 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
 
+@ApiTags('core')
 @Controller('crontabs')
 export class CrontabsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<CrontabsDto> = {

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } fr
 import { CategoriesCreateDto, CategoriesDto, CategoriesUpdateDto } from './_dto/categories.dto'
 import { CategoriesService } from './categories.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import {
   FilterOptions,
   FilterSchema,
@@ -20,6 +20,7 @@ import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-re
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 
+@ApiTags('core')
 @Controller('categories')
 export class CategoriesController extends AbstractController {
 

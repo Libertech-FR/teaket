@@ -2,11 +2,12 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res
 import { ProjectCreateDto, ProjectUpdateDto } from './_dto/project.dto'
 import { ProjectService } from './project.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam } from '@nestjs/swagger'
+import { ApiParam, ApiTags } from '@nestjs/swagger'
 import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { Request, Response } from 'express'
 
+@ApiTags('core')
 @Controller('project')
 export class ProjectController extends AbstractController {
   protected readonly projection = {
