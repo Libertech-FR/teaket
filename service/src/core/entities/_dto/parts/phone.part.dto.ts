@@ -8,7 +8,6 @@ export class PhonePartDto {
   @ApiProperty({ enum: PhoneTypeList })
   public type: PhoneType
 
-  @IsString()
   @IsPhoneNumber()
   @IsNotEmpty()
   @ApiProperty()

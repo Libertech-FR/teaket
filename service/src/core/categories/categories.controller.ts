@@ -27,9 +27,9 @@ export class CategoriesController extends AbstractController {
   protected static readonly projection: PartialProjectionType<CategoriesDto> = {
     name: 1,
     parentId: 1,
-    description: 1,
     color: 1,
     icon: 1,
+    disabled: 1,
   }
 
   constructor(private readonly _service: CategoriesService) {

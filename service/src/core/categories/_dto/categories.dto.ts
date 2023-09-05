@@ -1,16 +1,17 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsString, IsNumber, IsOptional, IsBoolean, IsMongoId } from 'class-validator'
+import { IsString, IsNumber, IsOptional, IsBoolean, IsMongoId, IsNotEmpty } from 'class-validator'
 import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
 
 export class CategoriesCreateDto extends AbstractCustomFieldsDto {
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   public name: string
 
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public description: string
+  public description?: string
 
   @IsMongoId()
   @IsOptional()
@@ -20,17 +21,17 @@ export class CategoriesCreateDto extends AbstractCustomFieldsDto {
   @IsNumber()
   @IsOptional()
   @ApiProperty()
-  public order: number
+  public order?: number
 
   @IsBoolean()
   @IsOptional()
   @ApiProperty()
-  public selectable: boolean
+  public selectable?: boolean
 
   @IsBoolean()
   @IsOptional()
   @ApiProperty()
-  public disabled: boolean
+  public disabled?: boolean
 
   @IsString()
   @IsOptional()

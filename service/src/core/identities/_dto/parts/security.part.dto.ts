@@ -1,31 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsArray, IsBoolean } from 'class-validator'
+import { IsString, IsArray, IsBoolean, IsOptional } from 'class-validator'
 
 export class SecurityPartDTO {
   @IsArray()
   @IsString({ each: true })
-  @ApiProperty()
+  @ApiProperty({ type: [String] })
   public oldPasswords?: string[]
 
   @IsString()
+  @IsOptional()
   @ApiProperty()
   public otpKey?: string
 
   @IsArray()
   @IsString({ each: true })
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ type: [String] })
   public u2fKey?: string[]
 
   @IsArray()
   @IsString({ each: true })
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ type: [String] })
   public allowedNetworks?: string[]
 
   @IsBoolean()
+  @IsOptional()
   @ApiProperty()
   public changePwdAtNextLogin: boolean
 
   @IsBoolean()
+  @IsOptional()
   @ApiProperty()
   public secretKey?: string
 }

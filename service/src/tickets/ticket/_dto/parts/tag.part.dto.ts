@@ -4,11 +4,7 @@ import { ApiProperty } from '@nestjs/swagger'
 
 export class TagPartDto extends IdnamePartDto {
   @IsBoolean()
-  @ApiProperty()
-  public manual: boolean
-
   @IsOptional()
   @ApiProperty()
-  //TODO: check utility of this property
-  public metadata: object
+  public manual: boolean
 }

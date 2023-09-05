@@ -21,10 +21,9 @@ export class ProjectController extends AbstractController {
     name: 1,
     startDate: 1,
     endDate: 1,
-    description: 1,
   }
 
-  constructor(private readonly _service: ProjectService) {
+  public constructor(private readonly _service: ProjectService) {
     super()
   }
 

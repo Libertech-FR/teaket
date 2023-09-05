@@ -15,7 +15,7 @@ export class PreferencesCreateDto {
   @IsObject()
   @IsOptional()
   @ValidateNested({ each: true })
-  @ApiProperty()
+  @ApiProperty({ type: Object })
   public data?: { [key: string]: any }
 }
 
@@ -25,4 +25,5 @@ export class PreferencesDto extends PreferencesCreateDto {
   public _id: string
 }
 
-export class PreferencesUpdateDto extends PartialType(PreferencesCreateDto) {}
+export class PreferencesUpdateDto extends PartialType(PreferencesCreateDto) {
+}

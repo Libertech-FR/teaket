@@ -5,7 +5,6 @@ import { ApiProperty } from '@nestjs/swagger'
 import { FragmentType, FragmentTypeList } from '~/tickets/thread/_enum/fragment-type.enum'
 
 export class FragmentPartDto {
-  @IsString()
   @IsEnum(FragmentTypeList)
   @ApiProperty({ enum: FragmentTypeList })
   public disposition: FragmentType

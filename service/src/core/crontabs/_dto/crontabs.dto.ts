@@ -22,7 +22,7 @@ export class CrontabsCreateDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Object)
-  @ApiProperty()
+  @ApiProperty({ type: [Object] })
   public actions: { [key: string]: any }[]
 
   @IsMongoId()

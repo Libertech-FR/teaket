@@ -1,9 +1,10 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
-import { IsArray, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class SourceRequestCreateDto extends AbstractCustomFieldsDto {
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   public name: string
 
@@ -24,7 +25,7 @@ export class SourceRequestCreateDto extends AbstractCustomFieldsDto {
 
   @IsArray()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: [Object] })
   public rules: { [key: string]: any }[]
 
   @IsString()

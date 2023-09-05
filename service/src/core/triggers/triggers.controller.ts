@@ -18,10 +18,11 @@ import { Response } from 'express'
 export class TriggersController extends AbstractController {
   protected static readonly projection: PartialProjectionType<TriggersDto> = {
     name: 1,
-    description: 1,
+    pluginId: 1,
+    disabled: 1,
   }
 
-  constructor(private readonly _service: TriggersService) {
+  public constructor(private readonly _service: TriggersService) {
     super()
   }
 

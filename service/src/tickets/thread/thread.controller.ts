@@ -11,7 +11,6 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
-import { StatesDto } from '~/tickets/state/_dto/state.dto'
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
 
 @ApiTags('tickets')

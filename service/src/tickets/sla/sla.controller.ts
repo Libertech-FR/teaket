@@ -30,7 +30,7 @@ export class SlaController extends AbstractController {
 
   @Post()
   @ApiCreateDecorator(SlaCreateDto, SlaDto)
-  public async create(@Req() req: Request, @Res() res: Response, @Body() body: SlaCreateDto): Promise<Response> {
+  public async create(@Res() res: Response, @Body() body: SlaCreateDto): Promise<Response> {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,

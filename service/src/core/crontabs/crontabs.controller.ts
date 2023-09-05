@@ -26,6 +26,7 @@ export class CrontabsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<CrontabsDto> = {
     name: 1,
     interval: 1,
+    disabled: 1,
   }
 
   public constructor(private readonly _service: CrontabsService) {

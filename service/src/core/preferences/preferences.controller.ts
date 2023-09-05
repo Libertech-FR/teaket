@@ -19,17 +19,16 @@ import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-re
 export class PreferencesController extends AbstractController {
   public static readonly projection: PartialProjectionType<PreferencesDto> = {
     name: 1,
-    data: 1,
     entityId: 1,
   }
 
-  constructor(private readonly _service: PreferencesService) {
+  public constructor(private readonly _service: PreferencesService) {
     super()
   }
 
   @Post()
   @ApiCreateDecorator(PreferencesCreateDto, PreferencesDto)
-  public async create(@Req() req: Request, @Res() res: Response, @Body() body: PreferencesCreateDto): Promise<Response> {
+  public async create(@Res() res: Response, @Body() body: PreferencesCreateDto): Promise<Response> {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,

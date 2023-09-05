@@ -1,18 +1,21 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
-import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean } from 'class-validator'
+import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty } from 'class-validator'
 import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
 
 export class FilestorageCreateDto extends AbstractCustomFieldsDto {
   @IsEnum(FsTypeList)
+  @IsNotEmpty()
   @ApiProperty({ enum: FsTypeList })
   type: FsType
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   namespace: string
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   path: string
 
@@ -28,12 +31,12 @@ export class FilestorageCreateDto extends AbstractCustomFieldsDto {
 
   @IsOptional()
   @IsObject()
-  @ApiProperty()
+  @ApiProperty({ type: Object })
   tags?: { [key: string]: any }
 
   @IsOptional()
   @IsObject()
-  @ApiProperty()
+  @ApiProperty({ type: Object })
   acls?: { [key: string]: any }
 }
 

@@ -18,10 +18,14 @@ import { Response } from 'express'
 @Controller('identities')
 export class IdentitiesController extends AbstractController {
   protected static readonly projection: PartialProjectionType<IdentitiesDto> = {
+    entityId: 1,
     username: 1,
+    displayName: 1,
+    state: 1,
+    hidden: 1,
   }
 
-  constructor(private readonly _service: IdentitiesService) {
+  public constructor(private readonly _service: IdentitiesService) {
     super()
   }
 
