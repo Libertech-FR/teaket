@@ -18,6 +18,7 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 export class ThreadController extends AbstractController {
   protected static readonly projection: PartialProjectionType<ThreadDto> = {
     ticketId: 1,
+    fragments: 1,
   }
 
   public constructor(private readonly _service: ThreadService) {
@@ -35,7 +36,7 @@ export class ThreadController extends AbstractController {
   }
 
   @Get()
-  @ApiPaginatedDecorator(PickProjectionHelper(ThreadDto, ThreadController.projection))
+  // @ApiPaginatedDecorator(PickProjectionHelper(ThreadDto, ThreadController.projection))
   public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, ThreadController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({

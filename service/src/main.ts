@@ -31,8 +31,8 @@ declare const module: any
   if (process.env.production !== 'production') {
     require('./swagger').default(app)
   }
-  await app.listen(9000, async (): Promise<void> => {
-    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:9000/> !', 'Bootstrap')
+  await app.listen(7100, async (): Promise<void> => {
+    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:7100/> !', 'Bootstrap')
   })
   if (module.hot) {
     module.hot.accept()

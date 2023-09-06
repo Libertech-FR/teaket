@@ -53,7 +53,7 @@ export default (): ConfigInstance => ({
     },
   },
   mongoose: {
-    uri: process.env.TEAKET_MONGOOSE_URI,
+    uri: process.env.TK_SERVICE_MONGOOSE_URI,
     options: {},
     plugins: [
       {
@@ -66,7 +66,7 @@ export default (): ConfigInstance => ({
     ],
   },
   ioredis: {
-    uri: process.env.TEAKET_IOREDIS_URI,
+    uri: process.env.TK_SERVICE_IOREDIS_URI,
     options: {
       showFriendlyErrorStack: true,
     },
@@ -83,7 +83,7 @@ export default (): ConfigInstance => ({
       /**
        * @see https://randomkeygen.com/
        */
-      secret: process.env.TEAKET_JWT_SECRET,
+      secret: process.env.TK_SERVICE_JWT_SECRET,
       jwksUri: 'http://127.0.0.1:2000/jwks',
     },
   },

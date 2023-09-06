@@ -16,6 +16,10 @@ import { FetchError } from 'ofetch'
 //   } as any)
 // }
 
+//TODO: fix this
+
+// export const useApiFetch = useApiData
+
 export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyof Paths[`/${P}`] & HttpMethod>>(
   path: MaybeRefOrGetter<P>,
   opts?: Omit<UseOpenApiDataOptions<Paths[`/${P}`], M>, 'method'> & {

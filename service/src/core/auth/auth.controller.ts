@@ -24,7 +24,7 @@ export class AuthController extends AbstractController {
 
   @Get('session')
   public async session(@Res() res: Response): Promise<Response> {
-    console.log('session')
+    // console.log('session')
     return res.json({
       token: '1234',
       user: {

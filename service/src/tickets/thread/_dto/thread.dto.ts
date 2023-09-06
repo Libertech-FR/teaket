@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsArray, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsMongoId, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
