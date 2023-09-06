@@ -23,10 +23,10 @@ import { FetchError } from 'ofetch'
 export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyof Paths[`/${P}`] & HttpMethod>>(
   path: MaybeRefOrGetter<P>,
   opts?: Omit<UseOpenApiDataOptions<Paths[`/${P}`], M>, 'method'> & {
-    method: M;
+    method: M
   } & {
     /* @ts-ignore */
-    body: Paths[`/${P}`][Lowercase<M>]['requestBody']['content']['application/json'],
+    body: Paths[`/${P}`][Lowercase<M>]['requestBody']['content']['application/json']
   },
   // opts?: UseOpenApiDataOptions<Paths[`/${P}`], M> & {
   //   method: M;
@@ -34,7 +34,7 @@ export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyo
   /* @ts-ignore */
   body?: Paths[`/${P}`][Lowercase<M>]['requestBody']['content']['application/json'],
 ): /* @ts-ignore */
-  AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<OpenApiError<Paths[`/${P}`][Lowercase<M>]>>> {
+AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<OpenApiError<Paths[`/${P}`][Lowercase<M>]>>> {
   if (!body) {
     return useApiData(path, {
       ...opts,

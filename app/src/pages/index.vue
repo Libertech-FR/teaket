@@ -1,3 +1,4 @@
+
 <template lang='pug'>
 div
   tk-hook(name="accueil" :data='{exemple: 1}' debug)
@@ -8,6 +9,7 @@ div
 </template>
 
 <script lang='ts' setup>
+import { definePageMeta, useAuth } from '#imports'
 const { signIn, signOut, session, status, cookies, getProviders, user, sessionToken } = useAuth()
 
 const test = useApiFetch('tickets/sla')
