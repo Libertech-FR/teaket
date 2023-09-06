@@ -9,12 +9,17 @@ export class MongooseValidationFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     Logger.debug(exception['message'], 'MongooseValidationFilter')
+    let debug = {}
+    if (process.env.NODE_ENV !== 'production') {
+      debug['_exception'] = exception
+    }
     response.status(HttpStatus.BAD_REQUEST).json(
       HttpException.createBody(
         {
           statusCode: HttpStatus.BAD_REQUEST,
           message: exception['message'],
           validations: this.getValidationErrors(exception),
+          ...debug,
         },
         exception.constructor.name,
         HttpStatus.BAD_REQUEST,

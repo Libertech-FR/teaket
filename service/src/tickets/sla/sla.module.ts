@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { SlaSchema, Sla } from '~/tickets/sla/_schemas/sla.schema'
+import { SlaSchema, Sla } from './_schemas/sla.schema'
 import { SlaService } from './sla.service'
 import { SlaController } from './sla.controller'
 

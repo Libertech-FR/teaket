@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { INestApplication, Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { TicketsModule } from '~/tickets/tickets.module'
@@ -12,6 +12,7 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core'
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter'
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe'
 import { CoreModule } from '~/core/core.module'
+import { ShutdownService } from '~/shutdown.service'
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CoreModule } from '~/core/core.module'
   controllers: [AppController],
   providers: [
     AppService,
+    ShutdownService,
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,

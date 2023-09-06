@@ -68,9 +68,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     const document: Document<T, any, T> = new this._model({
       ...data,
       metadata: {
-        createdBy: this.request.user || 'anonymous',
+        createdBy: this.request?.user || 'anonymous',
         createdAt: new Date(),
-        lastUpdatedBy: this.request.user || 'anonymous',
+        lastUpdatedBy: this.request?.user || 'anonymous',
         lastUpdatedAt: new Date(),
       }
     })

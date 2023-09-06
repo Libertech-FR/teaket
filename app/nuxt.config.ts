@@ -2,6 +2,9 @@ import { extensions } from '@libertech-fr/teaket_common'
 import pugPlugin from 'vite-plugin-pug'
 import { resolve } from 'node:path'
 
+const TK_APP_API_URL = process.env.TK_APP_API_URL || 'http://localhost:7100'
+const TK_APP_AUTH_SECRET = process.env.TK_APP_AUTH_SECRET
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
@@ -10,7 +13,7 @@ export default defineNuxtConfig({
   srcDir: 'src',
   debug: !!process.env.DEBUG,
   devServer: {
-    port: 8000,
+    port: 7000,
   },
   devtools: {
     enabled: process.env.NODE_ENV === 'development',
@@ -27,14 +30,12 @@ export default defineNuxtConfig({
   },
   modules: [
     'nuxt-api-party',
-    // '@hebilicious/authjs-nuxt',
-    // '@nuxtjs/auth-next',
     '@sidebase/nuxt-auth',
     'nuxt-quasar-ui',
     ...extensions.appSetup.default(),
   ],
   auth: {
-    baseURL: 'http://localhost:9000/core/auth',
+    baseURL: `${TK_APP_API_URL}/core/auth`,
     provider: {
       type: 'local',
       endpoints: {
@@ -49,7 +50,7 @@ export default defineNuxtConfig({
     },
     session: {
       enableRefreshOnWindowFocus: true,
-      enableRefreshPeriodically: 5000,
+      enableRefreshPeriodically: 5 * 60 * 1_000,
     },
     globalAppMiddleware: {
       isEnabled: true,
@@ -57,25 +58,24 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     authJs: {
-      secret: process.env.AUTH_SECRET,
-    },
-    github: {
-      clientId: process.env.NUXT_GITHUB_CLIENT_ID,
-      clientSecret: process.env.NUXT_GITHUB_CLIENT_SECRET,
+      secret: TK_APP_AUTH_SECRET,
     },
     public: {
       authJs: {
-        baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
+        // baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
         verifyClientOnEveryRequest: true, // whether to hit the /auth/session endpoint on every client request
       },
     },
+  },
+  appConfig: {
+    customSlots: {},
   },
   quasar: {},
   apiParty: {
     endpoints: {
       api: {
-        url: `${process.env.NUXT_API_URL}`,
-        schema: `${process.env.NUXT_API_URL}/swagger/json`,
+        url: TK_APP_API_URL,
+        schema: `${TK_APP_API_URL}/swagger/json`,
         cookies: true,
       },
     },

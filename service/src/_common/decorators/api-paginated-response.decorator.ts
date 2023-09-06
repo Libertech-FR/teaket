@@ -1,34 +1,18 @@
 import { applyDecorators, Type } from '@nestjs/common'
-import { ApiExtraModels, ApiQuery, getSchemaPath } from '@nestjs/swagger'
-import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator'
-import { PaginatedDto } from '~/_common/dto/paginated.dto'
+import { ApiExtraModels, getSchemaPath } from '@nestjs/swagger'
+import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator'
+import { PaginatedResponseDto } from '~/_common/dto/paginated-response.dto'
 
-const DEFAULT_OPTIONS = {
-  queryPagination: true,
-}
-
-export interface ApiPaginatedResponseOptions {
-  queryPagination?: boolean
-}
-
-export const ApiPaginatedResponse = <TModel extends Type<any>>(
+export const ApiPaginatedResponseDecorator = <TModel extends Type<any>>(
   model: TModel,
-  options?: ApiPaginatedResponseOptions | null | undefined,
+  options?: ApiResponseOptions | null | undefined,
 ) => {
-  options = { ...DEFAULT_OPTIONS, ...options }
-  const extraDecorators = []
-  if (options?.queryPagination) {
-    extraDecorators.push(
-      ApiQuery({ name: 'limit', type: Number, required: false }),
-      ApiQuery({ name: 'skip', type: Number, required: false }),
-    )
-  }
   return applyDecorators(
     ApiExtraModels(model),
     ApiOkResponse({
       schema: {
         allOf: [
-          { $ref: getSchemaPath(PaginatedDto) },
+          { $ref: getSchemaPath(PaginatedResponseDto) },
           {
             properties: {
               data: {
@@ -39,7 +23,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
           },
         ],
       },
+      ...options,
     }),
-    ...extraDecorators,
   )
 }

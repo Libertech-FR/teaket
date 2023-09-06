@@ -7,13 +7,19 @@ import { join } from 'path'
 import { AppModule } from './app.module'
 import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
+import { ShutdownService } from '~/shutdown.service'
+import * as process from 'process'
 
 declare const module: any
 ;(async (): Promise<void> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   })
-  app.use((_, res: Response, next: () => void) => {
+  app.get(ShutdownService).subscribeToShutdown(async () => {
+    await app.close()
+    process.exit(0)
+  })
+  app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by')
     next()
   })
@@ -25,8 +31,8 @@ declare const module: any
   if (process.env.production !== 'production') {
     require('./swagger').default(app)
   }
-  await app.listen(9000, async (): Promise<void> => {
-    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:9000/> !', 'Bootstrap')
+  await app.listen(7100, async (): Promise<void> => {
+    Logger.log('@libertech-fr/teaket is READY on <http://0.0.0.0:7100/> !', 'Bootstrap')
   })
   if (module.hot) {
     module.hot.accept()
