@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { definePageMeta, useAuth } from '#imports'
-
+import { useMouse } from '@vueuse/core'
 const { signIn, token, data, status, lastRefreshedAt } = useAuth()
+const { x, y } = useMouse()
 
 const username = ref('')
 const password = ref('')
@@ -21,6 +22,7 @@ definePageMeta({
 <template>
   <div>
     <h1>Login Page</h1>
+    <pre>Mouse position: {{ x }}, {{ y }}</pre>
     <pre>Status: {{ status }}</pre>
     <pre>Data: {{ data || 'no session data present, are you logged in?' }}</pre>
     <pre>Last refreshed at: {{ lastRefreshedAt || 'no refresh happened' }}</pre>
