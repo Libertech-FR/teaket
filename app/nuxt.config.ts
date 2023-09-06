@@ -21,19 +21,12 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  plugins: [
-    { src: '~/plugins/ofetch' },
-  ],
+  plugins: [{ src: '~/plugins/ofetch' }],
   components: {
     global: true,
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
-  modules: [
-    'nuxt-api-party',
-    '@sidebase/nuxt-auth',
-    'nuxt-quasar-ui',
-    ...extensions.appSetup.default(),
-  ],
+  modules: ['nuxt-api-party', '@sidebase/nuxt-auth', 'nuxt-quasar-ui', '@vueuse/nuxt', ...extensions.appSetup.default()],
   auth: {
     baseURL: `${TK_APP_API_URL}/core/auth`,
     provider: {
@@ -70,7 +63,9 @@ export default defineNuxtConfig({
   appConfig: {
     customSlots: {},
   },
-  quasar: {},
+  quasar: {
+    iconSet: 'mdi-v5',
+  },
   apiParty: {
     endpoints: {
       api: {
