@@ -1,8 +1,8 @@
 import { IsString, IsOptional, IsDate, IsObject, IsMongoId, IsNotEmpty } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 
-export class ProjectCreateDto extends AbstractCustomFieldsDto {
+export class ProjectCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
@@ -35,5 +35,4 @@ export class ProjectDto extends ProjectCreateDto {
   public _id: string
 }
 
-export class ProjectUpdateDto extends ProjectCreateDto {
-}
+export class ProjectUpdateDto extends ProjectCreateDto {}

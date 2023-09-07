@@ -1,3 +1,4 @@
+import { Meta } from './../../../../app/.nuxt/components.d'
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common'
 import { TicketService } from './ticket.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
@@ -22,6 +23,7 @@ export class TicketController extends AbstractController {
     subject: 1,
     sequence: 1,
     envelope: 1,
+    metadata: 1,
   }
 
   public constructor(private readonly _service: TicketService) {
@@ -40,11 +42,7 @@ export class TicketController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(TicketDto, TicketController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, TicketController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

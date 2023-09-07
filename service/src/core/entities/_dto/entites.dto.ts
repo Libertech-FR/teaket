@@ -1,12 +1,12 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { Type } from 'class-transformer'
 import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator'
 import { ProfilePartDto } from '~/core/entities/_dto/parts/profile.part.dto'
 import { StatePartDto } from '~/core/entities/_dto/parts/state.part.dto'
 import { EntityType, EntityTypeList } from '~/_common/enum/entity-type.enum'
 
-export class EntitiesCreateDto extends AbstractCustomFieldsDto {
+export class EntitiesCreateDto extends CustomFieldsDto {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty()
@@ -36,5 +36,4 @@ export class EntitiesDto extends EntitiesCreateDto {
   public _id: string
 }
 
-export class EntitiesUpdateDto extends PartialType(EntitiesCreateDto) {
-}
+export class EntitiesUpdateDto extends PartialType(EntitiesCreateDto) {}
