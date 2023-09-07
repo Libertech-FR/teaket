@@ -1,25 +1,24 @@
-import { IsArray, ValidateNested } from 'class-validator'
+import { ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
-import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { EntityPartDto } from '~/_common/dto/parts/entity.part.dto'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class EnvelopePartDto {
-  @IsArray()
+  // @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => IdnamePartDto)
-  @ApiProperty({ type: [IdnamePartDto] })
+  @Type(() => EntityPartDto)
+  @ApiProperty({ type: [EntityPartDto] })
   public senders: EntityPartDto[]
 
-  @IsArray()
+  // @IsArray()
   @ValidateNested({ each: true })
   @Type(() => EntityPartDto)
-  @ApiProperty({ type: [IdnamePartDto] })
+  @ApiProperty({ type: [EntityPartDto] })
   public observers: EntityPartDto[]
 
-  @IsArray()
+  // @IsArray()
   @ValidateNested({ each: true })
   @Type(() => EntityPartDto)
-  @ApiProperty({ type: [IdnamePartDto] })
+  @ApiProperty({ type: [EntityPartDto] })
   public assigned: EntityPartDto[]
 }

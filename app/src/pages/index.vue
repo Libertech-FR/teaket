@@ -11,5 +11,4 @@ div
 <script lang='ts' setup>
 import { definePageMeta, useAuth } from '#imports'
 const { signIn, signOut, session, status, cookies, getProviders, user, sessionToken } = useAuth()
-
 </script>

@@ -1,8 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { IdnamePart } from '~/_common/schemas/parts/idname.part.schema'
+import { Document, Types } from 'mongoose'
 
 @Schema({ _id: false })
-export class TagPart extends IdnamePart {
+export class TagPart extends Document {
+  @Prop({
+    type: Types.ObjectId,
+  })
+  public id?: Types.ObjectId
+
+  @Prop({
+    type: String,
+    required: true,
+  })
+  public name: string
+
   @Prop({
     type: Boolean,
     default: false,
@@ -11,3 +22,8 @@ export class TagPart extends IdnamePart {
 }
 
 export const TagPartSchema = SchemaFactory.createForClass(TagPart)
+  .pre('validate', function (this: TagPart) {
+    if (!this.manual && !this.id) {
+      throw new Error('If tag is not manual, id must be provided')
+    }
+  })

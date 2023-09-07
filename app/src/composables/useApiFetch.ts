@@ -35,13 +35,13 @@ export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyo
   body?: Paths[`/${P}`][Lowercase<M>]['requestBody']['content']['application/json'],
 ): /* @ts-ignore */
   AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<OpenApiError<Paths[`/${P}`][Lowercase<M>]>>> {
-  if(!body){
+  if (!body) {
     return useApiData(path, {
       ...opts,
       cache: false,
       client: true,
     } as any)
-  } 
+  }
   return useApiData(path, {
     ...opts,
     cache: false,
@@ -49,7 +49,7 @@ export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyo
     body: {
       ...opts?.body,
       ...body,
-    }
+    },
   } as any)
 }
 

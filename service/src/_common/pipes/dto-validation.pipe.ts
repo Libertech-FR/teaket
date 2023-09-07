@@ -1,39 +1,63 @@
-import { BadRequestException, HttpStatus, ValidationPipe, ValidationError, Logger } from '@nestjs/common'
+import {
+  BadRequestException,
+  HttpStatus,
+  ValidationPipe,
+  ValidationError,
+  Logger,
+  Injectable,
+  Scope, Inject,
+} from '@nestjs/common'
+import { REQUEST } from '@nestjs/core'
+import { Request } from 'express'
 
+interface ValidationRecursive {
+  [key: string]: string
+}
+
+@Injectable({ scope: Scope.REQUEST })
 export class DtoValidationPipe extends ValidationPipe {
-  public constructor() {
+  public constructor(@Inject(REQUEST) protected readonly request: Request) {
     super({
       transform: true,
-      exceptionFactory: (errors) => {
-        const validations = {}
-        const errorsMessage = []
-        errors.forEach((error: ValidationError) => {
-          if (error.constraints) {
-            Object.values(error.constraints).forEach((value) => {
-              validations[error.property] = value
-              errorsMessage.push(`${error.property}: ${value}`)
-            })
-          }
-          if (error.children.length > 0) {
-            validations[error.property] = {}
-            error.children.forEach((childError: ValidationError) => {
-              if (childError.constraints) {
-                Object.values(childError.constraints).forEach((value) => {
-                  validations[error.property][childError.property] = value
-                  errorsMessage.push(`${error.property}.${childError.property}: ${value}`)
-                })
-              }
-            })
-          }
-        })
-        const message = `Validation failed: ${errorsMessage.join(', ')}`
-        Logger.debug(message, 'DtoValidationPipe')
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors: ValidationError[]) => {
+        let validations: ValidationRecursive = {}
+        for (const error of errors) {
+          validations = { ...validations, ...this.validationRecursive(error)}
+        }
+        const debug = {}
+        const message = `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim()
+        Logger.debug(`${message} (${JSON.stringify(validations)})`, 'DtoValidationPipe')
+        if (process.env.NODE_ENV !== 'production' && request.query['debug']) {
+          debug['_errors'] = errors
+        }
         return new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
           message,
           validations,
+          ...debug,
         })
       },
     })
+  }
+
+  public validationRecursive(error: ValidationError, prefix = ''): ValidationRecursive {
+    let validations = {}
+    if (error.constraints) {
+      validations[`${prefix + error.property}`] = Object.values(error.constraints)[0]
+    }
+    if (error.children.length > 0) {
+      for (const errorChild of error.children) {
+        if (errorChild.constraints) {
+          validations[`${prefix + errorChild.property}`] = Object.values(errorChild.constraints)[0]
+        }
+        if (errorChild.children.length > 0) {
+          validations = { ...validations, ...this.validationRecursive(errorChild, `${prefix + error.property}.${errorChild.property}.`) }
+        }
+      }
+    }
+    return validations
   }
 }

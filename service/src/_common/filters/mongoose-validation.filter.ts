@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { Error } from 'mongoose'
 import { ValidationError } from 'class-validator'
 
@@ -7,22 +7,23 @@ import { ValidationError } from 'class-validator'
 export class MongooseValidationFilter implements ExceptionFilter {
   public catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
+    const request = ctx.getRequest<Request>()
     const response = ctx.getResponse<Response>()
     Logger.debug(exception['message'], 'MongooseValidationFilter')
     let debug = {}
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && request.query['debug']) {
       debug['_exception'] = exception
     }
-    response.status(HttpStatus.BAD_REQUEST).json(
+    response.status(HttpStatus.NOT_ACCEPTABLE).json(
       HttpException.createBody(
         {
-          statusCode: HttpStatus.BAD_REQUEST,
+          statusCode: HttpStatus.NOT_ACCEPTABLE,
           message: exception['message'],
           validations: this.getValidationErrors(exception),
           ...debug,
         },
         exception.constructor.name,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_ACCEPTABLE,
       ),
     )
   }

@@ -1,9 +1,19 @@
-import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
-import { IsBoolean, IsDate } from 'class-validator'
+import { IsBoolean, IsDate, IsMongoId, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class SlaPartDto extends IdnamePartDto {
+export class SlaPartDto {
+  @IsMongoId()
+  @IsOptional()
+  @ApiProperty()
+  public id: string
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public name: string
+
   @IsDate()
+  @IsOptional()
   @ApiProperty()
   public dueAt: Date
 
