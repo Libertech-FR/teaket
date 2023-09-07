@@ -26,7 +26,7 @@ export default defineNuxtConfig({
     global: true,
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
-  modules: ['nuxt-api-party', '@sidebase/nuxt-auth', 'nuxt-quasar-ui', '@vueuse/nuxt', ...extensions.appSetup.default()],
+  modules: ['nuxt-api-party', '@sidebase/nuxt-auth', 'nuxt-quasar-ui', '@vueuse/nuxt', 'dayjs-nuxt', ...extensions.appSetup.default()],
   auth: {
     baseURL: `${TK_APP_API_URL}/core/auth`,
     provider: {

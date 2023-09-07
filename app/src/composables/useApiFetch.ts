@@ -1,6 +1,6 @@
 import { AllPaths, HttpMethod, IgnoreCase, OpenApiError, OpenApiResponse } from 'nuxt-api-party/dist/runtime/types'
 import { MaybeRefOrGetter } from 'nuxt-api-party/dist/runtime/utils'
-import { paths as Paths } from '#nuxt-api-party/api'
+import { paths as Paths, components as Components } from '#nuxt-api-party/api'
 import { UseOpenApiDataOptions } from 'nuxt-api-party/dist/runtime/composables/useApiData'
 import { AsyncData } from 'nuxt/app'
 import { FetchError } from 'ofetch'
@@ -19,6 +19,8 @@ import { FetchError } from 'ofetch'
 //TODO: fix this
 
 // export const useApiFetch = useApiData
+
+export type schemas = Components['schemas']
 
 export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyof Paths[`/${P}`] & HttpMethod>>(
   path: MaybeRefOrGetter<P>,
@@ -53,3 +55,4 @@ AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<
   } as any)
 }
 
+export type Schemas = components['schemas']
