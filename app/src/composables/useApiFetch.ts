@@ -20,7 +20,18 @@ import { FetchError } from 'ofetch'
 
 // export const useApiFetch = useApiData
 
-export type schemas = Components['schemas']
+function parseQuery(query: Record<string, any>, prefix: string = '') {
+  let parsedQuery: any = {}
+  for (const q in query) {
+    const key = prefix ? `${prefix}[${q}]` : q
+    if (typeof query[q] === 'object') {
+      parsedQuery = { ...parsedQuery, ...parseQuery(query[q], key) }
+    } else {
+      parsedQuery[key] = query[q]
+    }
+  }
+  return parsedQuery
+}
 
 export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyof Paths[`/${P}`] & HttpMethod>>(
   path: MaybeRefOrGetter<P>,
@@ -36,16 +47,19 @@ export function useApiFetch<P extends AllPaths<Paths>, M extends IgnoreCase<keyo
   /* @ts-ignore */
   body?: Paths[`/${P}`][Lowercase<M>]['requestBody']['content']['application/json'],
 ): /* @ts-ignore */
-AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<OpenApiError<Paths[`/${P}`][Lowercase<M>]>>> {
+  AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<OpenApiError<Paths[`/${P}`][Lowercase<M>]>>> {
+  const query = parseQuery((opts as any)?.query || {})
   if (!body) {
     return useApiData(path, {
       ...opts,
+      query,
       cache: false,
       client: true,
     } as any)
   }
   return useApiData(path, {
     ...opts,
+    query,
     cache: false,
     client: true,
     body: {
