@@ -1,9 +1,8 @@
-import { Meta } from './../../../../app/.nuxt/components.d'
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common'
 import { TicketService } from './ticket.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { TicketCreateDto, TicketDto, TicketUpdateDto } from './_dto/ticket.dto'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
@@ -42,7 +41,12 @@ export class TicketController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(TicketDto, TicketController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
+  public async search(
+    @Res() res: Response,
+    @Req() req: Request,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, TicketController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

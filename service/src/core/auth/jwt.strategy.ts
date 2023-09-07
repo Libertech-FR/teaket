@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt'
 import { AuthService } from './auth.service'
+import { Request } from 'express'
+import { IdentityType } from '~/_common/types/identity.type'
+import { JwtPayload } from 'jsonwebtoken'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -14,19 +17,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       secretOrKey: config.get<string>('jwt.options.secret'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+      passReqToCallback: true,
     })
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public async validate(payload: any, done: VerifiedCallback): Promise<void> {
-    if (payload?.user) {
-      console.log('payload.user', payload.user)
-      return done(null, payload.user)
-    }
-    // const session = await this.auth.retrieveSession(
-    //   `${payload?.sub}`,
-    //   `${payload?.refreshKey}`,
-    // )
-    return done(null, {id: 123})
+  public async validate(_: Request, payload: JwtPayload & { identity: IdentityType }, done: VerifiedCallback): Promise<void> {
+    Logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`, 'JwtStrategy')
+    if (!payload?.identity) return done(new UnauthorizedException(), false)
+    const user = await this.auth.verifyIdentity(payload.jti)
+    if (!user) return done(new ForbiddenException(), false)
+    return done(null, payload?.identity)
   }
 }
