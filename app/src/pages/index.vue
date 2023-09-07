@@ -9,4 +9,6 @@ div
 
 <script lang='ts' setup>
 const { signIn, signOut, session, status, cookies, getProviders, user, sessionToken } = useAuth()
+
+const test = useApiFetch('tickets/sla')
 </script>

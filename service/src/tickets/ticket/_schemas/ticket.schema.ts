@@ -18,7 +18,7 @@ export class Ticket extends AbstractSchema {
   @Prop({
     type: String,
     validate: [(sequence: string) => /[A-Za-z0-9_-]+/.test(sequence), 'Numéro de tickets invalide.'],
-    required: true,
+    // required: true,
     unique: true,
   })
   public sequence: string

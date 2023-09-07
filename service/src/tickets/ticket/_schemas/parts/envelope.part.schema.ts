@@ -5,7 +5,7 @@ import { EntityType } from '~/_common/enum/entity-type.enum'
 import { CallbackWithoutResultAndOptionalError } from 'mongoose'
 
 @Schema({ _id: false })
-export class EnvelopePart extends IdnamePart {
+export class EnvelopePart {
   @Prop({
     type: [EntityPartSchema],
     required: true,
@@ -20,13 +20,16 @@ export class EnvelopePart extends IdnamePart {
 
   @Prop({
     type: [EntityPartSchema],
-    validate: (entities: EntityPart[]): boolean => {
-      for (const entity of entities) {
-        if (entity.type !== EntityType.AGENT) {
-          return false
+    validate: {
+      validator: (entities: EntityPart[]): boolean => {
+        for (const entity of entities) {
+          if (entity.type !== EntityType.AGENT) {
+            return false
+          }
         }
-      }
-      return true
+        return true
+      },
+      message: 'Assigned entities must be of type AGENT.',
     },
     default: [],
   })
@@ -35,8 +38,8 @@ export class EnvelopePart extends IdnamePart {
 
 export const EnvelopePartSchema = SchemaFactory.createForClass(EnvelopePart)
   .pre('save', function(next: CallbackWithoutResultAndOptionalError): void {
-    if (this.observers.length === 0) {
-      this.observers = this.senders
-    }
+    // if (this.observers.length === 0) {
+    //   this.observers = this.senders
+    // }
     next()
   })

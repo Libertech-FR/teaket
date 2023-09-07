@@ -1,8 +1,18 @@
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
-import { IsBoolean, IsOptional } from 'class-validator'
+import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class TagPartDto extends IdnamePartDto {
+export class TagPartDto {
+  @IsMongoId({ message: 'ObjectId invalide'})
+  @IsOptional()
+  @ApiProperty()
+  public id: string
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  public name: string
+
   @IsBoolean()
   @IsOptional()
   @ApiProperty()

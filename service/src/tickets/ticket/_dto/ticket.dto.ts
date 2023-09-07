@@ -20,11 +20,11 @@ export class TicketCreateDto extends AbstractCustomFieldsDto {
   @ApiProperty()
   public subject: string
 
-  @IsEnum(TicketTypeList)
+  @IsEnum(TicketTypeList, { message: 'Type de ticket invalide'})
   @ApiProperty({ enum: TicketTypeList })
   public type: TicketType
 
-  @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => TagPartDto)
   @ApiProperty({ type: [TagPartDto] })

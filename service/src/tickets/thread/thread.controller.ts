@@ -36,7 +36,7 @@ export class ThreadController extends AbstractController {
   }
 
   @Get()
-  // @ApiPaginatedDecorator(PickProjectionHelper(ThreadDto, ThreadController.projection))
+  @ApiPaginatedDecorator(PickProjectionHelper(ThreadDto, ThreadController.projection))
   public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, ThreadController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
