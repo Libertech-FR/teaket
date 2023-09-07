@@ -43,7 +43,6 @@ export class TicketController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(TicketDto, TicketController.projection))
   public async search(
     @Res() res: Response,
-    @Req() req: Request,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
