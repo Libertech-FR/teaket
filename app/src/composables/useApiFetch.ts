@@ -52,3 +52,4 @@ AsyncData<OpenApiResponse<Paths[`/${P}`][Lowercase<M>]> | undefined, FetchError<
     },
   } as any)
 }
+
