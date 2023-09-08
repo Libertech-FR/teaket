@@ -27,6 +27,10 @@ export default defineNuxtConfig({
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
   modules: ['nuxt-api-party', '@sidebase/nuxt-auth', 'nuxt-quasar-ui', '@vueuse/nuxt', 'dayjs-nuxt', ...extensions.appSetup.default()],
+  dayjs: {
+    locales: ['fr'],
+    defaultLocale: 'fr',
+  },
   auth: {
     baseURL: `${TK_APP_API_URL}/core/auth`,
     provider: {

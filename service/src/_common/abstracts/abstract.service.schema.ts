@@ -36,7 +36,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     options?: QueryOptions<T> | null | undefined,
   ): Promise<[Query<Array<T>, T, any, T>[], number]> {
     this.logger.debug(['findAndCount', JSON.stringify(Object.values(arguments))].join(' '))
-    const count = await this._model.countDocuments(filter, options).exec()
+    const count = await this._model.countDocuments(filter).exec()
     if (!count) return [[], 0]
     return [await this._model.find<Query<Array<T>, T, any, T>>(filter, projection, options).exec(), count]
   }
