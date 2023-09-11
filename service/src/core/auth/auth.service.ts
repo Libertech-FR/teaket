@@ -27,8 +27,9 @@ export class AuthService extends AbstractService implements OnModuleInit {
   protected readonly ACCESS_TOKEN_PREFIX = 'access_token'
   protected readonly REFRESH_TOKEN_PREFIX = 'refresh_token'
 
-  protected ACCESS_TOKEN_EXPIRES_IN = 10
+  protected ACCESS_TOKEN_EXPIRES_IN = 5 * 60
   protected REFRESH_TOKEN_EXPIRES_IN = 3600 * 24 * 7
+  //TODO: get data expire from config
 
   public constructor(
     protected moduleRef: ModuleRef,
