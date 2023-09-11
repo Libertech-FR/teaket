@@ -89,7 +89,6 @@ export function useHttpApi<
   },
 ): AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]> | undefined, FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>> {
 // ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
-
   return useHttp(path, {
     baseURL: 'http://localhost:7100',
     ...opts,

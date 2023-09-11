@@ -7,6 +7,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'
 import { IdentitiesModule } from '~/core/identities/identities.module'
 import { JwtStrategy } from '~/core/auth/jwt.strategy'
 import { LocalStrategy } from '~/core/auth/local.strategy'
+import { EntitiesModule } from '~/core/entities/entities.module'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LocalStrategy } from '~/core/auth/local.strategy'
       }),
     }),
     IdentitiesModule,
+    EntitiesModule,
   ],
   providers: [
     AuthService,

@@ -15,5 +15,6 @@ import { EntitiesController } from './entities.controller'
   ],
   providers: [EntitiesService],
   controllers: [EntitiesController],
+  exports: [EntitiesService],
 })
 export class EntitiesModule {}

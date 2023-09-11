@@ -1,18 +1,46 @@
-<template lang="pug">
-div 
-    q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="`mdi-${button.icon}`" size="lg")
-        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
+<template lang='pug'>
+div
+    q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="button.icon" size="lg")
+      q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
     q-btn-dropdown(icon="mdi-account-circle-outline" round flat size="lg")
-        q-list 
-            q-item(v-for="button in buttons" :key="button.name")
-                q-btn(flat :icon="`mdi-${button.icon}`" :label="button.name" color="primary")
+      q-list
+        q-item.q-pa-none(v-for="button in buttons" :key="button.name")
+          q-btn.full-width.items-baseline.q-pa-sm(
+            :icon="button.icon"
+            :label="button.name"
+            :color="button?.color || 'primary'"
+            @click="button?.action"
+            :to='button?.to'
+            flat
+            dense
+          )
 </template>
 
-<script lang="ts" setup>
+<script lang='ts' setup>
 const buttons = [
-    { icon: 'cog', name: 'Paramètres', action: '' },
-    { icon: 'bell', name: 'Notifications', action: '' },
-    { icon: 'help', name: 'Aide', action: '' },
-
+  {
+    icon: 'mdi-cog',
+    name: 'Paramètres',
+    to: '/settings',
+  },
+  {
+    icon: 'mdi-bell',
+    name: 'Notifications',
+    to: '#',
+  },
+  {
+    icon: 'mdi-help',
+    name: 'Aide',
+    to: '#',
+  },
+  {
+    icon: 'mdi-logout',
+    name: 'Déconnexion',
+    color: 'negative',
+    action: async () => {
+      await useAuth().logout()
+      useRouter().go(0)
+    },
+  },
 ]
 </script>

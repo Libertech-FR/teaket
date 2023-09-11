@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Post, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Header, Headers, HttpStatus, Post, Res, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Response } from 'express'
@@ -23,7 +23,7 @@ export class AuthController extends AbstractController {
   @Post('local')
   @UseGuards(AuthGuard('local'))
   public async authenticateWithLocal(@Res() res: Response, @ReqIdentity() user: IdentityType): Promise<Response> {
-    const tokens = await this.service.createToken(user)
+    const tokens = await this.service.createTokens(user)
     return res.status(HttpStatus.OK).json({
       ...tokens,
       user,
@@ -32,16 +32,24 @@ export class AuthController extends AbstractController {
 
   @Get('session')
   @UseGuards(AuthGuard('jwt'))
-  public async session(@Res() res: Response, @ReqIdentity() user: IdentityType): Promise<Response> {
-    const tokens = await this.service.createToken(user)
+  public async session(@Res() res: Response, @ReqIdentity() identity: IdentityType): Promise<Response> {
+    const user = await this.service.getSessionData(identity)
     return res.status(HttpStatus.OK).json({
-      ...tokens,
       user,
     })
   }
 
+  @Post('refresh')
+  public async refresh(@Res() res: Response, @Body() body: any): Promise<Response> {
+    const tokens = await this.service.renewTokens(body.refresh_token)
+    return res.status(HttpStatus.OK).json({
+      ...tokens,
+    })
+  }
+
   @Post('logout')
-  public async logout(@Res() res: Response): Promise<Response> {
+  public async logout(@Res() res: Response, @Headers('Authorization') jwt: string): Promise<Response> {
+    await this.service.clearSession(jwt.replace(/^Bearer\s/, ''))
     return res.status(HttpStatus.OK).send()
   }
 }
