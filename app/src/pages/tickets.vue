@@ -2,7 +2,7 @@
 <template lang="pug">
 div
     .q-pa-md
-        tk-SearchFilters(:fields="fieldsList")
+        tk-searchfilters(:fields="fieldsList")
     .q-pa-md
         q-table(
             :rows="data?.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="id" :visible-columns="visibleColumns"
@@ -28,13 +28,13 @@ div
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useApiFetch } from "../composables/useApiFetch";
+import { useHttpApi } from "~/composables/useHttpApi";
 import { computed, useDayjs, onMounted } from "#imports";
 import type { QTableProps } from "quasar";
-import type { schemas } from "../composables/useApiFetch";
 import { useRoute, useRouter } from "nuxt/app";
+import type { components } from '#build/types/service-api'
 
-type Ticket = schemas['TicketDto']
+type Ticket = components["schemas"]['TicketDto']
 
 const daysjs = useDayjs()
 const route = useRoute()
@@ -44,8 +44,8 @@ const router = useRouter()
 onMounted(() => {
     pagination.value!.rowsNumber = getTotalRowsNumber.value
     const query = { ...route.query }
-    const limit = query.limit
-    const skip = query.skip
+    const limit = query.limit ?? 10
+    const skip = query.skip ?? 0
     pagination.value!.rowsPerPage = parseInt(limit as string)
     pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
 
@@ -59,6 +59,7 @@ onMounted(() => {
     }
     pagination.value!.sortBy = sortKey
     pagination.value!.descending = sortDirection === 'desc'
+    paginationQuery()
 })
 
 const columns = ref<QTableProps['columns']>([
@@ -72,21 +73,21 @@ const columns = ref<QTableProps['columns']>([
     {
         name: 'envelope.senders.name',
         label: 'Appelant',
-        field: (row: Ticket) => row.envelope.senders[0].name,
+        field: (row: Ticket) => row.envelope.senders.length > 0 ? row.envelope.senders[0].name : '',
         align: 'left',
         sortable: true
     },
     {
         name: 'envelope.observers.name',
         label: 'Concerné',
-        field: (row: Ticket) => row.envelope.observers[0].name,
+        field: (row: Ticket) => row.envelope.observers.length > 0 ? row.envelope.observers[0].name : '',
         align: 'left',
         sortable: true
     },
     {
         name: 'envelope.assigned.name',
         label: 'Assigné',
-        field: (row: Ticket) => row.envelope.assigned[0].name,
+        field: (row: Ticket) => row.envelope.assigned.length > 0 ? row.envelope.assigned[0].name : '',
         align: 'left',
         sortable: true
     },
@@ -149,8 +150,8 @@ const columnsType = ref([
     { name: 'actions', type: 'text' },
 ])
 
-const { data, pending, error, refresh } = useApiFetch('tickets/ticket', {
-    method: 'GET',
+const { data, pending, error, refresh } = useHttpApi('tickets/ticket', {
+    method: 'get',
     query: computed(() => ({
         ...route.query,
     }))

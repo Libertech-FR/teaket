@@ -28,6 +28,8 @@
             q-input(v-model="searchMax" label="Max" clearable :type="searchInputType")
         .col-12.col-md-1
             q-btn(color="primary" @click="addFilter") Ajouter
+        .col-12.col-md-1
+            tk-SearchfiltersRightSelect
     //Filters chips
     .row.q-gutter-sm.items-center.q-mt-sm
         q-chip(
