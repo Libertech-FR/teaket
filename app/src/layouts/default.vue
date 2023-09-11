@@ -1,5 +1,5 @@
 <template lang="pug">
-q-layout(view="H p F")
+div
     tk-appbar
     q-page-container
         nuxt-page

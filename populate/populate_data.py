@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-token_path = os.path.join(os.path.dirname(__file__), '.dev-token.json')
+# Get the MongoDB URL from the environment variables
+mongo_url = os.getenv("MONGODB_URL")
 collections = [
     {
         "name": "identities",
@@ -71,30 +72,37 @@ collections = [
     },
 ]
 
+# async def populate_collection(collection_name, db):
+#     print(f"Populating {collection_name}...")
+#     file_path = os.path.join(os.path.dirname(__file__), 'seeds', f"{collection_name}.json")
+#     with open(file_path) as f:
+#         data = json.load(f)
+#         for d in data:
+#             d["_id"] = ObjectId(d["_id"])
+#         try:
+#             result = await db[collection_name].insert_many(data)
+#             logger.info(f"{len(result.inserted_ids)} {collection_name} inserted")
+#         except Exception as e:
+#             logger.warning(f"Duplicate key error: {e}")
+#             logger.warning(f"Skipping {collection_name}...")
+
 api_endpoint = os.getenv("API_BASE_URL")
 
-async def populate_collection(collection, token):
+async def populate_collection(collection):
     logger.info(f"Populating {collection.get('name')}...")
     file_path = os.path.join(os.path.dirname(__file__), 'seeds', collection.get('file'))
-    headers = {
-        "Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"
-    }
     with open(file_path) as f:
         datas = json.load(f)
         for data in datas:
             try:
-
-                response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data )
+                response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", json=data)
                 response.raise_for_status()
                 logger.info(f"{collection.get('name')} inserted")
             except Exception as e:
-                error_message = response.json().get('message')
-                logger.warning(f"Failed to insert {collection.get('name')}: {error_message}")
+                logger.warning(f"Failed to insert {collection.get('name')}: {e}")
 
 async def main():
-    with open(token_path) as f:
-        token = json.load(f).get("access_token")
-    collection_tasks = [populate_collection(col, token) for col in collections]
+    collection_tasks = [populate_collection(col) for col in collections]
     await asyncio.gather(*collection_tasks)
 
     print("DB populated")
