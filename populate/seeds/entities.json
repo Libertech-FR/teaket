@@ -13,13 +13,13 @@
                 {
                     "id": "5f84f96c8f3ac2082347f251",
                     "type": 3,
-                    "phoneNumber": "0329292929",
+                    "phoneNumber": "+33329292929",
                     "description": "Work Phone"
                 },
                 {
                     "id": "5f84f96c8f3ac2082347f252",
                     "type": 4,
-                    "phoneNumber": "0329292928",
+                    "phoneNumber": "+33329292928",
                     "description": "Personal Phone"
                 }
             ]
