@@ -52,6 +52,7 @@ export class Identities extends AbstractSchema {
   @Prop({
     type: StatePartSchema,
     required: true,
+    default: {},
   })
   public state: StatePart
 

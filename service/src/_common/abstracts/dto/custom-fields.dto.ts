@@ -1,6 +1,6 @@
 import { IsObject, IsOptional, ValidateNested } from 'class-validator'
 
-export abstract class AbstractCustomFieldsDto {
+export class CustomFieldsDto {
   @IsObject()
   @IsOptional()
   @ValidateNested()

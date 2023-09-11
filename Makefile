@@ -21,3 +21,15 @@ dbs: ## Start databases
 		-p 27017:27017 \
 		--network dev \
 		mongo:5.0 --wiredTigerCacheSizeGB 1.5 --quiet || true
+
+stop-dbs: ## Stop databases
+	@docker stop $(APPNAME)-redis || true
+	@docker stop $(APPNAME)-mongodb || true
+
+buildseeds: ## Build populate image
+	docker build -t seeding -f ./populate/Dockerfile ./populate
+
+populate-db: ## Populate database
+	docker run --rm -it --network dev -v $(CURDIR)/populate:/app seeding
+
+

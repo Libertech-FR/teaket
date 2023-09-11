@@ -1,9 +1,10 @@
 import { extensions } from '@libertech-fr/teaket_common'
 import pugPlugin from 'vite-plugin-pug'
-import { resolve } from 'node:path'
+import openapiTS from 'openapi-typescript'
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
 
 const TK_APP_API_URL = process.env.TK_APP_API_URL || 'http://localhost:7100'
-const TK_APP_AUTH_SECRET = process.env.TK_APP_AUTH_SECRET
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -21,65 +22,63 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  plugins: [
-    { src: '~/plugins/ofetch' },
-  ],
+  plugins: [{ src: '~/plugins/ofetch' }],
   components: {
     global: true,
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
   modules: [
-    'nuxt-api-party',
-    '@sidebase/nuxt-auth',
+    '@nuxt-alt/auth',
+    '@nuxt-alt/http',
+    '@pinia/nuxt',
     'nuxt-quasar-ui',
+    '@vueuse/nuxt',
+    'dayjs-nuxt',
     ...extensions.appSetup.default(),
   ],
   auth: {
-    baseURL: `${TK_APP_API_URL}/core/auth`,
-    provider: {
-      type: 'local',
-      endpoints: {
-        signIn: { path: '/login', method: 'post' },
-        signOut: { path: '/logout', method: 'post' },
-        signUp: { path: '/register', method: 'post' },
-        getSession: { path: '/session', method: 'get' },
-      },
-      pages: {
-        login: '/login',
-      },
-    },
-    session: {
-      enableRefreshOnWindowFocus: true,
-      enableRefreshPeriodically: 5 * 60 * 1_000,
-    },
-    globalAppMiddleware: {
-      isEnabled: true,
-    },
-  },
-  runtimeConfig: {
-    authJs: {
-      secret: TK_APP_AUTH_SECRET,
-    },
-    public: {
-      authJs: {
-        // baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
-        verifyClientOnEveryRequest: true, // whether to hit the /auth/session endpoint on every client request
+    globalMiddleware: true,
+    rewriteRedirects: true,
+    watchLoggedIn: true,
+    strategies: {
+      local: {
+        scheme: 'refresh',
+        token: {
+          property: 'access_token',
+          maxAge: 1 * 5,
+          // maxAge: 60 * 5,
+        },
+        refreshToken: {
+          property: 'refresh_token',
+          data: 'refresh_token',
+          maxAge: 60 * 60 * 4,
+        },
+        user: {
+          property: 'user',
+          autoFetch: true,
+        },
+        clientId: false,
+        grantType: false,
+        endpoints: {
+          login: { url: `${TK_APP_API_URL}/core/auth/local`, method: 'post', headers: { 'Content-Type': 'application/json' } },
+          refresh: { url: `${TK_APP_API_URL}/core/auth/refresh`, method: 'post', headers: { 'Content-Type': 'application/json' } },
+          logout: { url: `${TK_APP_API_URL}/core/auth/logout`, method: 'post' },
+          user: { url: `${TK_APP_API_URL}/core/auth/session`, method: 'get', propertyName: 'user' },
+        },
+        redirect: {
+          logout: '/login',
+          login: '/',
+        },
+        tokenType: 'Bearer',
+        autoRefresh: true,
       },
     },
   },
   appConfig: {
     customSlots: {},
   },
-  quasar: {},
-  apiParty: {
-    endpoints: {
-      api: {
-        url: TK_APP_API_URL,
-        schema: `${TK_APP_API_URL}/swagger/json`,
-        cookies: true,
-      },
-    },
-    allowClient: true,
+  quasar: {
+    iconSet: 'mdi-v5',
   },
   vite: {
     define: {
@@ -101,4 +100,16 @@ export default defineNuxtConfig({
     // typeCheck: 'build,
     shim: false,
   },
+  hooks: {
+    'ready': async () => {
+      console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
+      try {
+        const fileData = await openapiTS(`${TK_APP_API_URL}/swagger/json`)
+        writeFileSync('.nuxt/types/service-api.d.ts', fileData)
+        console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
+      } catch (error) {
+        console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
+      }
+    }
+  }
 })

@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
-import { PassportModule } from '@nestjs/passport'
+import { IAuthModuleOptions, PassportModule } from '@nestjs/passport'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { JwtModule } from '@nestjs/jwt'
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'
+import { IdentitiesModule } from '~/core/identities/identities.module'
+import { JwtStrategy } from '~/core/auth/jwt.strategy'
+import { LocalStrategy } from '~/core/auth/local.strategy'
+import { EntitiesModule } from '~/core/entities/entities.module'
 
 @Module({
   imports: [
@@ -11,18 +15,28 @@ import { JwtModule } from '@nestjs/jwt'
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        ...configService.get<object>('passport.options', {}),
+        ...configService.get<IAuthModuleOptions>('passport.options', {}),
       }),
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        ...configService.get<object>('jwt.options', {}),
+        ...configService.get<JwtModuleOptions>('jwt.options', {}),
       }),
     }),
+    IdentitiesModule,
+    EntitiesModule,
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    LocalStrategy,
+  ],
   controllers: [AuthController],
+  exports: [
+    PassportModule,
+    JwtModule,
+  ],
 })
 export class AuthModule {}

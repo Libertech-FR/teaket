@@ -1,4 +1,4 @@
-import { INestApplication, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { TicketsModule } from '~/tickets/tickets.module'
@@ -8,11 +8,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import config, { MongoosePlugin } from './config'
 import { RedisModule } from '@nestjs-modules/ioredis'
 import { RedisOptions } from 'ioredis'
-import { APP_FILTER, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core'
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter'
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe'
 import { CoreModule } from '~/core/core.module'
 import { ShutdownService } from '~/shutdown.service'
+import { AuthGuard } from '~/_common/guards/auth.guard'
 
 @Module({
   imports: [
@@ -55,6 +56,10 @@ import { ShutdownService } from '~/shutdown.service'
   providers: [
     AppService,
     ShutdownService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,

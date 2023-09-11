@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 
 @Schema({ _id: false })
-export class MetadataPartSchema extends Document {
+export class MetadataPart extends Document {
   @Prop({ type: String })
   public createdBy: string
 
@@ -16,4 +16,4 @@ export class MetadataPartSchema extends Document {
   public lastUpdatedAt: Date
 }
 
-export const MetadataPartSchemaSchema = SchemaFactory.createForClass(MetadataPartSchema)
+export const MetadataPartSchema = SchemaFactory.createForClass(MetadataPart)

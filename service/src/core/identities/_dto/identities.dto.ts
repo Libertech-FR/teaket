@@ -1,20 +1,11 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import {
-  IsString,
-  IsNotEmpty,
-  ValidateNested,
-  IsEmail,
-  IsBoolean,
-  IsArray,
-  IsMongoId,
-  IsOptional,
-} from 'class-validator'
+import { IsString, IsNotEmpty, ValidateNested, IsEmail, IsBoolean, IsArray, IsMongoId, IsOptional } from 'class-validator'
 import { Type } from 'class-transformer'
 import { StatePartDTO } from './parts/state.part.dto'
 import { SecurityPartDTO } from './parts/security.part.dto'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 
-export class IdentitiesCreateDto extends AbstractCustomFieldsDto {
+export class IdentitiesCreateDto extends CustomFieldsDto {
   @IsMongoId()
   @IsNotEmpty()
   @ApiProperty()
@@ -78,5 +69,4 @@ export class IdentitiesDto extends IdentitiesCreateDto {
   public _id: string
 }
 
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {
-}
+export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}

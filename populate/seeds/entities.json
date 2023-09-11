@@ -1,0 +1,47 @@
+[
+    {
+        "_id": "5f84f96c8f3ac2082347f250",
+        "publicEmail": "entity1@example.com",
+        "type": 2,
+        "profile": {
+            "commonName": "Common Name 1",
+            "firstName": "First Name 1",
+            "lastName": "Last Name 1",
+            "thirdName": "Third Name 1",
+            "avatar": "avatar1.jpg",
+            "phones": [
+                {
+                    "id": "5f84f96c8f3ac2082347f251",
+                    "type": 3,
+                    "phoneNumber": "0329292929",
+                    "description": "Work Phone"
+                },
+                {
+                    "id": "5f84f96c8f3ac2082347f252",
+                    "type": 4,
+                    "phoneNumber": "0329292928",
+                    "description": "Personal Phone"
+                }
+            ]
+        },
+        "state": {
+            "current": 1,
+            "lastChangedAt": "2023-09-10T00:00:00.000Z"
+        }
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f253",
+        "publicEmail": "entity2@example.com",
+        "type": 3,
+        "profile": {
+            "commonName": "Common Name 2",
+            "firstName": "First Name 2",
+            "lastName": "Last Name 2",
+            "avatar": "avatar2.jpg"
+        },
+        "state": {
+            "current": 1,
+            "lastChangedAt": "2023-09-11T00:00:00.000Z"
+        }
+    }
+]

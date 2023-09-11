@@ -1,0 +1,102 @@
+[
+    {
+        "_id": "64ff007d22c2c4ed0bd12424",
+        "name": "Electronics",
+        "description": "Category for electronic products",
+        "order": 1,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-laptop",
+        "color": "#0077FF"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd12425",
+        "name": "Clothing",
+        "description": "Category for clothing and apparel",
+        "order": 2,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-hanger",
+        "color": "#FF5733"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd12426",
+        "name": "Books",
+        "description": "Category for books and literature",
+        "order": 3,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-book",
+        "color": "#008000"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd12427",
+        "name": "Furniture",
+        "description": "Category for furniture",
+        "order": 4,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-sofa",
+        "color": "#A0522D"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd12428",
+        "name": "Toys",
+        "description": "Category for children's toys",
+        "order": 5,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-toy-brick",
+        "color": "#FFD700"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd12429",
+        "name": "Sports Equipment",
+        "description": "Category for sports equipment",
+        "order": 6,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-basketball",
+        "color": "#FF4500"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd1242a",
+        "name": "Beauty Products",
+        "description": "Category for beauty and skincare",
+        "order": 7,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-makeup",
+        "color": "#FF1493"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd1242b",
+        "name": "Home Decor",
+        "description": "Category for home decoration",
+        "order": 8,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-lamp",
+        "color": "#800080"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd1242c",
+        "name": "Jewelry",
+        "description": "Category for jewelry and accessories",
+        "order": 9,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-diamond",
+        "color": "#FF69B4"
+    },
+    {
+        "_id": "64ff007d22c2c4ed0bd1242d",
+        "name": "Garden Supplies",
+        "description": "Category for gardening tools",
+        "order": 10,
+        "selectable": true,
+        "disabled": false,
+        "icon": "mdi-shovel",
+        "color": "#008000"
+    }
+]

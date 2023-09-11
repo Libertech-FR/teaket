@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { IsArray, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
-export class StatesCreateDto extends AbstractCustomFieldsDto {
+export class StatesCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
@@ -46,5 +46,4 @@ export class StatesDto extends StatesCreateDto {
   public _id: string
 }
 
-export class StatesUpdateDto extends PartialType(StatesCreateDto) {
-}
+export class StatesUpdateDto extends PartialType(StatesCreateDto) {}

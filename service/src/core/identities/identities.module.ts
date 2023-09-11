@@ -15,5 +15,6 @@ import { IdentitiesController } from './identities.controller'
   ],
   providers: [IdentitiesService],
   controllers: [IdentitiesController],
+  exports: [IdentitiesService],
 })
 export class IdentitiesModule {}

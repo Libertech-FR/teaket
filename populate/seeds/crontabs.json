@@ -1,0 +1,42 @@
+[
+    {
+        "_id": "60b93ae4f1e0b4e2a07b6d31",
+        "name": "Registration 1",
+        "description": "Description for Registration 1",
+        "interval": "*/5 * * * *",
+        "actions": [
+            {
+                "actionType": "action1",
+                "actionData": {
+                    "param1": "value1",
+                    "param2": "value2"
+                }
+            },
+            {
+                "actionType": "action2",
+                "actionData": {
+                    "param1": "value1"
+                }
+            }
+        ],
+        "pluginId": "60b93ae4f1e0b4e2a07b6d32",
+        "disabled": false
+    },
+    {
+        "_id": "60b93ae4f1e0b4e2a07b6d33",
+        "name": "Registration 2",
+        "description": "Description for Registration 2",
+        "interval": "0 0 * * *",
+        "actions": [
+            {
+                "actionType": "action3",
+                "actionData": {
+                    "param1": "value1",
+                    "param2": "value2"
+                }
+            }
+        ],
+        "pluginId": "60b93ae4f1e0b4e2a07b6d34",
+        "disabled": true
+    }
+]

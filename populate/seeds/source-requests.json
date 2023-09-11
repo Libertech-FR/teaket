@@ -1,0 +1,65 @@
+[
+    {
+        "_id": "6142f2b354b7c0a3d8f3e539",
+        "name": "Source Request Name 1",
+        "description": "Source Request Description 1",
+        "icon": "mdi-laptop",
+        "color": "#FF9900",
+        "rules": [
+            {
+                "field": "Type",
+                "operator": "equals",
+                "value": "High Priority"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "Support"
+            }
+        ],
+        "backgroundColor": "#EFEFEF",
+        "order": 1
+    },
+    {
+        "_id": "6142f2b354b7c0a3d8f3e53a",
+        "name": "Source Request Name 2",
+        "description": "Source Request Description 2",
+        "icon": "mdi-phone",
+        "color": "#00CCFF",
+        "rules": [
+            {
+                "field": "Type",
+                "operator": "equals",
+                "value": "Low Priority"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "Sales"
+            }
+        ],
+        "backgroundColor": "#F0F0F0",
+        "order": 2
+    },
+    {
+        "_id": "6142f2b354b7c0a3d8f3e53b",
+        "name": "Source Request Name 3",
+        "description": "Source Request Description 3",
+        "icon": "mdi-email",
+        "color": "#009900",
+        "rules": [
+            {
+                "field": "Type",
+                "operator": "equals",
+                "value": "Medium Priority"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "General"
+            }
+        ],
+        "backgroundColor": "#DDDDDD",
+        "order": 3
+    }
+]

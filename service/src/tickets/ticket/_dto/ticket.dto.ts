@@ -1,6 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
+import { ApiProperty, PartialType, IntersectionType } from '@nestjs/swagger'
 import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { Type } from 'class-transformer'
 import { EnvelopePartDto } from '~/tickets/ticket/_dto/parts/envelope.part.dto'
 import { TicketType, TicketTypeList } from '~/tickets/ticket/_enum/ticket-type.enum'
@@ -8,8 +9,7 @@ import { TagPartDto } from '~/tickets/ticket/_dto/parts/tag.part.dto'
 import { TicketLifestep, TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { SlaPartDto } from '~/tickets/ticket/_dto/parts/sla.part.dto'
-
-export class TicketCreateDto extends AbstractCustomFieldsDto {
+export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsObject()
   @ValidateNested()
   @Type(() => EnvelopePartDto)
@@ -20,7 +20,7 @@ export class TicketCreateDto extends AbstractCustomFieldsDto {
   @ApiProperty()
   public subject: string
 
-  @IsEnum(TicketTypeList, { message: 'Type de ticket invalide'})
+  @IsEnum(TicketTypeList, { message: 'Type de ticket invalide' })
   @ApiProperty({ enum: TicketTypeList })
   public type: TicketType
 
@@ -91,5 +91,4 @@ export class TicketDto extends TicketCreateDto {
   public totalTime: number
 }
 
-export class TicketUpdateDto extends PartialType(TicketCreateDto) {
-}
+export class TicketUpdateDto extends PartialType(TicketCreateDto) {}

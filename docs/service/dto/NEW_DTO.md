@@ -2,10 +2,10 @@
 ## For crud operations
 ```ts
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { AbstractCustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/abstract.custom-fields.dto'
 import { IsMongoId } from 'class-validator'
 
-export class [NAME]CreateDto extends AbstractCustomFieldsDto {
+export class [NAME]CreateDto extends CustomFieldsDto {
   [FIELDS_HERE...]
 }
 
