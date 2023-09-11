@@ -118,7 +118,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   public async getSessionData(identity: IdentityType): Promise<any> {
-    const entity = await this.entityService.findOne({ identityId: identity.entityId }, {
+    const entity = await this.entityService.findOne({ _id: identity.entityId }, {
       projection: {
         metadata: 0,
       },
