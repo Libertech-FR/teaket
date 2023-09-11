@@ -45,7 +45,8 @@ export default defineNuxtConfig({
         scheme: 'refresh',
         token: {
           property: 'access_token',
-          maxAge: 60 * 5,
+          maxAge: 1 * 5,
+          // maxAge: 60 * 5,
         },
         refreshToken: {
           property: 'refresh_token',
