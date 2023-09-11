@@ -26,7 +26,7 @@ export interface ConfigInstance {
     options: IAuthModuleOptions
   }
   jwt: {
-    options: JwtModuleOptions & any
+    options: JwtModuleOptions
   }
   // oidc: {
   //   options: BuildOpenIdClientOptions
@@ -84,7 +84,7 @@ export default (): ConfigInstance => ({
        * @see https://randomkeygen.com/
        */
       secret: process.env.TK_SERVICE_JWT_SECRET,
-      jwksUri: 'http://127.0.0.1:2000/jwks',
+      // jwksUri: 'http://127.0.0.1:2000/jwks',
     },
   },
   // oidc: {
