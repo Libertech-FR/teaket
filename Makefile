@@ -29,7 +29,7 @@ stop-dbs: ## Stop databases
 buildseeds: ## Build populate image
 	docker build -t seeding -f ./populate/Dockerfile ./populate
 
-populate:
-	docker run --rm --network dev -v ./populate:/app seeding populate
+populate-db: ## Populate database
+	docker run --rm -it --network dev -v $(CURDIR)/populate:/app seeding
 
 
