@@ -1,7 +1,7 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthService } from '~/core/auth/auth.service'
-import { Strategy } from 'passport-local'
+import { IVerifyOptions, Strategy } from 'passport-local'
 import { Request } from 'express'
 import { IdentityState } from '~/core/identities/_enum/identity-state.enum'
 import { ExcludeIdentityType, IdentityType } from '~/_common/types/identity.type'
@@ -16,10 +16,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  public async validate(_: Request, username: string, password: string): Promise<IdentityType> {
+  public async validate(
+    _: Request,
+    username: string,
+    password: string,
+    done: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void,
+  ): Promise<void> {
+    Logger.debug(`Try to authenticate user : ${username}`, 'LocalStrategy')
     const user = await this.auth.authenticateWithLocal(username, password)
-    if (!user) throw new UnauthorizedException()
-    if (user.state.current !== IdentityState.ACTIVE) throw new ForbiddenException()
-    return omit(user.toObject(), ExcludeIdentityType) as IdentityType
+    if (!user) done(new UnauthorizedException(), false)
+    if (user.state.current !== IdentityState.ACTIVE) done(new ForbiddenException(), false)
+    done(null, omit(user.toObject(), ExcludeIdentityType) as IdentityType)
   }
 }

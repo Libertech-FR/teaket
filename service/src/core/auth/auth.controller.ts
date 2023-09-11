@@ -22,34 +22,26 @@ export class AuthController extends AbstractController {
 
   @Post('local')
   @UseGuards(AuthGuard('local'))
-  public async authenticateWithLocal(@Res() res: Response, @ReqIdentity() identity: IdentityType): Promise<Response> {
-    const tokens = await this.service.createToken(identity)
-    return res.status(HttpStatus.CREATED).json({
+  public async authenticateWithLocal(@Res() res: Response, @ReqIdentity() user: IdentityType): Promise<Response> {
+    const tokens = await this.service.createToken(user)
+    return res.status(HttpStatus.OK).json({
       ...tokens,
-      token: '1234',
-      identity,
-      user: {
-        id: 1,
-      }
+      user,
     })
   }
 
   @Get('session')
-  // @UseGuards(AuthGuard('jwt'))
-  public async session(@Res() res: Response, @ReqIdentity() identity: IdentityType): Promise<Response> {
-    // const tokens = await this.service.createToken(identity)
+  @UseGuards(AuthGuard('jwt'))
+  public async session(@Res() res: Response, @ReqIdentity() user: IdentityType): Promise<Response> {
+    const tokens = await this.service.createToken(user)
     return res.status(HttpStatus.OK).json({
-      // ...tokens,
-      token: '1234',
-      identity,
-      user: {
-        id: 1,
-      }
+      ...tokens,
+      user,
     })
   }
 
   @Post('logout')
   public async logout(@Res() res: Response): Promise<Response> {
-    return res.status(HttpStatus.NO_CONTENT).send()
+    return res.status(HttpStatus.OK).send()
   }
 }

@@ -29,7 +29,7 @@
     "@nestjs/passport": "^10.0.1",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.1.10",
-    "@streamkits/nestjs_module_scrud": "^0.0.15",
+    "@streamkits/nestjs_module_scrud": "^0.0.16",
     "@typegoose/auto-increment": "^3.4.0",
     "argon2": "^0.31.1",
     "cookie-parser": "^1.4.6",

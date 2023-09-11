@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { AbstractService } from '~/_common/abstracts/abstract.service'
 import { JwtService } from '@nestjs/jwt'
 import { ModuleRef } from '@nestjs/core'
@@ -26,9 +26,9 @@ export class AuthService extends AbstractService {
       if (user && await argon2Verify(user.password, password)) {
         return user
       }
-    } finally {
+    } catch (e) {
+      return null
     }
-    return null
   }
 
   public async verifyIdentity(jwtid: string): Promise<any> {
@@ -44,7 +44,7 @@ export class AuthService extends AbstractService {
 
   public async createToken(identity: IdentityType, refresh_token?: string): Promise<{
     access_token: string,
-    refresh_token?: string
+    refresh_token: string
   }> {
     const random = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     const jwtid = `${identity._id}_${random}`
@@ -52,6 +52,9 @@ export class AuthService extends AbstractService {
       expiresIn: '1h',
       jwtid,
     })
+    if (!refresh_token) {
+      refresh_token = '123'
+    }
     await this.redis.set(`jwtid_${jwtid}`, JSON.stringify({ identity }), 'EX', 3600)
     return {
       access_token,

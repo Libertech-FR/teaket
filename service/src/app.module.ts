@@ -56,10 +56,10 @@ import { AuthGuard } from '~/_common/guards/auth.guard'
   providers: [
     AppService,
     ShutdownService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,
