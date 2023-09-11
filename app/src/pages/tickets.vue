@@ -6,7 +6,7 @@ div
     .q-pa-md
         q-table(
             :rows="data?.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="id" :visible-columns="visibleColumns"
-            v-model:pagination="pagination" @update:pagination="paginationQuery($event)" title="Tickets" @request="onRequest"
+            v-model:pagination="pagination" title="Tickets" @request="onRequest"
             rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
             :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
         )
@@ -29,7 +29,7 @@ div
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useApiFetch } from "../composables/useApiFetch";
-import { computed, useDayjs } from "#imports";
+import { computed, useDayjs, onMounted } from "#imports";
 import type { QTableProps } from "quasar";
 import type { schemas } from "../composables/useApiFetch";
 import { useRoute, useRouter } from "nuxt/app";
@@ -39,6 +39,28 @@ type Ticket = schemas['TicketDto']
 const daysjs = useDayjs()
 const route = useRoute()
 const router = useRouter()
+
+
+onMounted(() => {
+    pagination.value!.rowsNumber = getTotalRowsNumber.value
+    const query = { ...route.query }
+    const limit = query.limit
+    const skip = query.skip
+    pagination.value!.rowsPerPage = parseInt(limit as string)
+    pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
+
+    let sortKey = 'updatedAt'
+    let sortDirection = 'desc'
+    for (const key in query) {
+        if (key.startsWith('sort')) {
+            sortKey = key.replace('sort[', '').replace(']', '')
+            sortDirection = query[key] === 'desc' ? 'desc' : 'asc'
+        }
+    }
+    pagination.value!.sortBy = sortKey
+    pagination.value!.descending = sortDirection === 'desc'
+})
+
 const columns = ref<QTableProps['columns']>([
     {
         name: 'sequence',
@@ -142,27 +164,48 @@ const pagination = ref<QTableProps['pagination']>({
     page: 1,
     rowsPerPage: 10,
     rowsNumber: 10,
-    sortBy: 'sequence',
-    descending: false
+    sortBy: 'updatedAt',
+    descending: true
 })
 
-const onRequest = (request: any) => {
-    const newPagination = { ...request.pagination }
-    newPagination.rowsNumber = getTotalRowsNumber.value
-    pagination.value = newPagination
-    paginationQuery(newPagination)
+const onRequest = (props: any) => {
+    const { page, rowsPerPage, sortBy, descending } = props.pagination
+    pagination.value!.rowsNumber = getTotalRowsNumber.value
+    pagination.value!.page = page
+    pagination.value!.rowsPerPage = rowsPerPage
+    pagination.value!.sortBy = sortBy
+    pagination.value!.descending = descending
+    paginationQuery()
 }
 
-const paginationQuery = (pagination: QTableProps['pagination']) => {
-    const skip = (pagination?.page! - 1) * pagination?.rowsPerPage!
-    const limit = pagination?.rowsPerPage!
+const paginationQuery = () => {
+    const query = removeSortKey()
+    const skip = `${(pagination.value?.page! - 1) * pagination.value?.rowsPerPage!}`
+    const limit = `${pagination.value?.rowsPerPage!}`
+    let sortBy = pagination.value?.sortBy!
+    if (sortBy === null) {
+        sortBy = 'updatedAt'
+    }
+
+    const sortKey = `sort[${sortBy}]`
+    const sortDirection = pagination.value?.descending! ? `desc` : `asc`
+
+    query[sortKey] = sortDirection
+    query['skip'] = skip
+    query['limit'] = limit
     router.push({
-        query: {
-            ...route.query,
-            skip,
-            limit,
-        }
+        query
     })
+}
+
+const removeSortKey = () => {
+    const query = { ...route.query }
+    for (const key in query) {
+        if (key.startsWith('sort[')) {
+            delete query[key]
+        }
+    }
+    return query
 }
 
 const fieldsList = computed(() => {
