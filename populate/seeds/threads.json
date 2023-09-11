@@ -1,0 +1,111 @@
+[
+    {
+        "_id": "5f84f96c8f3ac2082347f250",
+        "ticketId": "5f84f96c8f3ac2082347f250",
+        "sourceRequest": {
+            "id": "5f84f96c8f3ac2082347f253",
+            "name": "Source Request 1"
+        },
+        "timeSpend": 30,
+        "fragments": [
+            {
+                "id": "5f84f96c8f3ac2082347f254",
+                "disposition": "raw",
+                "message": "This is a raw fragment."
+            },
+            {
+                "id": "5f84f96c8f3ac2082347f255",
+                "disposition": "file",
+                "message": "Attachment 1",
+                "filestorage": {
+                    "id": "5f84f96c8f3ac2082347f256",
+                    "name": "Attachment 1",
+                    "namespace": "attachments",
+                    "path": "/attachments/attachment1.txt",
+                    "mime": "text/plain"
+                }
+            }
+        ],
+        "attachments": [
+            {
+                "id": "5f84f96c8f3ac2082347f257",
+                "name": "Attachment 2",
+                "namespace": "attachments",
+                "path": "/attachments/attachment2.pdf",
+                "mime": "application/pdf"
+            }
+        ]
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f257",
+        "ticketId": "5f84f96c8f3ac2082347f250",
+        "sourceRequest": {
+            "id": "5f84f96c8f3ac2082347f25a",
+            "name": "Source Request 2"
+        },
+        "timeSpend": 45,
+        "fragments": [
+            {
+                "id": "5f84f96c8f3ac2082347f25b",
+                "name": "Fragment 1",
+                "disposition": "raw",
+                "message": "Another raw fragment."
+            }
+        ],
+        "attachments": []
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f251",
+        "ticketId": "5f84f96c8f3ac2082347f251",
+        "sourceRequest": {
+            "id": "5f84f96c8f3ac2082347f253",
+            "name": "Source Request 1"
+        },
+        "timeSpend": 30,
+        "fragments": [
+            {
+                "id": "5f84f96c8f3ac2082347f254",
+                "name": "Fragment 1",
+                "disposition": "raw",
+                "message": "This is a raw fragment."
+            },
+            {
+                "id": "5f84f96c8f3ac2082347f255",
+                "disposition": "file",
+                "message": "Attachment 1",
+                "name": "Fragment 2",
+                "filestorage": {
+                    "id": "5f84f96c8f3ac2082347f256",
+                    "namespace": "attachments",
+                    "path": "/attachments/attachment1.txt",
+                    "mime": "text/plain"
+                }
+            }
+        ],
+        "attachments": [
+            {
+                "id": "5f84f96c8f3ac2082347f257",
+                "namespace": "attachments",
+                "path": "/attachments/attachment2.pdf",
+                "mime": "application/pdf"
+            }
+        ]
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f258",
+        "ticketId": "5f84f96c8f3ac2082347f251",
+        "sourceRequest": {
+            "id": "5f84f96c8f3ac2082347f25a",
+            "name": "Source Request 2"
+        },
+        "timeSpend": 45,
+        "fragments": [
+            {
+                "id": "5f84f96c8f3ac2082347f25b",
+                "disposition": "raw",
+                "message": "Another raw fragment."
+            }
+        ],
+        "attachments": []
+    }
+]

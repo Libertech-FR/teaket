@@ -1,0 +1,40 @@
+[
+    {
+        "_id": "5f84f96c8f3ac2082347f250",
+        "entityId": "5f84f96c8f3ac2082347f250",
+        "username": "user1",
+        "displayName": "User 1",
+        "email": "user1@example.com",
+        "password": "$argon2i$v=19$m=16,t=2,p=1$SndYMG9BTmZ4TkNMOVhKNQ$1U+dahX+7ipsgBNYZddkmA",
+        "thirdPartyAuth": "local",
+        "state": {
+            "current": 1,
+            "lastChangedAt": "2023-09-10T00:00:00.000Z"
+        },
+        "baseURL": "/",
+        "roles": [
+            "role1",
+            "role2"
+        ],
+        "hidden": false
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f252",
+        "entityId": "5f84f96c8f3ac2082347f253",
+        "username": "user2",
+        "displayName": "User 2",
+        "email": "user2@example.com",
+        "password": "$argon2i$v=19$m=16,t=2,p=1$SndYMG9BTmZ4TkNMOVhKNQ$48B0wb2yDFE3wiCrZTekmw",
+        "thirdPartyAuth": "local",
+        "state": {
+            "current": 1,
+            "lastChangedAt": "2023-09-11T00:00:00.000Z"
+        },
+        "baseURL": "/",
+        "roles": [
+            "role2",
+            "role3"
+        ],
+        "hidden": false
+    }
+]

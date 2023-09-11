@@ -1,0 +1,24 @@
+[
+    {
+        "_id": "5f84f96c8f3ac2082347f24e",
+        "name": "Project 1",
+        "startDate": "2023-09-11T00:00:00.000Z",
+        "endDate": "2023-09-30T00:00:00.000Z",
+        "rules": {
+            "rule1": "value1",
+            "rule2": "value2"
+        },
+        "description": "Description for Project 1"
+    },
+    {
+        "_id": "5f84f96c8f3ac2082347f24f",
+        "name": "Project 2",
+        "startDate": "2023-10-01T00:00:00.000Z",
+        "endDate": "2023-10-15T00:00:00.000Z",
+        "rules": {
+            "rule3": "value3",
+            "rule4": "value4"
+        },
+        "description": "Description for Project 2"
+    }
+]

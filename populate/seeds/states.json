@@ -1,0 +1,65 @@
+[
+    {
+        "_id": "6142f2b354b7c0a3d8f3e539",
+        "name": "State Name 1",
+        "description": "State Description 1",
+        "icon": "mdi-laptop",
+        "color": "#FF9900",
+        "rules": [
+            {
+                "field": "Priority",
+                "operator": "equals",
+                "value": "High"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "Support"
+            }
+        ],
+        "backgroundColor": "#EFEFEF",
+        "order": 1
+    },
+    {
+        "_id": "6142f2b354b7c0a3d8f3e53a",
+        "name": "State Name 2",
+        "description": "State Description 2",
+        "icon": "mdi-phone",
+        "color": "#00CCFF",
+        "rules": [
+            {
+                "field": "Priority",
+                "operator": "equals",
+                "value": "Low"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "Sales"
+            }
+        ],
+        "backgroundColor": "#F0F0F0",
+        "order": 2
+    },
+    {
+        "_id": "6142f2b354b7c0a3d8f3e53b",
+        "name": "State Name 3",
+        "description": "State Description 3",
+        "icon": "mdi-email",
+        "color": "#009900",
+        "rules": [
+            {
+                "field": "Priority",
+                "operator": "equals",
+                "value": "Medium"
+            },
+            {
+                "field": "Category",
+                "operator": "equals",
+                "value": "General"
+            }
+        ],
+        "backgroundColor": "#DDDDDD",
+        "order": 3
+    }
+]
