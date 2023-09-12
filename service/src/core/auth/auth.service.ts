@@ -149,7 +149,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   public async clearSession(jwt: string): Promise<void> {
     try {
-      console.log('clearSession', jwt)
       const data = this.jwtService.decode(jwt) as JwtPayload
       if (!data) return null
       const { jti } = data
