@@ -5,41 +5,63 @@ div
         tk-searchfilters(:fields="fieldsList")
     .q-pa-md
         q-table(
-            :rows="data?.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="id" :visible-columns="visibleColumns"
-            v-model:pagination="pagination" title="Tickets" @request="onRequest"
+            :rows="rows" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="sequence" :visible-columns="visibleColumns"
+            v-model:pagination="pagination" title="Tickets" @request="onRequest" 
             rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
             :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
+            selection="multiple" v-model:selected="selected" virtual-scroll style="height: 75vh;" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
         )
             template(v-slot:top)
+                q-btn-group(rounded flat)
+                    q-btn(icon="mdi-eye-check-outline" color="primary" rounded @click="markAsRead" size="md" :disable="selected.length === 0" primary)
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Marqué comme lu
+                    q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="selected.length === 0 || selected.length === 1")
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
+                    q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
+                    q-btn(flat icon="mdi-delete" color="primary" rounded @click="deleteTickets" size="md" :disable="selected.length === 0")
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les tickets sélectionnés
                 q-space
-                q-btn(flat fab icon="mdi-eye" color="primary")
-                    q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher
-                    q-menu(max-width="350px" max-height="350px").q-pa-md
-                        .row
-                            .col-6(v-for="column in columns" :key="column.value")
-                                q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
-                q-btn(flat fab icon="mdi-refresh" @click="refresh" color="primary")
-                    q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
-                q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
+                q-btn-group(rounded flat)
+                    q-btn(flat icon="mdi-table-headers-eye" color="primary")
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher des colones
+                        q-menu(max-width="350px" max-height="350px").q-pa-md
+                            .row
+                                .col-6(v-for="column in columns" :key="column.value")
+                                    q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
+                    q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
+                    q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
+            template(v-slot:body-cell-actions="props")
+                q-td(:props="props")
+                    q-btn-group(flat rounded)
+                        q-btn(icon="mdi-eye" color="primary" @click="goToTicket(props.row)" size="sm" flat)
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
+                        q-btn(icon="mdi-delete" color="primary" @click="deleteTickets" size="sm" flat)
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
+            template(v-slot:body-cell-states="props")
+                q-td(:props="props")
+                    q-icon(name="mdi-circle" :color="props.row.lifestep ? 'green' : 'red'" size="xs").q-mx-xs
+                    q-icon(:name="getType(props.row.type).icon" :color="getType(props.row.type).color" size="xs").q-mx-xs
+                    q-icon(:name="getState(props.row.state).icon" :color="getState(props.row.state).color" size="xs").q-mx-xs
 
 
     
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
 import { computed, useDayjs, onMounted } from "#imports";
-import type { QTableProps } from "quasar";
 import { useRoute, useRouter } from "nuxt/app";
+import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
-
 type Ticket = components["schemas"]['TicketDto']
+type State = components["schemas"]['StatesDto']
 
 const daysjs = useDayjs()
 const route = useRoute()
 const router = useRouter()
-
 
 onMounted(() => {
     pagination.value!.rowsNumber = getTotalRowsNumber.value
@@ -62,7 +84,24 @@ onMounted(() => {
     paginationQuery()
 })
 
+const selected = ref<Ticket[]>([])
+const ticketType = ref<{
+    label: string,
+    value: number,
+    icon: string,
+    color: string
+}[]>([
+    { label: 'Incident', value: 1, icon: 'mdi-account-alert', color: 'red' },
+    { label: 'Demande', value: 2, icon: 'mdi-account-question', color: 'primary' },
+])
+
 const columns = ref<QTableProps['columns']>([
+    {
+        name: 'states',
+        label: 'Etats',
+        field: 'states',
+        align: 'left',
+    },
     {
         name: 'sequence',
         label: 'ID',
@@ -99,7 +138,7 @@ const columns = ref<QTableProps['columns']>([
         sortable: true
     },
     {
-        name: 'updatedAt',
+        name: 'metadata.lastUpdatedAt',
         label: 'Date de modification',
         field: (row: Ticket) => row.metadata.lastUpdatedAt,
         format: (val: string) => daysjs(val).format('DD/MM/YYYY HH:mm'),
@@ -107,7 +146,7 @@ const columns = ref<QTableProps['columns']>([
         sortable: true,
     },
     {
-        name: 'createdAt',
+        name: 'metadata.createdAt',
         label: 'Date de création',
         field: (row: Ticket) => row.metadata.createdAt,
         format: (val: string) => daysjs(val).format('DD/MM/YYYY HH:mm'),
@@ -116,49 +155,65 @@ const columns = ref<QTableProps['columns']>([
     },
     // {
     //     name: 'actions',
-    //     label: 'Date de modification',
-    //     field: 'actions',
-    //     align: 'left',
-    //     sortable: true
-    // },
-    // {
-    //     name: 'actions',
     //     label: 'Etat de vie',
     //     field: 'actions',
     //     align: 'left',
     //     sortable: true
     // },
-    // {
-    //     name: 'actions',
-    //     label: 'Statut',
-    //     field: 'actions',
-    //     align: 'left',
-    //     sortable: true
-    // },
+    {
+        name: 'actions',
+        label: 'Actions',
+        field: 'actions',
+        align: 'left',
+    },
 ])
-const visibleColumns = ref<QTableProps['visibleColumns']>(['sequence', 'envelope.senders.name', 'envelope.observers.name', 'envelope.assigned.name', 'subject', 'updatedAt', 'createdAt'])
+const visibleColumns = ref<QTableProps['visibleColumns']>(['sequence', 'envelope.senders.name', 'envelope.observers.name', 'envelope.assigned.name', 'subject', 'metadata.lastUpdatedAt', 'metadata.createdAt', 'actions', 'states'])
 const columnsType = ref([
     { name: 'sequence', type: 'text' },
     { name: 'envelope.senders.name', type: 'text' },
     { name: 'envelope.observers.name', type: 'text' },
     { name: 'envelope.assigned.name', type: 'text' },
     { name: 'subject', type: 'text' },
-    { name: 'updatedAt', type: 'date' },
-    { name: 'createdAt', type: 'date' },
+    { name: 'metadata.lastUpdatedAt', type: 'date' },
+    { name: 'metadata.createdAt', type: 'date' },
     { name: 'actions', type: 'text' },
     { name: 'actions', type: 'text' },
     { name: 'actions', type: 'text' },
 ])
 
-const { data, pending, error, refresh } = useHttpApi('tickets/ticket', {
+const ticketFetch = useHttpApi('tickets/ticket', {
     method: 'get',
     query: computed(() => ({
         ...route.query,
     }))
 })
+const categoriesFetch = useHttpApi('core/categories')
+const stateFetch = useHttpApi('tickets/state')
+
+const states = computed(() => {
+    return {
+        data: [...stateFetch.data.value?.data],
+        total: stateFetch.data.value?.total
+    }
+})
+const rows = computed(() => {
+    return ticketFetch.data.value?.data ?? []
+})
+
+const refresh = () => {
+    ticketFetch.refresh()
+}
+
+const pending = computed(() => {
+    return ticketFetch.pending.value
+})
+
+const goToTicket = (ticket: Ticket) => {
+    router.push(`/ticket/${ticket._id}`)
+}
 
 const getTotalRowsNumber = computed(() => {
-    return data.value?.total ?? 0
+    return ticketFetch.data.value?.total ?? 0
 })
 
 const pagination = ref<QTableProps['pagination']>({
@@ -212,7 +267,7 @@ const removeSortKey = () => {
 const fieldsList = computed(() => {
     return columns.value!.reduce(
         (acc: { name: string, label: string, type?: string }[], column) => {
-            if (visibleColumns.value!.includes(column.name)) {
+            if (visibleColumns.value!.includes(column.name) && column.name !== 'actions' && column.name !== 'states') {
                 const type = columnsType.value.find(type => type.name === column.name)?.type
                 acc.push({
                     name: column.name,
@@ -226,5 +281,32 @@ const fieldsList = computed(() => {
     )
 })
 
+const getState = (state: { id: string, name: string }) => {
+    const findedState = states.value.data.find((s: any) => {
+        return s._id === state.id
+    })
+    return findedState
+}
+
+const getType = (type: number) => {
+    return ticketType.value.find(t => t.value === type)
+}
+
+const markAsRead = () => {
+    console.log('markAsRead')
+}
+
+const mergeTickets = () => {
+    console.log('mergeTickets')
+}
+
+const deleteTickets = () => {
+    console.log('deleteTickets')
+}
+
+provide('fieldsList', fieldsList)
+provide('stateFetch', stateFetch)
+provide('categoriesFetch', categoriesFetch)
+provide('ticketType', ticketType)
 
 </script>
