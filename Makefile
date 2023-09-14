@@ -30,6 +30,4 @@ buildseeds: ## Build populate image
 	docker build -t seeding -f ./populate/Dockerfile ./populate
 
 populate-db: ## Populate database
-	docker run --rm -it --network dev -v $(CURDIR)/populate:/app seeding
-
-
+	docker run --rm --network dev -v ./populate:/app -v ./service/.dev-token.json:/app/.dev-token.json seeding
