@@ -1,9 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Ticket, TicketSchema } from './_schemas/ticket.schema'
 import { TicketService } from './ticket.service'
 import { TicketController } from './ticket.controller'
-import { RouterModule } from '@nestjs/core'
+import { ThreadModule } from '~/tickets/thread/thread.module'
 
 @Module({
   imports: [
@@ -13,9 +13,11 @@ import { RouterModule } from '@nestjs/core'
         useFactory: () => TicketSchema,
       },
     ]),
+    forwardRef(() => ThreadModule),
   ],
   providers: [TicketService],
   controllers: [TicketController],
+  exports: [TicketService],
 })
 export class TicketModule {
 }

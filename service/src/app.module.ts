@@ -14,6 +14,10 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe'
 import { CoreModule } from '~/core/core.module'
 import { ShutdownService } from '~/shutdown.service'
 import { AuthGuard } from '~/_common/guards/auth.guard'
+import { AcceptLanguageResolver, CookieResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n'
+import { join } from 'path'
+import { ExtensionsModule } from '~/extensions/extensions.module'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
 @Module({
   imports: [
@@ -49,8 +53,37 @@ import { AuthGuard } from '~/_common/guards/auth.guard'
         },
       }),
     }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 20,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
+    }),
+    I18nModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        fallbackLanguage: config.get<string>('i18n.fallbackLanguage', 'en'),
+        typesOutputPath: join(__dirname, '../src/_generated/i18n.generated.ts'),
+        loaderOptions: {
+          path: join(__dirname, '/_i18n/'),
+          watch: true,
+        },
+      }),
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        new CookieResolver(['lang']),
+        new HeaderResolver(['x-lang']),
+        AcceptLanguageResolver,
+      ],
+      logging: true,
+    }),
     CoreModule.register(),
     TicketsModule.register(),
+    ExtensionsModule.register(),
   ],
   controllers: [AppController],
   providers: [

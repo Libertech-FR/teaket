@@ -1,19 +1,27 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsArray, IsMongoId, IsNumber, IsOptional, ValidateNested } from 'class-validator'
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
+import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
+import { Types } from 'mongoose'
 
 export class ThreadCreateDto {
   @IsMongoId()
   @ApiProperty()
   public ticketId: string
 
+  @IsNumber()
+  @IsEnum(ThreadTypeList)
+  @ApiProperty({ enum: ThreadTypeList })
+  public type: ThreadType
+
   @ValidateNested()
+  @IsOptional()
   @Type(() => IdnamePartDto)
   @ApiProperty({ type: IdnamePartDto })
-  public sourceRequest: IdnamePartDto
+  public sourceRequest?: IdnamePartDto
 
   @IsNumber()
   @IsOptional()
@@ -27,10 +35,11 @@ export class ThreadCreateDto {
   public fragments: FragmentPartDto[]
 
   @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => IdfsPartDto)
   @ApiProperty({ type: [IdfsPartDto] })
-  public attachments: IdfsPartDto[]
+  public attachments?: IdfsPartDto[]
 }
 
 export class ThreadDto extends ThreadCreateDto {

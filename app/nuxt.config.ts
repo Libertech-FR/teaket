@@ -1,4 +1,4 @@
-import { extensions } from '@libertech-fr/teaket_common'
+import appSetup from './src/extension.app.setup'
 import pugPlugin from 'vite-plugin-pug'
 import openapiTS from 'openapi-typescript'
 import { writeFileSync } from 'fs'
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@vueuse/nuxt',
     'dayjs-nuxt',
-    ...extensions.appSetup.default(),
+    ...appSetup(),
   ],
   auth: {
     globalMiddleware: true,
@@ -45,8 +45,7 @@ export default defineNuxtConfig({
         scheme: 'refresh',
         token: {
           property: 'access_token',
-          maxAge: 1 * 5,
-          // maxAge: 60 * 5,
+          maxAge: 60 * 5,
         },
         refreshToken: {
           property: 'refresh_token',
