@@ -11,7 +11,7 @@ import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
 import { ThreadType } from '~/tickets/thread/_enum/thread-type.enum'
 import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
-import { I18nTranslations } from '~/_generated/i18n.generated'
+// import { I18nTranslations } from '~/_generated/i18n.generated'
 
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {
@@ -19,7 +19,8 @@ export class TicketService extends AbstractServiceSchema {
     protected readonly moduleRef: ModuleRef,
     @Inject(forwardRef(() => ThreadService))
     protected readonly threadService: ThreadService,
-    private readonly i18n: I18nService<I18nTranslations>,
+    private readonly i18n: I18nService,
+    // private readonly i18n: I18nService<I18nTranslations>,
     @InjectModel(Ticket.name) protected _model: Model<Ticket>,
     @Inject(REQUEST) protected request?: Request & { user?: any },
   ) {

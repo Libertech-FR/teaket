@@ -7,7 +7,7 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { TicketService } from '~/tickets/ticket/ticket.service'
 import { ThreadCreateDto } from '~/tickets/thread/_dto/thread.dto'
 import { I18nService } from 'nestjs-i18n'
-import { I18nTranslations } from '~/_generated/i18n.generated'
+// import { I18nTranslations } from '~/_generated/i18n.generated'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
@@ -20,7 +20,8 @@ export class ThreadService extends AbstractServiceSchema {
     @InjectModel(Thread.name) protected _model: Model<Thread>,
     @Inject(forwardRef(() => TicketService))
     protected ticketService: TicketService,
-    private readonly i18n: I18nService<I18nTranslations>,
+    private readonly i18n: I18nService,
+    // private readonly i18n: I18nService<I18nTranslations>,
     protected readonly eventEmitter: EventEmitter2,
   ) {
     super({ moduleRef, request, eventEmitter })
