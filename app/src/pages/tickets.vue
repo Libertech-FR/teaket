@@ -12,26 +12,27 @@ div
             selection="multiple" v-model:selected="selected" virtual-scroll style="height: 75vh;" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
         )
             template(v-slot:top)
-                q-btn-group(rounded flat)
-                    q-btn(icon="mdi-eye-check-outline" color="primary" rounded @click="markAsRead" size="md" :disable="selected.length === 0" primary)
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Marqué comme lu
-                    q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="selected.length === 0 || selected.length === 1")
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
-                    q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
-                    q-btn(flat icon="mdi-delete" color="primary" rounded @click="deleteTickets" size="md" :disable="selected.length === 0")
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les tickets sélectionnés
-                q-space
-                q-btn-group(rounded flat)
-                    q-btn(flat icon="mdi-table-headers-eye" color="primary")
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher des colones
-                        q-menu(max-width="350px" max-height="350px").q-pa-md
-                            .row
-                                .col-6(v-for="column in columns" :key="column.value")
-                                    q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
-                    q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
-                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
-                    q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
+                .col-12.col-sm
+                    q-btn-group(rounded flat)
+                        q-btn(icon="mdi-eye-check-outline" color="primary" rounded @click="markAsRead" size="md" :disable="selected.length === 0" primary)
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Marqué comme lu
+                        q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="selected.length === 0 || selected.length === 1")
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
+                        q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
+                        q-btn(flat icon="mdi-delete" color="primary" rounded @click="deleteTickets" size="md" :disable="selected.length === 0")
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les tickets sélectionnés
+                .col-12.col-sm.flex.justify-end
+                    q-btn-group(rounded flat)
+                        q-btn(flat icon="mdi-table-headers-eye" color="primary")
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher des colones
+                            q-menu(max-width="350px" max-height="350px").q-pa-md
+                                .row
+                                    .col-6(v-for="column in columns" :key="column.value")
+                                        q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
+                        q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
+                            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
+                        q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
             template(v-slot:body-cell-actions="props")
                 q-td(:props="props")
                     q-btn-group(flat rounded)
@@ -45,6 +46,25 @@ div
                     q-icon(:name="getType(props.row.type).icon" :color="getType(props.row.type).color" size="xs").q-mx-xs
                     q-icon(:name="getState(props.row.state).icon" :color="getState(props.row.state).color" size="xs").q-mx-xs
 
+            template(v-slot:body-cell-envelope.senders.name="props")
+                q-td(:props="props")
+                    span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
+                    span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
+
+            template(v-slot:body-cell-envelope.observers.name="props")
+                q-td(:props="props")
+                    span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
+                    span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
+
+            template(v-slot:body-cell-envelope.assigned.name="props")
+                q-td(:props="props")
+                    span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
+                    span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
+                        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
+
+
 
     
 </template>
@@ -52,7 +72,7 @@ div
 <script lang="ts" setup>
 import { ref, provide } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
-import { computed, useDayjs, onMounted } from "#imports";
+import { computed, useDayjs, onMounted, onBeforeMount } from "#imports";
 import { useRoute, useRouter } from "nuxt/app";
 import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
@@ -63,8 +83,8 @@ const daysjs = useDayjs()
 const route = useRoute()
 const router = useRouter()
 
-onMounted(() => {
-    pagination.value!.rowsNumber = getTotalRowsNumber.value
+onMounted(async () => {
+    pagination.value!.rowsNumber = await ticketFetch.data.value?.total
     const query = { ...route.query }
     const limit = query.limit ?? 10
     const skip = query.skip ?? 0
@@ -112,21 +132,21 @@ const columns = ref<QTableProps['columns']>([
     {
         name: 'envelope.senders.name',
         label: 'Appelant',
-        field: (row: Ticket) => row.envelope.senders.length > 0 ? row.envelope.senders[0].name : '',
+        field: (row: Ticket) => row.envelope.senders,
         align: 'left',
         sortable: true
     },
     {
         name: 'envelope.observers.name',
         label: 'Concerné',
-        field: (row: Ticket) => row.envelope.observers.length > 0 ? row.envelope.observers[0].name : '',
+        field: (row: Ticket) => row.envelope.observers,
         align: 'left',
         sortable: true
     },
     {
         name: 'envelope.assigned.name',
         label: 'Assigné',
-        field: (row: Ticket) => row.envelope.assigned.length > 0 ? row.envelope.assigned[0].name : '',
+        field: (row: Ticket) => row.envelope.assigned,
         align: 'left',
         sortable: true
     },
@@ -183,9 +203,12 @@ const columnsType = ref([
 
 const ticketFetch = useHttpApi('tickets/ticket', {
     method: 'get',
-    query: computed(() => ({
-        ...route.query,
-    }))
+    query: computed(() => {
+        console.log("ticketFetch computed")
+        return {
+            ...route.query,
+        }
+    })
 })
 const categoriesFetch = useHttpApi('core/categories')
 const stateFetch = useHttpApi('tickets/state')
@@ -212,10 +235,6 @@ const goToTicket = (ticket: Ticket) => {
     router.push(`/ticket/${ticket._id}`)
 }
 
-const getTotalRowsNumber = computed(() => {
-    return ticketFetch.data.value?.total ?? 0
-})
-
 const pagination = ref<QTableProps['pagination']>({
     page: 1,
     rowsPerPage: 10,
@@ -224,9 +243,9 @@ const pagination = ref<QTableProps['pagination']>({
     descending: true
 })
 
-const onRequest = (props: any) => {
+const onRequest = async (props: any) => {
     const { page, rowsPerPage, sortBy, descending } = props.pagination
-    pagination.value!.rowsNumber = getTotalRowsNumber.value
+    pagination.value!.rowsNumber = await ticketFetch.data.value?.total
     pagination.value!.page = page
     pagination.value!.rowsPerPage = rowsPerPage
     pagination.value!.sortBy = sortBy
