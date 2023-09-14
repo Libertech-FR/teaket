@@ -31,6 +31,9 @@ export interface ConfigInstance {
   // oidc: {
   //   options: BuildOpenIdClientOptions
   // }
+  i18n: {
+    fallbackLanguage: string
+  }
   swagger: {
     path: string
     api: string
@@ -100,6 +103,9 @@ export default (): ConfigInstance => ({
   //     },
   //   },
   // },
+  i18n: {
+    fallbackLanguage: 'en',
+  },
   swagger: {
     path: '/swagger',
     api: '/swagger/json',

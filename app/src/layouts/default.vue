@@ -1,5 +1,7 @@
 <template lang="pug">
-div
+q-layout
     tk-appbar
-    slot
+    q-page-container
+        nuxt-page
+    tk-footer
 </template>

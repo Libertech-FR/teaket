@@ -1,0 +1,13 @@
+{
+  "dto": {
+
+  },
+  "schema": {
+    "ticketId": "Id du ticket"
+  },
+  "service": {
+    "create": {
+      "ticketNotFound": "Id de ticket introuvable"
+    }
+  }
+}

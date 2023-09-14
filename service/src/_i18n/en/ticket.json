@@ -1,0 +1,14 @@
+{
+  "dto": {
+
+  },
+  "schema": {
+    "type": "Type",
+    "subject": "Subject"
+  },
+  "service": {
+    "update": {
+      "newFragment": "Fields are updated {fields}."
+    }
+  }
+}
