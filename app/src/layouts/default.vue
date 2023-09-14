@@ -1,5 +1,7 @@
 <template lang="pug">
-div
+q-layout(view="H p F")
     tk-appbar
-    slot
+    q-page-container
+        slot
+    tk-footer
 </template>

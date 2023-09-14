@@ -9,7 +9,7 @@ div
             v-model:pagination="pagination" title="Tickets" @request="onRequest" 
             rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
             :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-            selection="multiple" v-model:selected="selected" virtual-scroll style="height: 75vh;" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
+            selection="multiple" v-model:selected="selected" virtual-scroll :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
         )
             template(v-slot:top)
                 .col-12.col-sm
