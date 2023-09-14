@@ -5,7 +5,7 @@ div
         tk-searchfilters(:fields="fieldsList")
     .q-pa-md
         q-table(
-            :rows="rows" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="sequence" :visible-columns="visibleColumns"
+            :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="sequence" :visible-columns="visibleColumns"
             v-model:pagination="pagination" title="Tickets" @request="onRequest" 
             rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
             :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
@@ -63,10 +63,6 @@ div
                     span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
                     span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
                         q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
-
-
-
-    
 </template>
 
 <script lang="ts" setup>
@@ -83,8 +79,19 @@ const daysjs = useDayjs()
 const route = useRoute()
 const router = useRouter()
 
+const { data: tickets, pending, refresh, error } = await useHttpApi('tickets/ticket', {
+    method: 'get',
+    query: computed(() => {
+        return {
+            ...route.query,
+        }
+    })
+})
+const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('core/categories')
+const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('tickets/state')
+
 onMounted(async () => {
-    pagination.value!.rowsNumber = await ticketFetch.data.value?.total
+    pagination.value!.rowsNumber = tickets.total
     const query = { ...route.query }
     const limit = query.limit ?? 10
     const skip = query.skip ?? 0
@@ -201,36 +208,6 @@ const columnsType = ref([
     { name: 'actions', type: 'text' },
 ])
 
-const ticketFetch = useHttpApi('tickets/ticket', {
-    method: 'get',
-    query: computed(() => {
-        console.log("ticketFetch computed")
-        return {
-            ...route.query,
-        }
-    })
-})
-const categoriesFetch = useHttpApi('core/categories')
-const stateFetch = useHttpApi('tickets/state')
-
-const states = computed(() => {
-    return {
-        data: [...stateFetch.data.value?.data],
-        total: stateFetch.data.value?.total
-    }
-})
-const rows = computed(() => {
-    return ticketFetch.data.value?.data ?? []
-})
-
-const refresh = () => {
-    ticketFetch.refresh()
-}
-
-const pending = computed(() => {
-    return ticketFetch.pending.value
-})
-
 const goToTicket = (ticket: Ticket) => {
     router.push(`/ticket/${ticket._id}`)
 }
@@ -245,7 +222,7 @@ const pagination = ref<QTableProps['pagination']>({
 
 const onRequest = async (props: any) => {
     const { page, rowsPerPage, sortBy, descending } = props.pagination
-    pagination.value!.rowsNumber = await ticketFetch.data.value?.total
+    pagination.value!.rowsNumber = tickets.total
     pagination.value!.page = page
     pagination.value!.rowsPerPage = rowsPerPage
     pagination.value!.sortBy = sortBy
@@ -324,8 +301,8 @@ const deleteTickets = () => {
 }
 
 provide('fieldsList', fieldsList)
-provide('stateFetch', stateFetch)
-provide('categoriesFetch', categoriesFetch)
+provide('stateFetch', { data: states, pending: statesPending, refresh: statesRefresh, error: statesError })
+provide('categoriesFetch', { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError })
 provide('ticketType', ticketType)
 
 </script>

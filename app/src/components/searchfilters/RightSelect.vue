@@ -46,8 +46,8 @@ type Option = {
 const route = useRoute()
 const router = useRouter()
 
-const stateFetch = inject('stateFetch')
-const categoriesFetch = inject('categoriesFetch')
+const { data: statesData } = inject('stateFetch')
+const { data: categoriesData } = inject('categoriesFetch')
 const ticketType: {
     label: string,
     value: number,
@@ -94,7 +94,7 @@ const lifeSteps = ref<Option[]>([
 ])
 
 const options = computed(() => {
-    // const categories: Option[] = categoriesFetch.data.value?.data.map((category: Category) => {
+    // const categories: Option[] = categoriesData.value.data.map((category: Category) => {
     //     return {
     //         label: category.name,
     //         value: category._id,
@@ -112,8 +112,7 @@ const options = computed(() => {
         }
     })
     ticketTypeOptions.unshift({ label: 'Types', header: true })
-
-    const states: Option[] = stateFetch.data.value?.data.map((state: State) => {
+    const states: Option[] = statesData.value.data.map((state: State) => {
         return {
             label: state.name,
             value: state._id,
