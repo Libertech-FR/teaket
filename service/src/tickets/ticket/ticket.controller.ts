@@ -23,6 +23,9 @@ export class TicketController extends AbstractController {
     sequence: 1,
     envelope: 1,
     metadata: 1,
+    lifestep: 1,
+    type: 1,
+    state: 1,
   }
 
   public constructor(private readonly _service: TicketService) {
@@ -41,11 +44,7 @@ export class TicketController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(TicketDto, TicketController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, TicketController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
