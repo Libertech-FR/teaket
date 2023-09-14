@@ -46,18 +46,24 @@ export class AuthService extends AbstractService implements OnModuleInit {
       this.logger.warn('DEV MODE ENABLED !')
       const devTokenPath = resolve(process.cwd(), this.DEV_TOKEN_PATH)
       if (existsSync(devTokenPath)) {
-        const data = JSON.parse(readFileSync(devTokenPath, 'utf-8'))
-        this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`)
-      } else {
-        const { access_token } = await this.createTokens(new ConsoleSession(), false, {
-          expiresIn: '1y',
-        })
-        writeFileSync(devTokenPath, JSON.stringify({
-          access_token,
-        }))
-
-        this.logger.log(`NEW TOKEN CREATED : <${access_token}>`)
+        try {
+          const data = JSON.parse(readFileSync(devTokenPath, 'utf-8'))
+          if (data.access_token) {
+            this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`)
+            return
+          }
+        } catch (e) {
+          this.logger.error(`TOKEN FILE CORRUPTED ! REGENERATING...`)
+        }
       }
+      const { access_token } = await this.createTokens(new ConsoleSession(), false, {
+        expiresIn: '1y',
+      })
+      writeFileSync(devTokenPath, JSON.stringify({
+        access_token,
+      }))
+
+      this.logger.log(`NEW TOKEN CREATED : <${access_token}>`)
     }
   }
 
@@ -143,7 +149,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   public async clearSession(jwt: string): Promise<void> {
     try {
-      console.log('clearSession', jwt)
       const data = this.jwtService.decode(jwt) as JwtPayload
       if (!data) return null
       const { jti } = data

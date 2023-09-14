@@ -23,8 +23,7 @@
   "private": true,
   "workspaces": [
     "service",
-    "app",
-    "common"
+    "app"
   ],
   "dependencies": {
     "radash": "^11.0.0"

@@ -2,16 +2,16 @@
   "name": "@libertech-fr/teaket_app",
   "version": "0.0.1",
   "scripts": {
+    "prebuild": "nuxt prepare",
     "build": "nuxt build",
+    "predev": "nuxt prepare",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
     "generate:api": "openapi-typescript http://localhost:7100/swagger/json -o ./.nuxt/types/service-api.d.ts",
     "upgrade:packages": "npx npm-check-updates -u --reject @types/node"
   },
   "dependencies": {
-    "@libertech-fr/teaket_common": "*",
     "@nuxt-alt/auth": "^2.6.1",
     "@nuxt-alt/http": "^1.6.8",
     "@pinia/nuxt": "^0.4.11",

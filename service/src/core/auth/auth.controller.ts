@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Headers, HttpStatus, Post, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Headers, HttpStatus, Post, Res, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { Response } from 'express'

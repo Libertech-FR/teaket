@@ -4,6 +4,7 @@ import { Types } from 'mongoose'
 import { IdnamePart, IdnamePartSchema } from '~/_common/schemas/parts/idname.part.schema'
 import { FragmentPart, FragmentPartSchema } from '~/tickets/thread/_schemas/parts/fragment.part.schema'
 import { IdfsPart, IdfsPartSchema } from '~/_common/schemas/parts/idfs.part.schema'
+import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
 
 @Schema({
   collection: 'threads',
@@ -17,10 +18,16 @@ export class Thread extends AbstractSchema {
   public ticketId: Types.ObjectId
 
   @Prop({
-    type: IdnamePartSchema,
+    type: Number,
+    enum: ThreadTypeList,
     required: true,
   })
-  public sourceRequest: IdnamePart
+  public type: ThreadType
+
+  @Prop({
+    type: IdnamePartSchema,
+  })
+  public sourceRequest?: IdnamePart
 
   @Prop({
     type: Number,
@@ -47,7 +54,7 @@ export class Thread extends AbstractSchema {
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread)
-  .pre('validate', function (next) {
+  .pre('validate', function(next) {
     if (this.fragments.length === 0) {
       next(new Error('Un fragment est obligatoire'))
     }

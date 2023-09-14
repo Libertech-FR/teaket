@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer'
-import { IsBoolean, IsDefined, IsEnum, IsString, ValidateNested } from 'class-validator'
-import 'reflect-metadata'
+import { IsBoolean, IsDefined, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class ExtensionsListV1 {
   @IsString()
@@ -14,6 +13,10 @@ export class ExtensionSettingsAppServiceMetadataV1 {
   @IsDefined()
   @IsString()
   public target: string
+
+  @IsOptional()
+  @IsString()
+  public mainModule: string = 'ExtensionModule'
 }
 
 export class ExtensionSettingsMetadataV1 {

@@ -1,0 +1,13 @@
+{
+  "dto": {
+
+  },
+  "schema": {
+    "ticketId": "Ticket id"
+  },
+  "service": {
+    "create": {
+      "ticketNotFound": "Ticket id not found"
+    }
+  }
+}
