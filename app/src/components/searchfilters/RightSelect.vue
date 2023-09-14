@@ -6,7 +6,7 @@ q-select(
     map-options    
     :model-value="filters"
     :option-value="(item) => item"
-    :label="`Filtres: ${filters.length} appliqué(s)`"
+    :label="`Etats: ${filters.length} filtre(s) appliqué(s)`"
     options-dense
     use-chips
     hide-selected
