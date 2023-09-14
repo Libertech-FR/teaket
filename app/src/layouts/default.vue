@@ -2,6 +2,6 @@
 q-layout(view="H p F")
     tk-appbar
     q-page-container
-        slot
+        nuxt-page
     tk-footer
 </template>
