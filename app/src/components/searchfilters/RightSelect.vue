@@ -13,16 +13,16 @@ q-select(
   @add="addFilter($event)"
   @remove="removeFilter($event)"
 )
-    template(v-slot:option="{ index, itemProps, opt, selected, toggleOption }")
-      q-item-label(v-bind="itemProps" v-if="opt.header" header) {{ opt.label }}
-      //@click.capture='addFilter({index, value: opt})'
-      q-item(v-bind="itemProps" v-else)
-        q-item-section(side)
-          q-icon(:name="opt.icon" :color="opt.color" size="xs")
-        q-item-section
-          q-item-label(v-html="opt.label")
-        q-item-section(side)
-          q-toggle(:model-value="selected" @update:model-value="toggleOption")
+  template(v-slot:option="{ index, itemProps, opt, selected, toggleOption }")
+    q-item-label(v-bind="itemProps" v-if="opt.header" header) {{ opt.label }}
+    //@click.capture='addFilter({index, value: opt})'
+    q-item(v-bind="itemProps" v-else)
+      q-item-section(side)
+        q-icon(:name="opt.icon" :color="opt.color" size="xs")
+      q-item-section
+        q-item-label(v-html="opt.label")
+      q-item-section(side)
+        q-toggle(:model-value="selected" @update:model-value="toggleOption")
 
 </template>
 
@@ -32,7 +32,7 @@ import type { Ref } from 'vue'
 import { useHttpApi } from "~/composables/useHttpApi";
 import type { components } from '#build/types/service-api'
 import { useRoute, useRouter } from 'nuxt/app';
-
+import { ticketType, lifeSteps } from "#imports";
 type Category = components['schemas']['CategoriesDto']
 type State = components['schemas']['StatesDto']
 
@@ -49,12 +49,7 @@ const router = useRouter()
 
 const { data: statesData } = inject('stateFetch')
 const { data: categoriesData } = inject('categoriesFetch')
-const ticketType: {
-  label: string,
-  value: number,
-  icon: string,
-  color: string
-}[] | undefined = inject('ticketType')
+
 onMounted(() => {
   getFilters()
 })
@@ -88,12 +83,6 @@ const getFilters = () => {
 
 
 const filters = ref<Option[]>([])
-const lifeSteps = ref<Option[]>([
-  { label: 'Lifestep', header: true },
-  { label: 'Ouvert', value: '1', group: 'lifestep', icon: 'mdi-circle', color: "green" },
-  { label: 'Clos', value: '0', group: 'lifestep', icon: 'mdi-circle', color: "red" },
-])
-
 const options = computed(() => {
   // const categories: Option[] = categoriesData.value.data.map((category: Category) => {
   //     return {
@@ -103,7 +92,7 @@ const options = computed(() => {
   //     }
   // }) ?? []
   // categories.unshift({ label: 'Catégories', header: true })
-  const ticketTypeOptions: Option[] = ticketType.value.map((type) => {
+  const ticketTypeOptions: Option[] = ticketType.map((type) => {
     return {
       label: type.label,
       value: type.value.toString(),
@@ -123,8 +112,9 @@ const options = computed(() => {
     }
   }) ?? []
   states.unshift({ label: 'États', header: true })
+  lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
-    ...lifeSteps.value,
+    ...lifeSteps,
     ...ticketTypeOptions,
     // ...categories,
     ...states
