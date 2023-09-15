@@ -5,9 +5,9 @@ import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
-import { Types } from 'mongoose'
+import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
 
-export class ThreadCreateDto {
+export class ThreadCreateDto extends MetadataDto {
   @IsMongoId()
   @ApiProperty()
   public ticketId: string
@@ -48,5 +48,4 @@ export class ThreadDto extends ThreadCreateDto {
   public _id: string
 }
 
-export class ThreadUpdateDto extends PartialType(ThreadCreateDto) {
-}
+export class ThreadUpdateDto extends PartialType(ThreadCreateDto) {}
