@@ -1,11 +1,11 @@
 <template lang="pug">
 .column
-    .row.q-gutter-lg.items-center
+    .row.q-my-md.q-px-sm
         q-breadcrumbs 
             q-breadcrumbs-el(to="/") Accueil
             q-breadcrumbs-el(to="/tickets") Tickets
             q-breadcrumbs-el(:label="ticketData.data.sequence")
-    .row.q-gutter-md.col-11
+    .row.q-gutter-md(style={'min-height': 'auto'})
         .col-2
             tk-ticketLeftPanel
         .col-6
@@ -21,7 +21,9 @@ import { useHttpApi } from '~/composables/useHttpApi';
 
 const route = useRoute()
 const id = ref<string>('')
-const { data: ticketData } = await useHttpApi(`tickets/ticket/${route.params.id}`)
+const { data: ticketData } = await useHttpApi(`/tickets/ticket/${route.params.id}`, {
+    method: 'get'
+})
 
 onMounted(async () => {
 

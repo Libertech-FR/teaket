@@ -89,10 +89,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
   providers: [
     AppService,
     ShutdownService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,

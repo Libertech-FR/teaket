@@ -80,27 +80,27 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ticket', {
-  method: 'get',
-  query: computed(() => {
-    return {
-      ...route.query,
-    }
-  })
-})
+    method: 'get',
+    query: computed(() => {
+        return {
+            ...route.query,
+        }
+    })
+}).catch((err) => console.error(err))
 const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('/core/categories', {
-  method: 'get',
+    method: 'get'
 })
 const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
-  method: 'get',
+    method: 'get'
 })
 
 onMounted(async () => {
-  pagination.value!.rowsNumber = tickets.total
-  const query = { ...route.query }
-  const limit = query.limit ?? 10
-  const skip = query.skip ?? 0
-  pagination.value!.rowsPerPage = parseInt(limit as string)
-  pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
+    pagination.value!.rowsNumber = tickets.value?.total
+    const query = { ...route.query }
+    const limit = query.limit ?? 10
+    const skip = query.skip ?? 0
+    pagination.value!.rowsPerPage = parseInt(limit as string)
+    pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
 
   let sortKey = 'updatedAt'
   let sortDirection = 'desc'
@@ -225,13 +225,13 @@ const pagination = ref<QTableProps['pagination']>({
 })
 
 const onRequest = async (props: any) => {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination
-  pagination.value!.rowsNumber = tickets.total
-  pagination.value!.page = page
-  pagination.value!.rowsPerPage = rowsPerPage
-  pagination.value!.sortBy = sortBy
-  pagination.value!.descending = descending
-  paginationQuery()
+    const { page, rowsPerPage, sortBy, descending } = props.pagination
+    pagination.value!.rowsNumber = tickets.value?.total
+    pagination.value!.page = page
+    pagination.value!.rowsPerPage = rowsPerPage
+    pagination.value!.sortBy = sortBy
+    pagination.value!.descending = descending
+    paginationQuery()
 }
 
 const paginationQuery = () => {
@@ -282,10 +282,10 @@ const fieldsList = computed(() => {
 })
 
 const getState = (state: { id: string, name: string }) => {
-  const findedState = states.value.data.find((s: any) => {
-    return s._id === state.id
-  })
-  return findedState
+    const findedState = states.value?.data.find((s: any) => {
+        return s._id === state.id
+    })
+    return findedState
 }
 
 const getType = (type: number) => {
