@@ -3208,7 +3208,7 @@
     "@smithy/types" "^2.3.3"
     tslib "^2.5.0"
 
-"@streamkits/nestjs_module_factorydrive-s3@^0.0.6":
+"@streamkits/nestjs_module_factorydrive-s3@^0.0.7":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_factorydrive-s3/-/nestjs_module_factorydrive-s3-0.0.6.tgz#11f5574b9b66908c4ab02320fabe808511f92452"
   integrity sha512-B65CzvE6wgNzObIduDSeXMKEPn12hrR55kuk2DXIR1b4j2mXrAGT7y8Ii77R70Fx/0iSFAj7Sm6gkKzSQUIotA==
@@ -4820,6 +4820,11 @@ bser@2.1.1:
   integrity sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==
   dependencies:
     node-int64 "^0.4.0"
+
+bson-objectid@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/bson-objectid/-/bson-objectid-2.0.4.tgz#339211572ef97dc98f2d68eaee7b99b7be59a089"
+  integrity sha512-vgnKAUzcDoa+AeyYwXCoHyF2q6u/8H46dxu5JN+4/TZeq/Dlinn0K6GvxsCLb3LHUJl0m/TLiEK31kUwtgocMQ==
 
 bson@^5.4.0:
   version "5.5.0"
