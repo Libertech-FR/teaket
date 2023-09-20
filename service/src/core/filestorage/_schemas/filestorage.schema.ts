@@ -14,11 +14,11 @@ export class Filestorage extends AbstractSchema {
   })
   public type: FsType
 
-  // text/html, application/pdf
   @Prop({
     type: String,
+    default: 'application/octet-stream',
   })
-  public mime?: string
+  public mime: string
 
   @Prop({
     required: true,

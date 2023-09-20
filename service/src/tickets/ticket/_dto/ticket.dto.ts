@@ -1,5 +1,5 @@
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
-import { ApiProperty, PartialType, IntersectionType } from '@nestjs/swagger'
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
 import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { Type } from 'class-transformer'
@@ -9,6 +9,7 @@ import { TagPartDto } from '~/tickets/ticket/_dto/parts/tag.part.dto'
 import { TicketLifestep, TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { SlaPartDto } from '~/tickets/ticket/_dto/parts/sla.part.dto'
+
 export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsObject()
   @ValidateNested()
@@ -91,4 +92,5 @@ export class TicketDto extends TicketCreateDto {
   public totalTime: number
 }
 
-export class TicketUpdateDto extends PartialType(TicketCreateDto) {}
+export class TicketUpdateDto extends PartialType(TicketCreateDto) {
+}
