@@ -33,6 +33,7 @@ q-page
             q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
             q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
+
       template(v-slot:body-cell-actions="props")
         q-td(:props="props")
           q-btn-group(flat rounded)
@@ -40,6 +41,7 @@ q-page
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
             q-btn(icon="mdi-delete" color="primary" @click="deleteTickets" size="sm" flat)
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
+
       template(v-slot:body-cell-states="props")
         q-td(:props="props")
           q-icon(:name="getLifeStep(props.row.lifestep).icon" :color="getLifeStep(props.row.lifestep).color" size="xs").q-mx-xs
@@ -68,7 +70,7 @@ q-page
 <script lang="ts" setup>
 import { ref, provide } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
-import { computed, useDayjs, onMounted, onBeforeMount } from "#imports";
+import { computed, useDayjs, onMounted } from "#imports";
 import { useRoute, useRouter } from "nuxt/app";
 import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
