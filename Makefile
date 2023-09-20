@@ -9,6 +9,17 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
+run-app:
+	cd ./app && yarn dev
+
+run-service:
+	cd ./service && yarn start:dev
+
+run: ## Run app and service
+	@make dbs &
+	@make run-app &
+	@make run-service &
+
 dbs: ## Start databases
 	@docker volume create $(APPNAME)-mongodb
 	@docker run -d --rm \

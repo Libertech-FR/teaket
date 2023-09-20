@@ -3,6 +3,7 @@ import pugPlugin from 'vite-plugin-pug'
 import openapiTS from 'openapi-typescript'
 import { writeFileSync } from 'fs'
 import { resolve } from 'path'
+import timezone from 'dayjs/plugin/timezone'
 
 const TK_APP_API_URL = process.env.TK_APP_API_URL || 'http://localhost:7100'
 
@@ -72,6 +73,17 @@ export default defineNuxtConfig({
         autoRefresh: true,
       },
     },
+  },
+  dayjs: {
+    locales: ['fr', 'en'],
+    defaultLocale: 'fr',
+    defaultTimezone: 'Paris',
+    plugins: ['timezone', 'relativeTime']
+  },
+  pinia:{
+    autoImports: [
+        'defineStore'
+    ]
   },
   appConfig: {
     customSlots: {},

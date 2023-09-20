@@ -1,4 +1,4 @@
-<template lang="pug" @keypress="addFilter">
+<template lang="pug" @keypress.enter="addFilter">
 .q-ma-sm
     tk-SearchfiltersMain(ref="mainData")
     //Filters chips

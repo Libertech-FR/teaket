@@ -9,5 +9,5 @@ export class MetadataDto {
   @ValidateNested()
   @Type(() => MetadataPartDto)
   @ApiProperty({ type: MetadataPartDto })
-  public metadata: MetadataPartDto
+  public metadata?: MetadataPartDto
 }

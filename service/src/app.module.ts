@@ -107,10 +107,10 @@ import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
   providers: [
     AppService,
     ShutdownService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,
