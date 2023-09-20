@@ -6,11 +6,12 @@ import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
+import { Types } from 'mongoose'
 
 export class ThreadCreateDto extends MetadataDto {
   @IsMongoId()
   @ApiProperty()
-  public ticketId: string
+  public ticketId: Types.ObjectId
 
   @IsNumber()
   @IsEnum(ThreadTypeList)
