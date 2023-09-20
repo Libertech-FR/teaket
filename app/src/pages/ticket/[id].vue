@@ -2,11 +2,11 @@
 q-page.row.items-stretch
     .col-12
         .row(style="height: 100%")
-            .col-2.q-pa-sm
+            .col-12.col-md-2.q-pa-sm
                 tk-ticketLeftPanel(:sequence="ticketData.data.sequence")
-            .col-6.q-pa-sm
+            .col-12.col-md-6.q-pa-sm
                 tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject")
-            .col-4.q-pa-sm
+            .col-12.col-md-4.q-pa-sm
                 tk-ticketRightPanel(:ticketData="ticketData.data")
 </template>
 

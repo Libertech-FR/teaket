@@ -1,81 +1,89 @@
 <template lang="pug">
 q-scroll-area(:style="{height: '100%'}")
     q-card
-        q-list
-            q-expansion-item(label="Enveloppe")
-                q-card
-                    q-card-section
-                        q-select.q-my-xs(
-                            label="Appelant(s)" filled v-model="ticket.envelope.senders"
-                            option-label="name"
-                            use-input use-chips multiple
-                            new-value-mode="add-unique"
-                        )
-                        q-select.q-my-xs(
-                            option-label="name"
-                            label="Appelant(s)" filled v-model="ticket.envelope.observers"
-                            use-input use-chips multiple
-                            new-value-mode="add-unique"
-                        )
-                        q-select.q-my-xs(
-                            option-label="name"
-                            label="Appelant(s)" filled v-model="ticket.envelope.assigned"
-                            use-input use-chips multiple
-                            new-value-mode="add-unique"
-                        )
-            q-expansion-item(label="Informations")
-                q-card
-                    q-card-section
-                        .row.items-center 
-                            .col-6 Type de ticket : 
-                            .col-6
-                                q-chip(:icon="typeOfTicket.icon" :color="typeOfTicket.color" outline).q-mx-auto {{ typeOfTicket.label }}
-                        q-select.q-my-xs(
-                            label="Projet(s)" filled v-model="ticket.project"
-                            option-label="name"
-                            use-input use-chips
-                            new-value-mode="add-unique"
-                        )
-                        q-select.q-my-xs(
-                            label="Priorité" filled
-                            option-label="name"
-                            use-input use-chips
-                            new-value-mode="add-unique"
-                            v-model="ticket.priority"
-                        )
-                        q-select.q-my-xs(
-                            label="Impact" filled
-                            option-label="name"
-                            use-input use-chips
-                            new-value-mode="add-unique"
-                            v-model="ticket.impact"
-                        )
-                        q-select.q-my-xs(
-                            label="SLA" filled
-                            option-label="name"
-                            use-input use-chips
-                            new-value-mode="add-unique"
-                            v-model="ticket.sla"
-                        )
-                        q-input.q-my-xs( label="Due date" type="date" filled v-model="dueDate")
-                        q-input.q-my-xs( label="Temps total" type="time" filled readonly v-model="totalTime")
-            q-expansion-item(label="Cycle de vie")
-                q-card
-                    q-card-section
-                        .row.items-center 
-                            .col-6 Etape de vie : 
-                            .col-6
-                                q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
-                        .row.items-center 
-                            .col-6 State : 
-                            .col-6
-                                q-chip(:icon="stateOfTicket?.icon" :color="stateOfTicket?.color" outline).q-mx-auto {{ stateOfTicket?.name }}
+        q-toolbar.justify-end
+            q-btn-group
+                q-btn(color="primary" icon="mdi-printer" @click="console.log('Imprimer')" size="md")
+                    q-tooltip.text-body2 Imprimer
+                q-btn(color="info" icon="mdi-content-save-all" @click="console.log('Save')" size="md")
+                    q-tooltip.text-body2 Sauvegarder
+                q-btn(color="red" icon="mdi-arrow-left" @click="console.log(router.go(-1))" size="md")
+                    q-tooltip.text-body2 Retour
+        q-expansion-item(label="Enveloppe").bg-gray-4
+            q-card
+                q-card-section
+                    q-select.q-my-xs(
+                        label="Appelant(s)" filled v-model="ticket.envelope.senders"
+                        option-label="name"
+                        use-input use-chips multiple
+                        new-value-mode="add-unique"
+                    )
+                    q-select.q-my-xs(
+                        option-label="name"
+                        label="Appelant(s)" filled v-model="ticket.envelope.observers"
+                        use-input use-chips multiple
+                        new-value-mode="add-unique"
+                    )
+                    q-select.q-my-xs(
+                        option-label="name"
+                        label="Appelant(s)" filled v-model="ticket.envelope.assigned"
+                        use-input use-chips multiple
+                        new-value-mode="add-unique"
+                    )
+        q-expansion-item(label="Informations").bg-gray-4
+            q-card
+                q-card-section
+                    .row.items-center 
+                        .col-6 Type de ticket : 
+                        .col-6
+                            q-chip(:icon="typeOfTicket.icon" :color="typeOfTicket.color" outline).q-mx-auto {{ typeOfTicket.label }}
+                    q-select.q-my-xs(
+                        label="Projet(s)" filled v-model="ticket.project"
+                        option-label="name"
+                        use-input use-chips
+                        new-value-mode="add-unique"
+                    )
+                    q-select.q-my-xs(
+                        label="Priorité" filled
+                        option-label="name"
+                        use-input use-chips
+                        new-value-mode="add-unique"
+                        v-model="ticket.priority"
+                    )
+                    q-select.q-my-xs(
+                        label="Impact" filled
+                        option-label="name"
+                        use-input use-chips
+                        new-value-mode="add-unique"
+                        v-model="ticket.impact"
+                    )
+                    q-select.q-my-xs(
+                        label="SLA" filled
+                        option-label="name"
+                        use-input use-chips
+                        new-value-mode="add-unique"
+                        v-model="ticket.sla"
+                    )
+                    q-input.q-my-xs( label="Due date" type="date" filled v-model="dueDate")
+                    q-input.q-my-xs( label="Temps total" type="time" filled readonly v-model="totalTime")
+        q-expansion-item(label="Cycle de vie").bg-gray-4
+            q-card
+                q-card-section
+                    .row.items-center 
+                        .col-6 Etape de vie : 
+                        .col-6
+                            q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
+                    .row.items-center 
+                        .col-6 State : 
+                        .col-6
+                            q-chip(:icon="stateOfTicket?.icon" :color="stateOfTicket?.color" outline).q-mx-auto {{ stateOfTicket?.name }}
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, inject } from 'vue'
 import { ticketType, lifeSteps, useDayjs } from '#imports';
 import { useHttpApi } from '~/composables/useHttpApi';
+import { useRouter } from 'vue-router';
 const props = defineProps({
     ticketData: {
         type: Object,
@@ -83,6 +91,7 @@ const props = defineProps({
     }
 })
 const dayjs = useDayjs()
+const router = useRouter()
 const ticket = ref(props.ticketData)
 const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
     method: 'get'
