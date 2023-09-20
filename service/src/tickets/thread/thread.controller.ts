@@ -19,6 +19,7 @@ export class ThreadController extends AbstractController {
   protected static readonly projection: PartialProjectionType<ThreadDto> = {
     ticketId: 1,
     fragments: 1,
+    metadata: 1,
   }
 
   public constructor(private readonly _service: ThreadService) {

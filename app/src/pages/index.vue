@@ -1,5 +1,5 @@
 <template lang='pug'>
-div
+q-page
   tk-hook(name="accueil" :data='{exemple: 1}' debug)
   span Accueil
   tk-hook(name="index.accueil.bottom")

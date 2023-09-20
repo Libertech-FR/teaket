@@ -18,6 +18,8 @@ import { AcceptLanguageResolver, CookieResolver, HeaderResolver, I18nModule, Que
 import { join } from 'path'
 import { ExtensionsModule } from '~/extensions/extensions.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
+import { FactorydriveModule, FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
+import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
 
 @Module({
   imports: [
@@ -53,6 +55,22 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
         },
       }),
     }),
+    FactorydriveModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        ...config.get('factorydrive.options'),
+      }),
+    }),
+    // S3Module.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (config: ConfigService) => ({
+    //     config: {
+    //       ...config.get<S3ClientConfig>('s3.options'),
+    //     },
+    //   }),
+    // }),
     EventEmitterModule.forRoot({
       wildcard: true,
       delimiter: '.',
@@ -89,10 +107,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
   providers: [
     AppService,
     ShutdownService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,
@@ -104,4 +122,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
   ],
 })
 export class AppModule {
+  public constructor(storage: FactorydriveService) {
+    storage.registerDriver('s3', AwsS3Storage)
+  }
 }

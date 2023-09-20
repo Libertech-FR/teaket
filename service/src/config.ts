@@ -4,6 +4,8 @@ import { IAuthModuleOptions } from '@nestjs/passport'
 import { SwaggerCustomOptions } from '@nestjs/swagger'
 import { HelmetOptions } from 'helmet'
 import { RedisOptions } from 'ioredis'
+import * as process from 'process'
+import { StorageManagerConfig } from '@streamkits/nestjs_module_factorydrive'
 
 export interface MongoosePlugin {
   package: string
@@ -30,6 +32,12 @@ export interface ConfigInstance {
   }
   // oidc: {
   //   options: BuildOpenIdClientOptions
+  // }
+  factorydrive: {
+    options: StorageManagerConfig
+  }
+  // s3: {
+  //   options: S3ClientConfig
   // }
   i18n: {
     fallbackLanguage: string
@@ -103,6 +111,27 @@ export default (): ConfigInstance => ({
   //     },
   //   },
   // },
+  factorydrive: {
+    options: {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage',
+          },
+        },
+        // s3: {
+        //   driver: 's3',
+        //   config: {
+        //     key: 'AKIAIOSFODNN7EXAMPLE',
+        //     secret: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+        //     endpoint: 'http://teaket-minio:9000/',
+        //   },
+        // },
+      },
+    },
+  },
   i18n: {
     fallbackLanguage: 'en',
   },

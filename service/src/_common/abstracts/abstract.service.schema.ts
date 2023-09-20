@@ -229,7 +229,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       .findByIdAndUpdate<Query<T | null, T, any, T>>({ _id }, {
         ...update,
         metadata: {
-          lastUpdatedBy: this.request.user || 'anonymous',
+          lastUpdatedBy: this.request?.user || 'anonymous',
           lastUpdatedAt: new Date(),
         },
       }, {

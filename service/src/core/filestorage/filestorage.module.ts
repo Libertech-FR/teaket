@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { FilestorageSchema, Filestorage } from './_schemas/filestorage.schema'
+import { Filestorage, FilestorageSchema } from './_schemas/filestorage.schema'
 import { FilestorageService } from './filestorage.service'
 import { FilestorageController } from './filestorage.controller'
 
@@ -15,5 +15,7 @@ import { FilestorageController } from './filestorage.controller'
   ],
   providers: [FilestorageService],
   controllers: [FilestorageController],
+  exports: [FilestorageService],
 })
-export class FilestorageModule {}
+export class FilestorageModule {
+}
