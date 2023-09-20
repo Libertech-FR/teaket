@@ -2,7 +2,7 @@ import { IsMongoId, IsNotEmpty, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class IdnamePartDto {
-  @IsMongoId()
+  @IsMongoId({ message: 'Id invalide' })
   @ApiProperty()
   public id: string
 

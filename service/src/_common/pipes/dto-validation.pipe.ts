@@ -31,7 +31,10 @@ export class DtoValidationPipe extends ValidationPipe {
         const message = `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim()
         Logger.debug(`${message} (${JSON.stringify(validations)})`, 'DtoValidationPipe')
         if (process.env.NODE_ENV !== 'production' && request.query['debug']) {
-          debug['_errors'] = errors
+          debug['_errors'] = errors.map((error) => {
+            delete error['target']
+            return error
+          })
         }
         return new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
@@ -49,9 +52,10 @@ export class DtoValidationPipe extends ValidationPipe {
       validations[`${prefix + error.property}`] = Object.values(error.constraints)[0]
     }
     if (error.children.length > 0) {
+      console.log(error.children)
       for (const errorChild of error.children) {
         if (errorChild.constraints) {
-          validations[`${prefix + errorChild.property}`] = Object.values(errorChild.constraints)[0]
+          validations[`${prefix + error.property}.${errorChild.property}`] = Object.values(errorChild.constraints)[0]
         }
         if (errorChild.children.length > 0) {
           validations = { ...validations, ...this.validationRecursive(errorChild, `${prefix + error.property}.${errorChild.property}.`) }
