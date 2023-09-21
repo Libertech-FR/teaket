@@ -109,10 +109,10 @@ import { SettingsModule } from '~/core/settings/settings.module'
   providers: [
     AppService,
     ShutdownService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,
