@@ -11,6 +11,7 @@ import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
 import { ThreadType } from '~/tickets/thread/_enum/thread-type.enum'
 import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
+import { SettingsService } from '~/core/settings/settings.service'
 
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {
@@ -18,6 +19,7 @@ export class TicketService extends AbstractServiceSchema {
     protected readonly moduleRef: ModuleRef,
     @Inject(forwardRef(() => ThreadService))
     protected readonly threadService: ThreadService,
+    protected readonly settings: SettingsService,
     private readonly i18n: I18nService,
     // private readonly i18n: I18nService<I18nTranslations>,
     @InjectModel(Ticket.name) protected _model: Model<Ticket>,
@@ -45,7 +47,7 @@ export class TicketService extends AbstractServiceSchema {
       updated = await super.update<T>(_id, update, { ...options, session })
       const diff = await reduce(
         Object.keys(update),
-        async (acc, key) => isEqual(update[key], beforeData[key]) ? acc : acc.concat(key),
+        async (acc, key)   => isEqual(update[key], beforeData[key]) ? acc : acc.concat(key),
         [],
       )
       if (diff.length) {

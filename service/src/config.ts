@@ -6,6 +6,8 @@ import { HelmetOptions } from 'helmet'
 import { RedisOptions } from 'ioredis'
 import * as process from 'process'
 import { StorageManagerConfig } from '@streamkits/nestjs_module_factorydrive'
+import { AmazonWebServicesS3StorageConfig } from '@streamkits/nestjs_module_factorydrive-s3'
+import { Settings } from '~/core/settings/settings.interface'
 
 export interface MongoosePlugin {
   package: string
@@ -34,11 +36,16 @@ export interface ConfigInstance {
   //   options: BuildOpenIdClientOptions
   // }
   factorydrive: {
-    options: StorageManagerConfig
+    options: StorageManagerConfig | {
+      disks: {
+        [key: string]: {
+          driver: 's3'
+          config: AmazonWebServicesS3StorageConfig
+        }
+      }
+    }
   }
-  // s3: {
-  //   options: S3ClientConfig
-  // }
+  settings: Settings
   i18n: {
     fallbackLanguage: string
   }
@@ -121,15 +128,33 @@ export default (): ConfigInstance => ({
             root: process.cwd() + '/storage',
           },
         },
-        // s3: {
-        //   driver: 's3',
-        //   config: {
-        //     key: 'AKIAIOSFODNN7EXAMPLE',
-        //     secret: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-        //     endpoint: 'http://teaket-minio:9000/',
-        //   },
-        // },
+        s3: {
+          driver: 's3',
+          config: {
+            credentials: {
+              accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
+              secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+            },
+            endpoint: 'http://localhost:9000/',
+            region: 'us-east-1',
+            bucket: 'teaket',
+            forcePathStyle: true,
+          },
+        },
       },
+    },
+  },
+  settings: {
+    tickets: {
+      ticket: {
+        schema: {
+          sequence: {
+            prefix: 'TK',
+            suffix: '',
+            length: 6,
+          },
+        }
+      }
     },
   },
   i18n: {
