@@ -175,12 +175,13 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+    console.log('this.request?.user', this.request?.user)
     const document: Document<T, any, T> = new this._model({
       ...data,
       metadata: {
-        createdBy: this.request?.user || 'anonymous',
+        createdBy: this.request?.user?.username || 'anonymous',
         createdAt: new Date(),
-        lastUpdatedBy: this.request?.user || 'anonymous',
+        lastUpdatedBy: this.request?.user?.username || 'anonymous',
         lastUpdatedAt: new Date(),
       },
     })
@@ -229,7 +230,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       .findByIdAndUpdate<Query<T | null, T, any, T>>({ _id }, {
         ...update,
         metadata: {
-          lastUpdatedBy: this.request?.user || 'anonymous',
+          lastUpdatedBy: this.request?.user?.username || 'anonymous',
           lastUpdatedAt: new Date(),
         },
       }, {
