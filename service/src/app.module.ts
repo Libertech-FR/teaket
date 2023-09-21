@@ -20,6 +20,7 @@ import { ExtensionsModule } from '~/extensions/extensions.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { FactorydriveModule, FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
 import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
+import { SettingsModule } from '~/core/settings/settings.module'
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
       isGlobal: true,
       load: [config],
     }),
+    SettingsModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

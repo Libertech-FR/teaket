@@ -6,7 +6,7 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 
 @Injectable()
 export class ProjectService extends AbstractServiceSchema {
-  constructor(@InjectModel(Project.name) protected _model: Model<Project>) {
+  public constructor(@InjectModel(Project.name) protected _model: Model<Project>) {
     super()
   }
 }
