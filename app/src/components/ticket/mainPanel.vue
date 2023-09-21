@@ -3,6 +3,8 @@ q-card(style="height: 100%").column
   q-toolbar.col-1
     q-toolbar-title {{ sequence }} | {{ subject }}
   q-scroll-area.col-8(ref="chatScroll")
+    div(v-if="threads.total === 0").flex.items-center.justify-center
+      span Aucun message
     div(v-for='(value, key) in getMessageByDay' :key='key')
       q-chat-message
         template(v-slot:label)
@@ -19,30 +21,30 @@ q-card(style="height: 100%").column
               q-tooltip.text-body2 {{ getHour(message.metadata.createdAt) }}
           template(v-slot:default)
             div
-              q-chip(v-for='file in message.fragments.file' :key='file.id' icon="mdi-paperclip" dense size='md' :label="file.message")
+              q-chip(v-for='file in message.attachement' :key='file.id' icon="mdi-paperclip" dense size='md' :label="file.message")
               q-separator.q-my-xs(v-if="message.fragments.file")
               div(v-for='raw in message.fragments.raw' v-html="raw.message")
-
+  tk-SearchfiltersThreads
   q-editor(
     v-model="message" placeholder="Votre message ..." v-model:fullscreen="isFullscreen"
-    :definitions="{ send: { tip: 'Envoyer', icon: 'mdi-send', label: 'Envoyer', handler: sendMessage }, attach:{ tip: 'Joindre un fichier', icon: 'mdi-paperclip', label: 'Joindre un fichier', handler: () => {console.log('joindre')} }}"
-    :toolbar="[['left','center','right','justify'],['bold','italic','underline','strike'],['undo','redo'],['attach','send']]"
+    :definitions="editorDefinitions" ref="dropZoneRef"
+    :toolbar="[['left','center','right','justify'],['bold','italic','underline','strike'],['undo','redo'],['attach','send'],['fullscreen']]"
   ).col
-  .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
-    q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
-    span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
+  //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
+  //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
+  //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
 
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'nuxt/app';
-import { useHttpApi } from '~/composables/useHttpApi';
+import { useRoute, useRouter } from 'nuxt/app';
+import { useHttpApi } from '~/composables';
 import { useDayjs, usePinia } from "#imports";
 import { generateMongoId } from '~/utils';
 import type { Fragments, Threads } from '~/types';
 import type { components } from '#build/types/service-api'
-import { ThreadType } from '~/utils';
+import { ThreadType, threadTypes } from '~/utils';
 import { useDropZone } from '@vueuse/core'
 
 type ThreadDto = components['schemas']['ThreadDto']
@@ -50,8 +52,8 @@ type FragmentPartDto = components["schemas"]["FragmentPartDto"]
 type ThreadCreateDto = components['schemas']['ThreadCreateDto']
 
 const dayjs = useDayjs()
-
 const store = usePinia()
+const route = useRoute()
 const user = store.state.value.auth.user
 const props = defineProps({
   sequence: {
@@ -64,25 +66,31 @@ const props = defineProps({
   }
 })
 
-const chatScroll = ref(null)
 onMounted(() => {
   scroll()
 })
 
-const route = useRoute()
-const query = ref({
+const chatScroll = ref(null)
+const baseQuery = ref({
   "filters[ticketId]": `${route.params.id}`,
   "sort[metadata.createdAt]": 'asc',
-  "limit": 100,
+  "limit": 999,
 })
 
 const isFullscreen = ref(false)
-
+const message = ref('')
 const dropZoneRef = ref<HTMLDivElement>()
 const { data: threads } = await useHttpApi(`tickets/thread`, {
   method: 'get',
-  query
+  query: computed(() => {
+    return {
+      ...baseQuery.value,
+      ...route.query
+    }
+  })
 })
+
+
 const onDrop = (files: File[] | null) => {
   console.log('drop')
   console.log(files)
@@ -138,6 +146,31 @@ const sendMessage = async () => {
   scroll()
 }
 
+const editorDefinitions = ref({
+  send: {
+    tip: 'Envoyer',
+    icon: 'mdi-send',
+    label: 'Envoyer',
+    handler: sendMessage
+  },
+  attach: {
+    tip: 'Joindre un fichier',
+    icon: 'mdi-paperclip',
+    label: 'Joindre un fichier',
+    handler: () => {
+      console.log('joindre')
+    }
+  },
+  fullscreen: {
+    tip: 'Plein écran',
+    icon: 'mdi-fullscreen',
+    label: 'Plein écran',
+    handler: () => {
+      isFullscreen.value = !isFullscreen.value
+    }
+  }
+})
+
 const getMessageByDay = computed((): Threads => {
   return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {
     const day = dayjs(thread.metadata.createdAt).format('DD-MM-YYYY')
@@ -151,11 +184,4 @@ const getMessageByDay = computed((): Threads => {
   }, {})
 })
 
-const message = ref('')
 </script>
-
-<style lang="css" scoped>
-.mainContent {
-  height: calc(100% - 50px);
-}
-</style>

@@ -29,7 +29,8 @@ q-select(
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch, inject } from 'vue'
 import type { Ref } from 'vue'
-import { useHttpApi } from "~/composables/useHttpApi";
+import { useHttpApi, pushQuery } from "~/composables";
+
 import type { components } from '#build/types/service-api'
 import { useRoute, useRouter } from 'nuxt/app';
 import { ticketType, lifeSteps } from "#imports";
@@ -132,51 +133,61 @@ const regroupFilters = async () => {
   }, {})
 }
 
-const pushQuery = async () => {
-  const query = { ...route.query };
+// const pushQuery = async () => {
+//   const query = { ...route.query };
+//   const regroupedFilters = await regroupFilters();
+
+//   const keysToDelete = new Set<string>();
+
+//   for (const key in query) {
+//     if (key.startsWith('filters[@')) {
+//       keysToDelete.add(key);
+//     }
+//   }
+
+//   keysToDelete.forEach((keyToDelete) => {
+//     delete query[keyToDelete];
+//   });
+
+//   for (const key in regroupedFilters) {
+//     const values = regroupedFilters[key];
+//     const length = values.length;
+//     const keyWithBrackets = `${key}[]`;
+//     if (length === 1) {
+//       query[keyWithBrackets] = values;
+//     } else {
+//       if (query[keyWithBrackets]) {
+//         delete query[keyWithBrackets];
+//       }
+//       query[key] = values;
+//     }
+//   }
+
+//   router.push({
+//     query
+//   })
+// };
+
+const pushQueries = async () => {
   const regroupedFilters = await regroupFilters();
-
-  const keysToDelete = new Set<string>();
-
-  for (const key in query) {
-    if (key.startsWith('filters[@')) {
-      keysToDelete.add(key);
-    }
-  }
-
-  keysToDelete.forEach((keyToDelete) => {
-    delete query[keyToDelete];
-  });
 
   for (const key in regroupedFilters) {
     const values = regroupedFilters[key];
-    const length = values.length;
-
-    if (length === 1) {
-      query[`${key}[]`] = values;
-    } else {
-      const keyWithBrackets = `${key}[]`;
-      if (query[keyWithBrackets]) {
-        delete query[keyWithBrackets];
-      }
-      query[key] = values;
+    for (const value of values) {
+      pushQuery({ value, key, multiple: true })
     }
   }
-
-  router.push({
-    query
-  })
 };
 
 const addFilter = (option: { index: number, value: Option }) => {
   filters.value.push(option.value)
-  pushQuery()
+  pushQueries()
 }
 
 
 const removeFilter = (option: { index: number, value: Option }) => {
   filters.value.splice(option.index, 1)
-  pushQuery()
+  pushQueries()
 }
 
 defineExpose({
