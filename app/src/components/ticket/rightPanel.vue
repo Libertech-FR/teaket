@@ -44,31 +44,25 @@ q-scroll-area(:style="{height: '100%'}")
                             .col-6
                                 q-chip(:icon="typeOfTicket.icon" :color="typeOfTicket.color" outline).q-mx-auto {{ typeOfTicket.label }}
                         q-select.q-my-xs(
-                            label="Projet(s)" filled v-model="ticket.project"
-                            use-input use-chips
-                            new-value-mode="add-unique"
-                            :options="projects.data" 
+                            label="Projet(s)" filled 
+                            v-model="ticket.project"
+                            :options="getProjectsData" 
                             option-label="name"
                         )
                         q-select.q-my-xs(
                             label="Priorité" filled
-                            use-input use-chips
                             v-model="ticket.priority"
                             :options="priority" 
                             option-label="name"
                         )
                         q-select.q-my-xs(
                             label="Impact" filled
-                            use-input use-chips
-                            new-value-mode="add-unique"
                             v-model="ticket.impact"
                             :options="impact" 
                             option-label="name"
                         )
                         q-select.q-my-xs(
                             label="SLA" filled
-                            use-input use-chips
-                            new-value-mode="add-unique"
                             v-model="ticket.sla"
                             :options="sla.data" 
                             option-label="name"
@@ -129,39 +123,55 @@ const stateOfTicket = computed(() => {
     return states.value?.data.find((state: any) => state._id === ticket.value.state.id)
 })
 
+const getProjectsData = computed(() => {
+    return projects.value?.data.map((project: any) => {
+        return {
+            id: project._id,
+            name: project.name,
+        }
+    })
+})
+
+const getSlaData = computed(() => {
+    return sla.value?.data.map((sla: any) => {
+        return {
+            id: sla._id,
+            name: sla.name,
+        }
+    })
+})
+
 const countdown = ref(0)
 let interval: NodeJS.Timeout
 
 watch(ticket, (newTicket, oldTicket) => {
-    startCountdown()
     console.log('ticket changed')
     console.log(newTicket)
     console.log(oldTicket)
-}, { deep: true })
-
-watch(countdown, (newCountdown) => {
-    if (newCountdown === 0) {
-        resetCountdown()
-        const body = omit(ticket.value, ['_id', 'metadata', 'tags', 'sequence', 'subject'])
-        useHttpApi(`/tickets/ticket/${ticket.value._id}`, {
-            method: 'patch',
-            body
-        })
-    }
-})
-
-const startCountdown = () => {
-    resetCountdown()
+    countdown.value = 3
+    clearInterval(interval)
     interval = setInterval(() => {
         countdown.value--
+        if (countdown.value === 0) {
+            clearInterval(interval)
+            useHttpApi(`/tickets/ticket/${ticket.value._id}`, {
+                method: 'patch',
+                body: {
+                    envelope: {
+                        ...newTicket.envelope,
+                    },
+                    project: { ...newTicket.project },
+                    priority: { ...newTicket.priority },
+                    impact: { ...newTicket.impact },
+                    state: { ...newTicket.state },
+                    // sla: { ...newTicket.sla}
+                    lifestep: newTicket.lifestep,
+                }
+            })
+        }
         console.log(countdown.value)
     }, 1000)
-}
-
-const resetCountdown = () => {
-    countdown.value = 15
-    clearInterval(interval)
-}
+}, { deep: true })
 
 const ticketCountdown = computed(() => {
     const dueAt = dayjs(ticket.value.sla.dueAt)

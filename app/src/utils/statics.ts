@@ -32,38 +32,61 @@ export enum Priority {
 
 export const impact = [
   {
-    _id: generateMongoId(),
+    id: '612345678901234567890123',
     name: Impact.Low,
   },
   {
-    _id: generateMongoId(),
+    id: '712345678901234567890123',
     name: Impact.Medium,
   },
   {
-    _id: generateMongoId(),
+    id: '812345678901234567890123',
     name: Impact.High,
   },
   {
-    _id: generateMongoId(),
+    id: '912345678901234567890123',
     name: Impact.Critical,
   },
 ]
 
 export const priority = [
   {
-    _id: generateMongoId(),
+    id: '612345678901234567890123',
     name: Priority.Low,
   },
   {
-    _id: generateMongoId(),
+    id: '712345678901234567890123',
     name: Priority.Normal,
   },
   {
-    _id: generateMongoId(),
+    id: '812345678901234567890123',
     name: Priority.High,
   },
   {
-    _id: generateMongoId(),
+    id: '912345678901234567890123',
     name: Priority.Urgent,
+  },
+]
+
+export const threadTypes = [
+  {
+    label: 'Système',
+    value: ThreadType.SYSTEM,
+  },
+  {
+    label: 'Interne',
+    value: ThreadType.INTERNAL,
+  },
+  {
+    label: 'Externe',
+    value: ThreadType.EXTERNAL,
+  },
+  {
+    label: 'Entrant',
+    value: ThreadType.INCOMING,
+  },
+  {
+    label: 'Sortant',
+    value: ThreadType.OUTGOING,
   },
 ]
