@@ -1,12 +1,12 @@
 <template lang="pug" @keypress.enter="addFilter">
 .q-ma-sm
-    tk-SearchfiltersMain(ref="mainData")
-    //Filters chips
-    .row.q-gutter-sm.items-center.q-mt-sm
-      q-chip(
-        v-for="filter in filterArray" :key="filter.field"
-        removable @remove="removeFilter(filter)"
-      ) {{ filter.label }} {{ filter.comparator }} {{ filter.search }}
+  tk-SearchfiltersMain(ref="mainData")
+  //Filters chips
+  .row.q-gutter-sm.items-center.q-mt-sm
+    q-chip(
+      v-for="filter in filterArray" :key="filter.field"
+      removable @remove="removeFilter(filter)"
+    ) {{ filter.label }} {{ filter.comparator }} {{ filter.search }}
 </template>
 
 <script lang="ts" setup>
@@ -98,6 +98,7 @@ const getLabelByName = (name: string) => {
   return field.name.replace('[]', '')
 }
 
+// Return the label for a comparator based on the comparator's query sign
 const getComparatorLabel = (comparator: string) => {
   const comparatorObj = mainData.value?.comparatorTypes.find(comparatorObj => comparatorObj.querySign === comparator)
   if (!comparatorObj) return comparator
@@ -124,6 +125,9 @@ const getSearchString = (search: LocationQueryValue | LocationQueryValue[], fiel
   return sanitizeSearchString(search!.toString())
 }
 
+// This function sanitizes a search string by removing all prefixes and suffixes from the search string.
+
+// The function takes a search string and returns a sanitized search string.
 const sanitizeSearchString = (search: string) => {
   const allPrefixAndSuffixPattern = getAllPrefixAndSuffixPattern.value
   for (const pattern of allPrefixAndSuffixPattern) {
@@ -132,7 +136,13 @@ const sanitizeSearchString = (search: string) => {
   return search
 }
 
-const exctractComparator = (key: string): {
+/**
+ * This function extracts the comparator and field from a key.
+ * @param {string} key - The key to extract the comparator and field from.
+ * @returns {object} The extracted comparator and field, or null if the key does not start with a comparator.
+ */
+
+const extractComparator = (key: string): {
   comparator: string
   field: string
 } | null => {
@@ -146,21 +156,21 @@ const exctractComparator = (key: string): {
   }
 }
 
+// This code extracts the filters from the route query and returns them as a computed object
+
 const filterArray = computed(() => {
   const queries = { ...route.query }
   const filters: Record<string, { label: string, field: string, comparator: string, querySign: string, search: string }> = {};
-
-  // Iterate through the keys and values in the input object
   for (const key in queries) {
     if (queries.hasOwnProperty(key) && key.includes("filter")) {
-
-      // Extract the key without the "filter[" and "]" parts
       const filteredKey = key.replace("filters[", "").replace("]", "");
-      const exctract = exctractComparator(filteredKey)
-      if (!exctract) continue
-      const { comparator, field } = exctract
+      const extract = extractComparator(filteredKey)
+      if (!extract) continue
+      const { comparator, field } = extract
+      const label = getLabelByName(field)
+      const search = getSearchString(queries[key], field)
+      if (!label || !search || search === '') continue
 
-      // Assign the value to the extracted key in the filter array
       filters[key] = {
         label: getLabelByName(field),
         field,

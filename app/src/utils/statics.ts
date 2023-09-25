@@ -8,6 +8,16 @@ export const lifeSteps = [
   { label: 'Clos', value: 0, group: 'lifestep', icon: 'mdi-circle', color: 'red' },
 ]
 
+export enum TicketType {
+  INCIDENT = 1,
+  DEMANDE = 2,
+}
+
+export enum LifeStep {
+  OPEN = 1,
+  CLOSED = 0,
+}
+
 export enum ThreadType {
   SYSTEM = 1,
   INTERNAL = 2,

@@ -26,10 +26,21 @@ q-card(style="height: 100%").column
               div(v-for='raw in message.fragments.raw' v-html="raw.message")
   tk-SearchfiltersThreads
   q-editor(
-    v-model="message" placeholder="Votre message ..." v-model:fullscreen="isFullscreen"
+    v-model="message" placeholder="Votre message ..."
     :definitions="editorDefinitions" ref="dropZoneRef"
-    :toolbar="[['left','center','right','justify'],['bold','italic','underline','strike'],['undo','redo'],['attach','send'],['fullscreen']]"
+    :toolbar="[['left','center','right','justify'],['bold','italic','underline','strike'],['undo','redo'],['send'],['fullscreen']]"
   ).col
+  q-dialog(v-model="isFullscreen")
+    q-card
+      q-card-section
+        q-editor(
+          min-height="50vh" min-width="50vw"
+          v-model="message" placeholder="Votre message ..."
+          :definitions="editorDefinitions" ref="dropZoneRef"
+          :toolbar="[['left','center','right','justify'],['bold','italic','underline','strike'],['undo','redo'],['send'],['fullscreen']]" class="q-pa-none"
+          :disable="disabled"
+        )
+
   //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
   //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
   //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
@@ -45,7 +56,7 @@ import { generateMongoId } from '~/utils';
 import type { Fragments, Threads } from '~/types';
 import type { components } from '#build/types/service-api'
 import { ThreadType, threadTypes } from '~/utils';
-import { useDropZone } from '@vueuse/core'
+import { useDropZone, useResizeObserver } from '@vueuse/core'
 
 type ThreadDto = components['schemas']['ThreadDto']
 type FragmentPartDto = components["schemas"]["FragmentPartDto"]
@@ -63,6 +74,10 @@ const props = defineProps({
   subject: {
     type: String,
     required: true
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -80,6 +95,7 @@ const baseQuery = ref({
 const isFullscreen = ref(false)
 const message = ref('')
 const dropZoneRef = ref<HTMLDivElement>()
+const editorDialog = ref()
 const { data: threads } = await useHttpApi(`tickets/thread`, {
   method: 'get',
   query: computed(() => {
@@ -96,6 +112,11 @@ const onDrop = (files: File[] | null) => {
   console.log(files)
 }
 const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
+
+// useResizeObserver(editorDialog, (entries) => {
+//   const entry = entries[0]
+//   const { width, height } = entry.contentRect
+// })
 
 const getTimeFrom = (time: string) => {
   return dayjs().to(dayjs(time))
@@ -146,30 +167,31 @@ const sendMessage = async () => {
   scroll()
 }
 
-const editorDefinitions = ref({
-  send: {
-    tip: 'Envoyer',
-    icon: 'mdi-send',
-    label: 'Envoyer',
-    handler: sendMessage
-  },
-  attach: {
-    tip: 'Joindre un fichier',
-    icon: 'mdi-paperclip',
-    label: 'Joindre un fichier',
-    handler: () => {
-      console.log('joindre')
+const editorDefinitions = computed(() => (
+  {
+    send: {
+      tip: 'Envoyer',
+      icon: 'mdi-send',
+      label: 'Envoyer',
+      handler: sendMessage
+    },
+    attach: {
+      tip: 'Joindre un fichier',
+      icon: 'mdi-paperclip',
+      label: 'Joindre un fichier',
+      handler: () => {
+        console.log('joindre')
+      }
+    },
+    fullscreen: {
+      tip: 'Plein écran',
+      icon: isFullscreen.value ? 'mdi-fullscreen-exit' : 'mdi-fullscreen',
+      label: isFullscreen.value ? 'Quitter le plein écran' : 'Plein écran',
+      handler: () => {
+        isFullscreen.value = !isFullscreen.value
+      }
     }
-  },
-  fullscreen: {
-    tip: 'Plein écran',
-    icon: 'mdi-fullscreen',
-    label: 'Plein écran',
-    handler: () => {
-      isFullscreen.value = !isFullscreen.value
-    }
-  }
-})
+  }))
 
 const getMessageByDay = computed((): Threads => {
   return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {

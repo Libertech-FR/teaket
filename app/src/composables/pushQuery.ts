@@ -31,7 +31,6 @@ export async function pushQuery(payload: { value: any; key: string; multiple?: b
       filters.push(value.toString())
     }
     const length = filters.length
-    console.log(length)
     if (length === 1) {
       query[keyWithBrackets] = filters
     } else {
@@ -41,7 +40,6 @@ export async function pushQuery(payload: { value: any; key: string; multiple?: b
       query[key] = filters
     }
   }
-  console.log('query', query)
   await router.push({
     query,
   })
