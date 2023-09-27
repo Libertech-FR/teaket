@@ -20,6 +20,7 @@ export class ThreadController extends AbstractController {
     ticketId: 1,
     fragments: 1,
     metadata: 1,
+    attachments: 1,
   }
 
   public constructor(private readonly _service: ThreadService) {
