@@ -1,38 +1,39 @@
 <template lang="pug">
 .row.q-gutter-sm.items-center.q-mt-sm
-    //- .col.col-md-2
-    //-     q-select(:options="fieldTypes" label="Type de champ" v-model="fieldType" clearable @update:model-value="clearFields(['field', 'comparator'])")
-    .col.col-md-2
-      q-select(:options="fields" label="Champs" v-model="field" clearable @update:model-value="onFieldChange($event)")
-    .col.col-md-2
-      q-select(:options="comparatorFilteredByType" label="Comparateurs" v-model="comparator" clearable @update:model-value="clearFields([])" :disable="isFieldDisabled.comparator")
-        template(v-slot:selected-item="scope")
-          q-icon(:name="scope.opt.icon" size="xs")
-        template(v-slot:option="scope")
-          q-item(v-bind="scope.itemProps")
-            q-item-section(avatar)
-              q-icon(:name="scope.opt.icon")
-            q-item-section
-              q-item-label
-                span {{ scope.opt.label }}
+  //- .col.col-md-2
+  //-     q-select(:options="fieldTypes" label="Type de champ" v-model="fieldType" clearable @update:model-value="clearFields(['field', 'comparator'])")
+  .col.col-md-2
+    q-select(:options="fields" label="Champs" v-model="field" clearable @update:model-value="onFieldChange($event)")
+  .col.col-md-2
+    q-select(:options="comparatorFilteredByType" label="Comparateurs" v-model="comparator" clearable @update:model-value="clearFields([])" :disable="isFieldDisabled.comparator")
+      template(v-slot:selected-item="scope")
+        q-icon(:name="scope.opt.icon" size="xs")
+      template(v-slot:option="scope")
+        q-item(v-bind="scope.itemProps")
+          q-item-section(avatar)
+            q-icon(:name="scope.opt.icon")
+          q-item-section
+            q-item-label
+              span {{ scope.opt.label }}
 
-    .col-12.col-md-2(v-show="!comparator?.multiplefields")
-      q-input(v-model="search" label="Rechercher" clearable :type="searchInputType" :disable="isFieldDisabled.search" :prefix="comparator?.prefix" :suffix="comparator?.suffix")
-    .col-6.col-md-2(v-show="comparator?.multiplefields")
-      q-input(v-model="searchMin" label="Min" clearable :type="searchInputType" :disable="isFieldDisabled.search" )
-    .col-6.col-md-2(v-show="comparator?.multiplefields")
-      q-input(v-model="searchMax" label="Max" clearable :type="searchInputType" :disable="isFieldDisabled.search" )
-    .col-12.col-md-1
-      q-btn(color="primary" @click="addFilter" :disable="isFieldDisabled.addButton") Ajouter
-    q-space
-    .col-12.col-md-2
-      tk-SearchfiltersRightSelect(ref="rightSelect")
+  .col-12.col-md-2(v-show="!comparator?.multiplefields")
+    q-input(v-model="search" label="Rechercher" clearable :type="searchInputType" :disable="isFieldDisabled.search" :prefix="comparator?.prefix" :suffix="comparator?.suffix")
+  .col-6.col-md-2(v-show="comparator?.multiplefields")
+    q-input(v-model="searchMin" label="Min" clearable :type="searchInputType" :disable="isFieldDisabled.search" )
+  .col-6.col-md-2(v-show="comparator?.multiplefields")
+    q-input(v-model="searchMax" label="Max" clearable :type="searchInputType" :disable="isFieldDisabled.search" )
+  .col-12.col-md-1
+    q-btn(color="primary" @click="addFilter" :disable="isFieldDisabled.addButton") Ajouter
+  q-space
+  .col-12.col-md-2
+    tk-SearchfiltersRightSelect(ref="rightSelect")
 </template>
 
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue'
 import { useRouter, useRoute } from 'nuxt/app'
 import { useDayjs } from '#imports';
+import { pushQuery } from '~/composables'
 import type { Filter, Field, Comparator, SearchFilter } from '~/types'
 const dayjs = useDayjs()
 
@@ -95,11 +96,11 @@ const addFilter = async () => {
   if (!searchFilter) return
   if (searchFilter.comparator.multiplefields) {
     for (const { key, value } of parseMultipleFilter(searchFilter)) {
-      await pushQuery(key, value)
+      await pushQuery({ key, value })
     }
   } else {
     const { key, value } = parseSimpleFilter(searchFilter)
-    await pushQuery(key, value)
+    await pushQuery({ key, value })
   }
 }
 
@@ -130,15 +131,15 @@ const parseMultipleFilter = (searchFilter: SearchFilter) => {
   return [min, max]
 }
 
-const pushQuery = async (key: string, value: string) => {
-  const query = {
-    ...route.query,
-  }
-  query[key] = value
-  await router.push({
-    query
-  })
-}
+// const pushQuery = async (key: string, value: string) => {
+//   const query = {
+//     ...route.query,
+//   }
+//   query[key] = value
+//   await router.push({
+//     query
+//   })
+// }
 
 const getSearchFilter = computed(() => {
   if (field.value === undefined || field.value === null) return null

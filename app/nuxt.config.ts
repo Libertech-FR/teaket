@@ -28,15 +28,7 @@ export default defineNuxtConfig({
     global: true,
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
-  modules: [
-    '@nuxt-alt/auth',
-    '@nuxt-alt/http',
-    '@pinia/nuxt',
-    'nuxt-quasar-ui',
-    '@vueuse/nuxt',
-    'dayjs-nuxt',
-    ...appSetup(),
-  ],
+  modules: ['@nuxt-alt/auth', '@nuxt-alt/http', '@pinia/nuxt', 'nuxt-quasar-ui', '@vueuse/nuxt', 'dayjs-nuxt', ...appSetup()],
   auth: {
     globalMiddleware: true,
     rewriteRedirects: true,
@@ -78,18 +70,24 @@ export default defineNuxtConfig({
     locales: ['fr', 'en'],
     defaultLocale: 'fr',
     defaultTimezone: 'Paris',
-    plugins: ['timezone', 'relativeTime']
+    plugins: ['timezone', 'relativeTime'],
   },
-  pinia:{
-    autoImports: [
-        'defineStore'
-    ]
+  pinia: {
+    autoImports: ['defineStore'],
   },
   appConfig: {
     customSlots: {},
   },
   quasar: {
     iconSet: 'mdi-v5',
+    plugins: ['Notify'],
+    config: {
+      notify: {
+        timeout: 2500,
+        position: 'top-right',
+        actions: [{ icon: 'mdi-close', color: 'white' }],
+      },
+    },
   },
   vite: {
     define: {
@@ -98,6 +96,7 @@ export default defineNuxtConfig({
     plugins: [
       pugPlugin(<any>{
         pretty: true,
+        compilerOptions: {},
       }),
     ],
   },
@@ -112,7 +111,7 @@ export default defineNuxtConfig({
     shim: false,
   },
   hooks: {
-    'ready': async () => {
+    ready: async () => {
       console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
       try {
         const fileData = await openapiTS(`${TK_APP_API_URL}/swagger/json`)
@@ -121,6 +120,6 @@ export default defineNuxtConfig({
       } catch (error) {
         console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
       }
-    }
-  }
+    },
+  },
 })

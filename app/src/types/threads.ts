@@ -1,3 +1,4 @@
+import { addComponent } from '@nuxt/kit'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { Metadata } from './'
 
@@ -10,6 +11,7 @@ export interface Thread {
   metadata: Metadata
   ticketId: string
   fragments: Fragments
+  attachments: Attachments
 }
 
 export interface Fragments {
@@ -36,4 +38,12 @@ export interface Raw {
   id: string
   disposition: string
   message: string
+}
+
+export interface Attachments {
+  id: string
+  name: string
+  namespace: string
+  path: string
+  mime: string
 }

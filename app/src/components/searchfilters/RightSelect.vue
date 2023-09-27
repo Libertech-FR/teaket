@@ -1,22 +1,16 @@
 <template lang="pug">
 q-select(
   :options="options"
-  multiple
-  emit-value
-  map-options
+  multiple hide-selected
+  emit-value use-chips
+  options-dense map-options 
   :model-value="filters"
   :option-value="(item) => item"
   :label="`Etats: ${filters.length} filtre(s) appliqué(s)`"
-  options-dense
-  use-chips
-  hide-selected
-  @add="addFilter($event)"
-  @remove="removeFilter($event)"
 )
   template(v-slot:option="{ index, itemProps, opt, selected, toggleOption }")
     q-item-label(v-bind="itemProps" v-if="opt.header" header) {{ opt.label }}
-    //@click.capture='addFilter({index, value: opt})'
-    q-item(v-bind="itemProps" v-else)
+    q-item(v-bind="itemProps" v-else @click.capture='addFilter({index, value: opt})')
       q-item-section(side)
         q-icon(:name="opt.icon" :color="opt.color" size="xs")
       q-item-section
@@ -29,7 +23,8 @@ q-select(
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch, inject } from 'vue'
 import type { Ref } from 'vue'
-import { useHttpApi } from "~/composables/useHttpApi";
+import { useHttpApi, pushQuery } from "~/composables";
+
 import type { components } from '#build/types/service-api'
 import { useRoute, useRouter } from 'nuxt/app';
 import { ticketType, lifeSteps } from "#imports";
@@ -59,26 +54,44 @@ watch(() => route.query, () => {
   getFilters()
 })
 
+// const getFilters = () => {
+//   const query = { ...route.query }
+//   for (const key in query) {
+//     if (key.startsWith('filters[@') && query[key] !== null) {
+//       const values = query[key]
+//       if (Array.isArray(values)) {
+//         for (const value of values) {
+//           const option = options.value.find(option => option.value === value)
+//           if (option) {
+//             filters.value.push(option)
+//           }
+//         }
+//       } else {
+//         const option = options.value.find(option => option.value === values)
+//         if (option) {
+//           filters.value.push(option)
+//         }
+//       }
+//     }
+//   }
+// }
+
 const getFilters = () => {
-  const query = { ...route.query }
-  for (const key in query) {
-    if (key.startsWith('filters[@') && query[key] !== null) {
-      const values = query[key]
-      if (Array.isArray(values)) {
-        for (const value of values) {
-          const option = options.value.find(option => option.value === value)
-          if (option) {
-            filters.value.push(option)
-          }
-        }
-      } else {
-        const option = options.value.find(option => option.value === values)
-        if (option) {
-          filters.value.push(option)
-        }
-      }
-    }
-  }
+  // Use destructuring assignment to clone the route.query object
+  const query = { ...route.query };
+
+  // Use a functional approach with filter and map for better readability
+  let group: string
+  const filteredOptions = Object.entries(query)
+    .filter(([key, value]) => key.startsWith('filters[@') && value !== null)
+    .map(([key, value]) => {
+      group = key.replace('filters[@', '').replace(']', '').replace('[]', '')
+      return Array.isArray(value) ? value : [value]
+    })
+    .flat()
+    .map(value => options.value.find(option => option.value?.toString() === value?.toString() && option.group === group))
+    .filter(option => option !== undefined);
+  filters.value = filteredOptions;
 }
 
 
@@ -111,8 +124,8 @@ const options = computed(() => {
       color: state.color ?? ''
     }
   }) ?? []
-  states.unshift({ label: 'États', header: true })
-  lifeSteps.unshift({ label: 'Étapes de vie', header: true })
+  if (!states.find(state => state.header)) states.unshift({ label: 'États', header: true })
+  if (!lifeSteps.find(lifestepstep => lifestepstep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
     ...lifeSteps,
     ...ticketTypeOptions,
@@ -132,51 +145,59 @@ const regroupFilters = async () => {
   }, {})
 }
 
-const pushQuery = async () => {
-  const query = { ...route.query };
+// const pushQuery = async () => {
+//   const query = { ...route.query };
+//   const regroupedFilters = await regroupFilters();
+
+//   const keysToDelete = new Set<string>();
+
+//   for (const key in query) {
+//     if (key.startsWith('filters[@')) {
+//       keysToDelete.add(key);
+//     }
+//   }
+
+//   keysToDelete.forEach((keyToDelete) => {
+//     delete query[keyToDelete];
+//   });
+
+//   for (const key in regroupedFilters) {
+//     const values = regroupedFilters[key];
+//     const length = values.length;
+//     const keyWithBrackets = `${key}[]`;
+//     if (length === 1) {
+//       query[keyWithBrackets] = values;
+//     } else {
+//       if (query[keyWithBrackets]) {
+//         delete query[keyWithBrackets];
+//       }
+//       query[key] = values;
+//     }
+//   }
+
+//   router.push({
+//     query
+//   })
+// };
+
+const pushQueries = async () => {
   const regroupedFilters = await regroupFilters();
-
-  const keysToDelete = new Set<string>();
-
-  for (const key in query) {
-    if (key.startsWith('filters[@')) {
-      keysToDelete.add(key);
-    }
-  }
-
-  keysToDelete.forEach((keyToDelete) => {
-    delete query[keyToDelete];
-  });
-
   for (const key in regroupedFilters) {
     const values = regroupedFilters[key];
-    const length = values.length;
-
-    if (length === 1) {
-      query[`${key}[]`] = values;
-    } else {
-      const keyWithBrackets = `${key}[]`;
-      if (query[keyWithBrackets]) {
-        delete query[keyWithBrackets];
-      }
-      query[key] = values;
+    for (const value of values) {
+      pushQuery({ value, key, multiple: true })
     }
   }
-
-  router.push({
-    query
-  })
 };
 
 const addFilter = (option: { index: number, value: Option }) => {
-  filters.value.push(option.value)
-  pushQuery()
-}
-
-
-const removeFilter = (option: { index: number, value: Option }) => {
-  filters.value.splice(option.index, 1)
-  pushQuery()
+  const index = filters.value.findIndex(filter => filter.value?.toString() === option.value.toString() && filter.group === option.value.group)
+  if (index === -1) {
+    filters.value.push(option.value)
+  } else {
+    filters.value.splice(index, 1)
+  }
+  pushQueries()
 }
 
 defineExpose({
