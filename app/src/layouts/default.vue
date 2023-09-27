@@ -3,7 +3,7 @@ q-layout
   tk-appbar
   q-page-container
     nuxt-page
-  tk-footer
+  //- tk-footer
 </template>
 
 <style>
