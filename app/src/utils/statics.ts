@@ -40,6 +40,12 @@ export enum Priority {
   Urgent = 'Urgent',
 }
 
+export enum FsType {
+  DIRECTORY = 'd',
+  FILE = 'f',
+  SYMLINK = 'l',
+}
+
 export const impact = [
   {
     id: '612345678901234567890123',
