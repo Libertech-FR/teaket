@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { AbstractSchema } from './schemas/abstract.schema'
 import {
   Document,
-  FilterQuery,
+  FilterQuery, HydratedDocument,
   Model,
   ModifyResult,
   ProjectionType,
@@ -15,6 +15,7 @@ import {
 import { AbstractService, AbstractServiceContext } from './abstract.service'
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface'
 import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constant'
+import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -161,7 +162,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         session: typeof arguments[1] === 'object' && 'session' in arguments[1] ? 'session' : undefined,
       },
     })
-    this.logger.debug(['create', JSON.stringify(Object.values(arguments))].join(' '))
+    this.logger.debug(['create', JSON.stringify(logInfos)].join(' '))
     if (this.eventEmitter) {
       const beforeEvents = await this.eventEmitter?.emitAsync([
         this.moduleName.toLowerCase(),
@@ -177,13 +178,13 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     console.log('this.request?.user', this.request?.user)
     const document: Document<T, any, T> = new this._model({
-      ...data,
       metadata: {
         createdBy: this.request?.user?.username || 'anonymous',
         createdAt: new Date(),
         lastUpdatedBy: this.request?.user?.username || 'anonymous',
         lastUpdatedAt: new Date(),
       },
+      ...data,
     })
     let created = document.save(options)
     if (this.eventEmitter) {

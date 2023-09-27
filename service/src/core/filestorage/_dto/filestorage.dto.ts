@@ -7,42 +7,47 @@ export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
   @IsNotEmpty()
   @ApiProperty({ enum: FsTypeList })
-  type: FsType
+  public type: FsType
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  namespace: string
+  public namespace: string
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  path: string
+  public path: string
+
+  @IsOptional()
+  @IsMongoId()
+  @ApiProperty()
+  public linkedTo?: string
 
   @IsOptional()
   @IsString()
   @ApiProperty()
-  comments?: string
+  public comments?: string
 
   @IsOptional()
   @IsMimeType()
   @ApiProperty()
-  mime?: string
+  public mime?: string
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty()
-  hidden?: boolean
+  public hidden?: boolean
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  tags?: { [key: string]: any }
+  public tags?: { [key: string]: any }
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  acls?: { [key: string]: any }
+  public acls?: { [key: string]: any }
 }
 
 export class FilestorageDto extends FilestorageCreateDto {

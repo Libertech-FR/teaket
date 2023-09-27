@@ -16,6 +16,11 @@ export interface MongoosePlugin {
 }
 
 export interface ConfigInstance {
+  application: {
+    bodyParser: {
+      limit: string
+    }
+  }
   helmet: HelmetOptions
   mongoose: {
     uri: string
@@ -57,6 +62,11 @@ export interface ConfigInstance {
 }
 
 export default (): ConfigInstance => ({
+  application: {
+    bodyParser: {
+      limit: '500mb',
+    },
+  },
   helmet: {
     contentSecurityPolicy: {
       directives: {
@@ -129,6 +139,19 @@ export default (): ConfigInstance => ({
           },
         },
         s3: {
+          driver: 's3',
+          config: {
+            credentials: {
+              accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
+              secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+            },
+            endpoint: 'http://localhost:9000/',
+            region: 'us-east-1',
+            bucket: 'teaket',
+            forcePathStyle: true,
+          },
+        },
+        ticket: {
           driver: 's3',
           config: {
             credentials: {

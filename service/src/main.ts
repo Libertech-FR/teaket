@@ -1,7 +1,8 @@
+// noinspection JSUnresolvedReference
+
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import { json } from 'body-parser'
 import { Response } from 'express'
 import { join } from 'path'
 import { AppModule } from './app.module'
@@ -9,11 +10,16 @@ import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
 import { ShutdownService } from '~/shutdown.service'
 import * as process from 'process'
+import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware'
+import config from '~/config'
 
 declare const module: any
 ;(async (): Promise<void> => {
+  const cfg = config()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    bodyParser: false,
+    rawBody: true,
   })
   app.get(ShutdownService).subscribeToShutdown(async () => {
     await app.close()
@@ -23,11 +29,12 @@ declare const module: any
     res.removeHeader('x-powered-by')
     next()
   })
+  app.setViewEngine('hbs')
+  app.useStaticAssets(join(__dirname, '..', 'public'))
+  app.setBaseViewsDir(join(__dirname, '..', 'views'))
   app.use(passport.initialize())
+  app.use(rawBodyBuffer(cfg?.application?.bodyParser))
   app.use(cookieParser())
-  app.use(json({ limit: '50mb' }))
-  app.useStaticAssets(join(__dirname, 'public'))
-  app.setBaseViewsDir(join(__dirname, 'templates'))
   if (process.env.production !== 'production') {
     require('./swagger').default(app)
   }
