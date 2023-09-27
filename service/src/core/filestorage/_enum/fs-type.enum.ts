@@ -2,6 +2,7 @@ export enum FsType {
   DIRECTORY = 'd',
   FILE = 'f',
   SYMLINK = 'l',
+  EMBED = 'e',
 }
 
 export const FsTypeList: number[] = Object.keys(FsType)

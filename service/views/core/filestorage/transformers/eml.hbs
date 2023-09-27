@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>App</title>
+  <base href='/'>
+</head>
+<body>
+<div class="row" style="background-color: #eee;">
+  <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">De : <b>{{{ parsed.from.html }}}</b></p>
+  <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Pour : <b>{{{ parsed.to.html }}}</b></p>
+  {{#if parsed.cc}}
+    <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Cc : <b>{{{ parsed.cc.html }}}</b></p>
+  {{/if}}
+  <p style="margin-left: 5px;margin-top: 5px; margin-bottom: 5px;">Date : <b>{{ parsed.date }}</b></p>
+  <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Sujet : <b>{{ parsed.subject }}</b></p>
+</div>
+{{{ parsed.html }}}
+</body>
+</html>

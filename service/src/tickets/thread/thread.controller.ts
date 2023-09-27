@@ -12,6 +12,10 @@ import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
+import { FragmentPart } from '~/tickets/thread/_schemas/parts/fragment.part.schema'
+import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
+import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
+import { pick } from 'radash'
 
 @ApiTags('tickets')
 @Controller('thread')
@@ -43,7 +47,26 @@ export class ThreadController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
-      data,
+      data: data.map((thread: any) => {
+        return {
+          ...thread.toObject(),
+          fragments: thread.fragments.map((frag: FragmentPart) => {
+            const fragment: FragmentPartDto & { filestorage?: { link?: string } } = { ...frag.toObject() }
+            if (frag.disposition === FragmentType.FILE && frag.filestorage) {
+              console.log('frag.filestorage', fragment)
+              fragment.filestorage.link = '/' + [
+                'core',
+                'filestorage',
+                frag.filestorage.id,
+                'raw',
+              ].join('/') + '?' + [
+                `signature=empty`,
+              ].join('&')
+            }
+            return fragment
+          }),
+        }
+      }),
     })
   }
 

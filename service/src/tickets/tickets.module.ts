@@ -7,6 +7,7 @@ import { StateModule } from '~/tickets/state/state.module'
 import { TicketModule } from '~/tickets/ticket/ticket.module'
 import { SourceRequestModule } from '~/tickets/source-request/source-request.module'
 import { ThreadModule } from './thread/thread.module'
+import { MailsModule } from '~/tickets/mails/mails.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ThreadModule } from './thread/thread.module'
     TicketModule,
     SourceRequestModule,
     ThreadModule,
+    MailsModule,
   ],
   providers: [TicketsService],
   controllers: [TicketsController],

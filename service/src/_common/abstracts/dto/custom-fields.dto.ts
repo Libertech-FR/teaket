@@ -4,5 +4,5 @@ export class CustomFieldsDto {
   @IsObject()
   @IsOptional()
   @ValidateNested()
-  public customFields?: { [key: string]: any }[]
+  public customFields?: { [key: string]: any }
 }

@@ -1,7 +1,17 @@
 import { ConflictException, forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
-import { Document, FilterQuery, Model, ProjectionType, Query, QueryOptions, SaveOptions, Types } from 'mongoose'
+import {
+  Document,
+  FilterQuery,
+  HydratedDocument,
+  Model,
+  ProjectionType,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+} from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { TicketService } from '~/tickets/ticket/ticket.service'
@@ -11,6 +21,7 @@ import { I18nService } from 'nestjs-i18n'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 @Injectable({ scope: Scope.REQUEST })
 export class ThreadService extends AbstractServiceSchema {
@@ -44,9 +55,13 @@ export class ThreadService extends AbstractServiceSchema {
     )
   }
 
-  public async create<T extends AbstractSchema | Document>(data?: ThreadCreateDto, options?: SaveOptions): Promise<Document<T, any, T>> {
-    const count = await this.ticketService.count({ _id: data.ticketId })
-    if (!count) throw new ConflictException(this.i18n.t(`thread.service.create.ticketNotFound`))
+  public async create<T extends AbstractSchema | Document>(data?: ThreadCreateDto, options?: SaveOptions & {
+    checkTicketId?: boolean
+  }): Promise<Document<T, any, T>> {
+    if (options?.checkTicketId !== false) {
+      const count = await this.ticketService.count({ _id: data.ticketId })
+      if (!count) throw new ConflictException(this.i18n.t(`thread.service.create.ticketNotFound`))
+    }
     data.ticketId = new Types.ObjectId(data.ticketId)
     data.fragments.map((fragment) => {
       fragment.id = new Types.ObjectId()

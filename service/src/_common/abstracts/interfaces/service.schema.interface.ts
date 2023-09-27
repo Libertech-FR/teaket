@@ -1,5 +1,17 @@
-import { Document, FilterQuery, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
+import {
+  Document,
+  FilterQuery,
+  HydratedDocument,
+  ModifyResult,
+  ProjectionType,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose'
 import { AbstractSchema } from '../schemas/abstract.schema'
+import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 export interface ServiceSchemaInterface {
   find<T extends AbstractSchema | Document>(

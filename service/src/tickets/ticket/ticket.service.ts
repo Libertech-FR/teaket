@@ -1,7 +1,17 @@
 import { forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Ticket } from './_schemas/ticket.schema'
-import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
+import {
+  Document,
+  HydratedDocument,
+  Model,
+  ModifyResult,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
@@ -12,6 +22,7 @@ import { ThreadType } from '~/tickets/thread/_enum/thread-type.enum'
 import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
 import { SettingsService } from '~/core/settings/settings.service'
+import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {

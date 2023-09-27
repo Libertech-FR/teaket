@@ -1,3 +1,5 @@
+// noinspection ExceptionCaughtLocallyJS
+
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Filestorage } from './_schemas/filestorage.schema'
@@ -18,6 +20,9 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
 import { FilestorageCreateDto } from '~/core/filestorage/_dto/filestorage.dto'
 import { FsType } from '~/core/filestorage/_enum/fs-type.enum'
+import { omit } from 'radash'
+
+export const EMBED_SEPARATOR = '#'
 
 function hasFileExtension(path: string): boolean {
   const regex = /\.\w+$/
@@ -26,9 +31,10 @@ function hasFileExtension(path: string): boolean {
 
 @Injectable()
 export class FilestorageService extends AbstractServiceSchema {
+  protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#']
+
   constructor(
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage>,
-    // @InjectS3() private readonly s3: S3,
     protected readonly storage: FactorydriveService,
   ) {
     super()
@@ -36,23 +42,38 @@ export class FilestorageService extends AbstractServiceSchema {
 
   public async create<T extends AbstractSchema | Document>(
     data?: FilestorageCreateDto & { file?: Express.Multer.File },
-    options?: SaveOptions,
+    options?: SaveOptions & { checkFilestorageLinkedTo?: boolean },
   ): Promise<Document<T, any, T>> {
     const file = data.file
-    delete data.file
     if (file && data.type !== FsType.FILE) throw new BadRequestException(`Type must be ${FsType.FILE}`)
     try {
-      let payload: FilestorageCreateDto = { ...data }
-      const partPath = ['']
-      const customFileName = data.path.replace(/^\//, '')
-      if (customFileName) partPath.push(customFileName)
-      if (data.type === FsType.FILE) {
-        //TODO: ignore ../
-        if (!customFileName || !hasFileExtension(customFileName)) {
-          partPath.push(file.originalname)
+      let payload: FilestorageCreateDto = { ...omit(data, ['file']) }
+      const basePath = this.reservedChars.reduce((acc, char) => {
+        if (char === EMBED_SEPARATOR && data.type === FsType.EMBED) return acc
+        return acc.replace(char, '_')
+      }, payload.path.replace(/^\//, '').replace(/\.\.\//g, ''))
+      const partPath = ['', basePath]
+      // noinspection ExceptionCaughtLocallyJS
+      switch (data.type) {
+        case FsType.FILE: {
+          if (!basePath || !hasFileExtension(basePath)) {
+            partPath.push(file.originalname)
+          }
+          payload.mime = file.mimetype
+          await this.storage.getDisk(data.namespace).put(partPath.join('/'), file.buffer)
+          break
         }
-        payload.mime = file.mimetype
-        await this.storage.getDisk(data.namespace).put(partPath.join('/'), file.buffer)
+        case FsType.EMBED: {
+          const embedBasePath = [...partPath].pop().split(EMBED_SEPARATOR)
+          const embedId = embedBasePath.pop()
+          if (!embedId || !hasFileExtension(embedId)) throw new BadRequestException(`Embed anchor must have a file extension`)
+          if (options.checkFilestorageLinkedTo !== false) {
+            const existFile = await this._model.findById(payload.linkedTo)
+            if (!existFile) throw new BadRequestException(`File ${payload.linkedTo} not found`)
+            payload.linkedTo = existFile._id
+          }
+          break
+        }
       }
       payload.path = partPath.join('/')
       return super.create(payload, options)
@@ -70,25 +91,53 @@ export class FilestorageService extends AbstractServiceSchema {
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<T, T, any, T>> {
     const data = await super.findById<Document<any, any, Filestorage> & Filestorage>(_id, projection, options)
-    const storageRequest = await this.storage.getDisk(data.namespace).exists(data.path)
-    if (!storageRequest.exists) this.logger.warn(`Filestorage ${data._id} not found in storage`)
-    return {
-      ...data.toObject(),
-      _exists: storageRequest.exists,
+    if (data.type === FsType.FILE) {
+      const storageRequest = await this.storage.getDisk(data.namespace).exists(data.path)
+      if (!storageRequest.exists) this.logger.warn(`Filestorage ${data._id} not found in storage`)
+      return {
+        ...data.toObject(),
+        _exists: storageRequest.exists,
+      }
     }
+    return data.toObject()
   }
 
   public async findByIdWithRawData<T extends Filestorage | Document>(
     _id: Types.ObjectId | any,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream]> {
+  ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream | null, (Document<any, any, Filestorage> & Filestorage) | null]> {
     const data = await super.findById<Document<any, any, Filestorage> & Filestorage>(_id, projection, options)
-    const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
-    return [
-      data,
-      stream,
-    ]
+    if (data.type === FsType.FILE) {
+      const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
+      return [
+        data,
+        stream,
+        null,
+      ]
+    } else if(data.type === FsType.EMBED) {
+      return this.findRawDataWithEmbed(data, projection, options)
+    }
+    return [data, null, null]
+  }
+
+  public async findOneWithRawData<T extends Filestorage | Document>(
+    filter?: FilterQuery<T>,
+    projection?: ProjectionType<T> | null | undefined,
+    options?: QueryOptions<T> | null | undefined,
+  ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream | null, (Document<any, any, Filestorage> & Filestorage) | null]> {
+    const data = await super.findOne<Document<any, any, Filestorage> & Filestorage>(filter, projection, options)
+    if (data.type === FsType.FILE) {
+      const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
+      return [
+        data,
+        stream,
+        null,
+      ]
+    } else if(data.type === FsType.EMBED) {
+      return this.findRawDataWithEmbed(data, projection, options)
+    }
+    return [data, null, null]
   }
 
   public async findOne<T extends AbstractSchema | Document>(
@@ -97,12 +146,15 @@ export class FilestorageService extends AbstractServiceSchema {
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<T, T, any, T>> {
     const data = await super.findOne<Document<any, any, Filestorage> & Filestorage>(filter, projection, options)
-    const storageRequest = await this.storage.getDisk(data.namespace).exists(data.path)
-    if (!storageRequest.exists) this.logger.warn(`Filestorage ${data._id} not found in storage`)
-    return {
-      ...data.toObject(),
-      _exists: storageRequest.exists,
+    if (data.type === FsType.FILE) {
+      const storageRequest = await this.storage.getDisk(data.namespace).exists(data.path)
+      if (!storageRequest.exists) this.logger.warn(`Filestorage ${data._id} not found in storage`)
+      return {
+        ...data.toObject(),
+        _exists: storageRequest.exists,
+      }
     }
+    return data.toObject()
   }
 
   public async update<T extends AbstractSchema | Document>(
@@ -127,5 +179,21 @@ export class FilestorageService extends AbstractServiceSchema {
       }
     })
     return updated
+  }
+
+  public async findRawDataWithEmbed<T extends AbstractSchema | Document>(
+    embedFilestorage: Filestorage,
+    projection?: ProjectionType<T> | null | undefined,
+    options?: QueryOptions<T> | null | undefined,
+  ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream, (Document<any, any, Filestorage> & Filestorage) | null]> {
+    const data = await this.findById<Document<any, any, Filestorage> & Filestorage>(embedFilestorage.linkedTo, projection, options)
+    console.log('data', data)
+    if (!data) throw new BadRequestException(`Filestorage ${embedFilestorage.linkedTo} not found`)
+    const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
+    return [
+      embedFilestorage,
+      stream,
+      data,
+    ]
   }
 }

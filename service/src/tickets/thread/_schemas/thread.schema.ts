@@ -5,6 +5,7 @@ import { IdnamePart, IdnamePartSchema } from '~/_common/schemas/parts/idname.par
 import { FragmentPart, FragmentPartSchema } from '~/tickets/thread/_schemas/parts/fragment.part.schema'
 import { IdfsPart, IdfsPartSchema } from '~/_common/schemas/parts/idfs.part.schema'
 import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
+import { MailinfoPart, MailinfoPartSchema } from '~/tickets/thread/_schemas/parts/mailinfo.part.schema'
 
 @Schema({
   collection: 'threads',
@@ -46,6 +47,11 @@ export class Thread extends AbstractSchema {
     default: [],
   })
   public attachments: IdfsPart[]
+
+  @Prop({
+    type: MailinfoPartSchema,
+  })
+  public mailinfo: MailinfoPart
 
   @Prop({
     type: Object,
