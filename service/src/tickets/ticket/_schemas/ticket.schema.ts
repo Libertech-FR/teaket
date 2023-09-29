@@ -64,6 +64,11 @@ export class Ticket extends AbstractSchema {
   public state?: IdnamePart
 
   @Prop({
+    type: [IdnamePartSchema],
+  })
+  public categories?: IdnamePart[]
+
+  @Prop({
     type: IdnamePartSchema,
   })
   public project?: IdnamePart

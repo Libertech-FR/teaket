@@ -16,5 +16,13 @@
   <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Sujet : <b>{{ parsed.subject }}</b></p>
 </div>
 {{{ parsed.html }}}
+<!--suppress ES6ConvertVarToLetConst -->
+<script>
+  window.parent.postMessage({
+    type: 'iframeInfo',
+    id: '{{data._id}}',
+    scrollHeight: document.documentElement.scrollHeight + 20,
+  }, '*')
+</script>
 </body>
 </html>

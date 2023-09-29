@@ -18,6 +18,7 @@ export class SlaPartDto {
   public dueAt: Date
 
   @IsBoolean()
+  @IsOptional()
   @ApiProperty()
   public manual: boolean
 }
