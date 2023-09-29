@@ -3,12 +3,12 @@ q-btn(flat icon="mdi-dots-grid" size="xl")
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Apps
     q-menu(max-width="350px" max-height="350px").q-pa-md
         .row
-            .col-4(v-for="app in apps" :key="app.name")
+            .col-4(v-for="(app, key) in apps" :key="key")
                 q-btn(flat stack dense :to="app.to" rounded).full-width
                     q-icon(:name="app.icon.name" :color="app.icon.color" size="xl")
                     q-badge(v-if="app.badge" :color="app.badge.color" floating) {{ app.badge.value }}
                     div.text-center(:class="`text-${app.title.color}`") {{ app.title.name }}
-                    
+
 </template>
 
 <script lang="ts" setup>
@@ -39,6 +39,7 @@ const apps: {
         name: string
         color: string
     }
+    badge?: { color: string, value: number | undefined }
     to: string
 }[] = [
         {
@@ -64,7 +65,7 @@ const apps: {
             to: `/tickets?filters[^envelope.assigned.name]=/${user.displayName}/&filters[@lifestep][]=1&${baseFilter}`,
             badge: {
                 color: 'red',
-                value: data.value.total
+                value: data?.value?.total,
             }
         },
         {
@@ -78,39 +79,28 @@ const apps: {
             },
             to: `/tickets?filters[@lifestep][]=1&${baseFilter}`
         },
-        {
-            title: {
-                name: 'Profil',
-                color: 'primary'
-            },
-            icon: {
-                name: 'mdi-account',
-                color: 'primary'
-            },
-            to: '/profil'
-        },
-        {
-            title: {
-                name: 'Paramètres',
-                color: 'primary'
-            },
-            icon: {
-                name: 'mdi-cog',
-                color: 'primary'
-            },
-            to: '/parametres'
-        },
-        {
-            title: {
-                name: 'Déconnexion',
-                color: 'negative'
-            },
-            icon: {
-                name: 'mdi-logout',
-                color: 'negative'
-            },
-            to: '/deconnexion'
-        }
+        // {
+        //     title: {
+        //         name: 'Profil',
+        //         color: 'primary'
+        //     },
+        //     icon: {
+        //         name: 'mdi-account',
+        //         color: 'primary'
+        //     },
+        //     to: '/profil'
+        // },
+        // {
+        //     title: {
+        //         name: 'Paramètres',
+        //         color: 'primary'
+        //     },
+        //     icon: {
+        //         name: 'mdi-cog',
+        //         color: 'primary'
+        //     },
+        //     to: '/parametres'
+        // },
     ]
 
 

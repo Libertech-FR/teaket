@@ -8,8 +8,8 @@ q-header
         q-separator(vertical dark inset).q-mx-md
         tk-AppbarMenu
         q-space
-        tk-AppbarSearchfield
-        q-separator(vertical dark inset).q-mx-md
+        //tk-AppbarSearchfield
+        //q-separator(vertical dark inset).q-mx-md
         tk-AppbarRightButtons
 </template>
 

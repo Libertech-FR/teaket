@@ -14,16 +14,19 @@ export class MailinfoPart extends Document {
 
   @Prop({
     type: MailaddressPartSchema,
+    default: {},
   })
   public from: MailaddressPart
 
   @Prop({
     type: [MailaddressPartSchema],
+    default: [],
   })
   public to?: MailaddressPart[]
 
   @Prop({
     type: [MailaddressPartSchema],
+    default: [],
   })
   public cc?: MailaddressPart[]
 

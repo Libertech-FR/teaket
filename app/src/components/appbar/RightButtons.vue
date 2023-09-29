@@ -1,6 +1,6 @@
 <template lang='pug'>
 div
-  q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="button.icon" size="md").q-mx-sm
+  //q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="button.icon" size="md").q-mx-sm
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
   q-btn-dropdown(icon="mdi-account-circle-outline" round flat size="md")
     q-list
@@ -18,21 +18,21 @@ div
 
 <script lang='ts' setup>
 const buttons = [
-  {
-    icon: 'mdi-cog',
-    name: 'Paramètres',
-    to: '/settings',
-  },
-  {
-    icon: 'mdi-bell',
-    name: 'Notifications',
-    to: '#',
-  },
-  {
-    icon: 'mdi-help',
-    name: 'Aide',
-    to: '#',
-  },
+  // {
+  //   icon: 'mdi-cog',
+  //   name: 'Paramètres',
+  //   to: '/settings',
+  // },
+  // {
+  //   icon: 'mdi-bell',
+  //   name: 'Notifications',
+  //   to: '#',
+  // },
+  // {
+  //   icon: 'mdi-help',
+  //   name: 'Aide',
+  //   to: '#',
+  // },
   {
     icon: 'mdi-logout',
     name: 'Déconnexion',
