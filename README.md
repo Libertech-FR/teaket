@@ -6,6 +6,7 @@
   <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/libertech-fr/teaket/total">
   <img alt="GitHub" src="https://img.shields.io/github/license/libertech-fr/teaket">
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/libertech-fr/teaket">
+  [![Release](https://github.com/Libertech-Fr/titanobel.myreport.app/actions/workflows/release.yml/badge.svg)](https://github.com/Libertech-Fr/titanobel.myreport.app/actions/workflows/release.yml?event=workflow_dispatch)
 </p>
 <br>
 
