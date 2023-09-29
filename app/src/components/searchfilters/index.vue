@@ -111,7 +111,7 @@ const getSearchString = (search: LocationQueryValue | LocationQueryValue[], fiel
   if (field.type === 'multiple') {
     const searchArray = Array.isArray(search) ? search : [search]
     return searchArray.map(search => {
-      const option = (field.label as { label: string, value: string }[]).find(option => option.value === search)
+      const option = (field.label as { label: string, value: string }[]).find(option => option.value.toString() === search.toString())
       if (!option) return search
       return option.label
     }).join(' ou ')
