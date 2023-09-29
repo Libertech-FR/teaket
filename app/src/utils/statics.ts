@@ -46,6 +46,15 @@ export enum FsType {
   SYMLINK = 'l',
 }
 
+export enum EntityType {
+  CONSOLE = 0,
+  OPERATOR = 1,
+  AGENT = 2,
+  CLIENT = 3,
+  COMPANY = 4,
+  OTHER = 99,
+}
+
 export const impact = [
   {
     id: '612345678901234567890123',

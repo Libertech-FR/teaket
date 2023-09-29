@@ -3,19 +3,19 @@ q-scroll-area(:style="{height: '100%'}")
     q-card
         q-toolbar.justify-end
             q-btn-group
-                q-btn(@click="showCloseTicketDialog()" color="red" icon="mdi-close" size="md" :disable="disabled")
+                q-btn(@click="showCloseTicketDialog()" color="red" icon="mdi-close" size="md" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Cloturer
                 q-btn(
                     v-if="!props.ticketData.envelope.assigned.find((user: any) => user.id === store.state.value.auth.user._id)"
-                    color="green" icon="mdi-clipboard-arrow-down-outline" @click="assignTicket" size="md" :disable="disabled"
+                    color="green" icon="mdi-clipboard-arrow-down-outline" @click="assignTicket" size="md" :disable="isDisabledTicket"
                 ) 
                     q-tooltip.text-body2 M'assigner le ticket
-                q-btn(v-else color="red" icon="mdi-clipboard-arrow-up-outline" size="md" @click="unasignTicket" :disable="disabled") 
+                q-btn(v-else color="red" icon="mdi-clipboard-arrow-up-outline" size="md" @click="unasignTicket" :disable="isDisabledTicket") 
                     q-tooltip.text-body2 Me désassigner le ticket
 
                 q-btn(color="primary" icon="mdi-printer" @click="console.log('Imprimer')" size="md")
                     q-tooltip.text-body2 Imprimer
-                q-btn(color="info" icon="mdi-content-save-all" @click="console.log('Save')" size="md" :disable="disabled")
+                q-btn(color="info" icon="mdi-content-save-all" @click="console.log('Save')" size="md" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Sauvegarder
                 q-btn(color="red" icon="mdi-arrow-left" @click="console.log(router.go(-1))" size="md")
                     q-tooltip.text-body2 Retour
@@ -27,25 +27,30 @@ q-scroll-area(:style="{height: '100%'}")
                 q-card
                     q-card-section
                         q-select.q-my-xs(
-                            label="Appelant(s)" filled v-model="props.ticketData.envelope.senders"
+                            @update:model-value="updateData({field: 'envelope.senders', value: $event})"
+                            label="Appelant(s)" filled 
+                            v-model="ticketDataRef.envelope.senders"
                             option-label="name"
                             use-input use-chips multiple
-                            new-value-mode="add-unique"
-                            :disable="disabled"
+                            :readonly="true"
                         )
                         q-select.q-my-xs(
                             option-label="name"
-                            label="Concerné(s)" filled v-model="props.ticketData.envelope.observers"
+                            @update:model-value="updateData({field: 'envelope.observers', value: $event})"
+                            label="Concerné(s)" filled 
+                            v-model="ticketDataRef.envelope.observers"
                             use-input use-chips multiple
-                            new-value-mode="add-unique"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
+                            :options="observers"
                         )
                         q-select.q-my-xs(
                             option-label="name"
-                            label="Assigné(s)" filled v-model="props.ticketData.envelope.assigned"
+                            @update:model-value="updateData({field: 'envelope.assigned', value: $event})"
+                            label="Assigné(s)" filled 
+                            v-model="ticketDataRef.envelope.assigned"
                             use-input use-chips multiple
-                            new-value-mode="add-unique"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
+                            :options="assigned"
                         )
             q-expansion-item(label="Informations").bg-gray-4
                 q-card
@@ -56,34 +61,38 @@ q-scroll-area(:style="{height: '100%'}")
                                 q-chip(:icon="typeOfTicket.icon" :color="typeOfTicket.color" outline).q-mx-auto {{ typeOfTicket.label }}
                         q-select.q-my-xs(
                             label="Projet(s)" filled 
-                            v-model="props.ticketData.project"
+                            @update:model-value="updateData({field: 'project', value: $event})"
+                            v-model="ticketDataRef.project"
                             :options="getProjectsData" 
                             option-label="name"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
                         )
                         q-select.q-my-xs(
                             label="Priorité" filled
-                            v-model="props.ticketData.priority"
+                            @update:model-value="updateData({field: 'priority', value: $event})"
+                            v-model="ticketDataRef.priority"
                             :options="priority" 
                             option-label="name"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
                         )
                         q-select.q-my-xs(
                             label="Impact" filled
-                            v-model="props.ticketData.impact"
+                            @update:model-value="updateData({field: 'impact', value: $event})"
+                            v-model="ticketDataRef.impact"
                             :options="impact" 
                             option-label="name"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
                         )
                         q-select.q-my-xs(
                             label="SLA" filled
-                            v-model="props.ticketData.sla"
-                            :options="sla.data" 
+                            @update:model-value="updateData({field: 'sla', value: $event})"
+                            v-model="ticketDataRef.sla"
+                            :options="getSlaData" 
                             option-label="name"
-                            :disable="disabled"
+                            :disable="isDisabledTicket"
                         )
                         q-input.q-my-xs( label="Due date" type="date" filled v-model="dueDate"
-                        :disable="disabled")
+                        :disable="isDisabledTicket")
                         q-input.q-my-xs( label="Temps total" type="time" filled readonly v-model="totalTime")
             q-expansion-item(label="Cycle de vie").bg-gray-4
                 q-card
@@ -108,45 +117,98 @@ q-scroll-area(:style="{height: '100%'}")
                 q-card-actions
                     q-btn(color="red" label="Annuler" flat @click="closeDialog = false")
                     q-btn(color="green" label="Confirmer" flat @click="closeTicket")
-                    q-btn(color="primary" label="Réouvrir" flat @click="openTicket")
+                    //- q-btn(color="primary" label="Réouvrir" flat @click="openTicket")
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, inject, watch } from 'vue'
-import { ticketType, lifeSteps, useDayjs, usePinia } from '#imports';
+import { ticketType, lifeSteps, useDayjs, usePinia, useQuasar } from '#imports';
 import { useHttpApi } from '~/composables/useHttpApi';
 import { useRouter } from 'vue-router';
-import { impact, priority, LifeStep } from '~/utils';
+import { impact, priority, LifeStep, EntityType } from '~/utils';
 import type { components } from '#build/types/service-api'
-
-type TicketType = components['schemas']['Ticket']
+type TicketUpdateDto = components['schemas']['TicketUpdateDto']
+type IdnamePartDto = components["schemas"]["IdnamePartDto"]
+type SlaPartDto = components["schemas"]["SlaPartDto"]
+type EntityPartDto = components["schemas"]["EntityPartDto"]
+type TicketType = components['schemas']['TicketDto']
 const props = defineProps({
     ticketData: {
         type: Object,
         required: true
-    } as TicketType,
-    disabled: {
-        type: Boolean,
-        default: false
     }
 })
-const emit = defineEmits(['update:ticketData'])
+const emit = defineEmits(['fetch:ticketData', 'update:ticketData'])
 const dayjs = useDayjs()
 const router = useRouter()
 const store = usePinia()
-
-const ticket = ref(props.ticketData)
+const $q = useQuasar()
+const ticketDataRef = ref(props.ticketData)
 const closeTicketDialog = ref<boolean>(false)
 const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
     method: 'get'
 })
+if (statesError.value) {
+    $q.notify({
+        message: 'Erreur lors de la recupération des états',
+        color: 'negative'
+    })
+}
 
 const { data: projects, pending: projectsPending, refresh: projectsRefresh, error: projectsError } = await useHttpApi('/core/project', {
     method: 'get'
 })
+if (projectsError.value) {
+    $q.notify({
+        message: 'Erreur lors de la recupération des projets',
+        color: 'negative'
+    })
+}
 
 const { data: sla, pending: slaPending, refresh: slaRefresh, error: slaError } = await useHttpApi('/tickets/sla', {
     method: 'get'
+})
+if (slaError.value) {
+    $q.notify({
+        message: 'Erreur lors de la recupération des sla',
+        color: 'negative'
+    })
+}
+
+const { data: entities, pending: entitiesPending, refresh: entitiesRefresh, error: entitiesError } = await useHttpApi('/core/entities', {
+    method: 'get'
+})
+if (entitiesError.value) {
+    $q.notify({
+        message: 'Erreur lors de la recupération des entités',
+        color: 'negative'
+    })
+}
+
+const observers = computed(() => {
+    return entities.value?.data.reduce((acc: any, entity: any) => {
+        if (entity.type <= EntityType.OTHER) {
+            acc.push({
+                id: entity._id,
+                name: entity.profile.commonName,
+                type: entity.type
+            })
+        }
+        return acc
+    }, [])
+})
+
+const assigned = computed(() => {
+    return entities.value?.data.reduce((acc: any, entity: any) => {
+        if (entity.type <= EntityType.AGENT) {
+            acc.push({
+                id: entity._id,
+                name: entity.profile.commonName,
+                type: entity.type
+            })
+        }
+        return acc
+    }, [])
 })
 
 const typeOfTicket = computed(() => {
@@ -158,7 +220,7 @@ const lifestepOfTicket = computed(() => {
 })
 
 const stateOfTicket = computed(() => {
-    return states.value?.data.find((state: any) => state._id === props.ticketData.state.id)
+    return states.value?.data.find((state: any) => state._id === props.ticketData.state?.id)
 })
 
 const getProjectsData = computed(() => {
@@ -179,33 +241,54 @@ const getSlaData = computed(() => {
     })
 })
 
+const body = ref<TicketUpdateDto>({})
 const countdown = ref(0)
-let interval: NodeJS.Timeout
 
-watch(ticket, (newTicket, oldTicket) => {
-    countdown.value = 3
-    clearInterval(interval)
-    interval = setInterval(() => {
-        countdown.value--
-        if (countdown.value === 0) {
-            clearInterval(interval)
-            useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
-                method: 'patch',
-                body: {
-                    envelope: {
-                        ...newTicket.envelope,
-                    },
-                    project: { ...newTicket.project },
-                    priority: { ...newTicket.priority },
-                    impact: { ...newTicket.impact },
-                    state: { ...newTicket.state },
-                    // sla: { ...newTicket.sla}
-                    lifestep: newTicket.lifestep,
-                }
-            })
+let timeoutId: NodeJS.Timeout
+let intervalId: NodeJS.Timeout
+
+const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto | EntityPartDto[] | LifeStep }) => {
+    console.log('ticket', ticket)
+    clearTimeout(timeoutId)
+    clearInterval(intervalId)
+    if (ticket.field === 'envelope.senders') {
+        body.value.envelope = {
+            ...props.ticketData.envelope,
+            senders: ticket.value as EntityPartDto[]
         }
+    }
+    if (ticket.field === 'envelope.observers') {
+        body.value.envelope = {
+            ...props.ticketData.envelope,
+            observers: ticket.value as EntityPartDto[]
+        }
+    }
+    if (ticket.field === 'envelope.assigned') {
+        body.value.envelope = {
+            ...props.ticketData.envelope,
+            assigned: ticket.value as EntityPartDto[]
+        }
+    }
+    if (ticket.field === 'project') body.value.project = ticket.value as IdnamePartDto
+    if (ticket.field === 'priority') body.value.priority = ticket.value as IdnamePartDto
+    if (ticket.field === 'impact') body.value.impact = ticket.value as IdnamePartDto
+    if (ticket.field === 'sla') body.value.sla = { ...ticket.value, manual: true } as SlaPartDto
+    if (ticket.field === 'lifestep') body.value.lifestep = ticket.value as LifeStep
+
+    countdown.value = 3
+    intervalId = setInterval(() => {
+        countdown.value--
     }, 1000)
-}, { deep: true })
+    timeoutId = setTimeout(() => {
+        useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+            method: 'patch',
+            body: body.value
+        })
+        body.value = {}
+        console.log('updated')
+        emit('fetch:ticketData')
+    }, 3000)
+}
 
 const ticketCountdown = computed(() => {
     const dueAt = dayjs(props.ticketData.sla.dueAt)
@@ -232,30 +315,44 @@ const showCloseTicketDialog = () => {
 }
 
 const closeTicket = async () => {
-    const data = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
         method: 'patch',
         body: {
             lifestep: LifeStep.CLOSED,
         }
     })
-    emit('update:ticketData')
+    if (error.value) {
+        $q.notify({
+            message: 'Erreur lors de la cloture du ticket',
+            color: 'negative'
+        })
+    }
+
+    emit('fetch:ticketData')
     closeTicketDialog.value = false
 }
 
 const openTicket = async () => {
-    const data = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
         method: 'patch',
         body: {
             lifestep: LifeStep.OPEN,
         }
     })
-    emit('update:ticketData')
+
+    if (error.value) {
+        $q.notify({
+            message: 'Erreur lors de la réouverture du ticket',
+            color: 'negative'
+        })
+    }
+    emit('fetch:ticketData')
     closeTicketDialog.value = false
 }
 
 const assignTicket = async () => {
     const user = store.state.value.auth.user
-    const data = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
         method: 'patch',
         body: {
             envelope: {
@@ -271,12 +368,18 @@ const assignTicket = async () => {
             }
         }
     })
-    emit('update:ticketData')
+    if (error.value) {
+        $q.notify({
+            message: 'Erreur lors de l\'assignation du ticket',
+            color: 'negative'
+        })
+    }
+    emit('fetch:ticketData')
 }
 
 const unasignTicket = async () => {
     const user = store.state.value.auth.user
-    const data = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
         method: 'patch',
         body: {
             envelope: {
@@ -285,7 +388,15 @@ const unasignTicket = async () => {
             }
         }
     })
-    emit('update:ticketData')
+    if (error.value) {
+        $q.notify({
+            message: 'Erreur lors de la désassignation du ticket',
+            color: 'negative'
+        })
+    }
+    emit('fetch:ticketData')
 }
+
+const isDisabledTicket = inject('isDisabledTicket')
 
 </script>
