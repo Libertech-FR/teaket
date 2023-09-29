@@ -38,6 +38,7 @@ export interface AutoIncrementPluginOptions {
 /**
  * A function to generate the name used for the auto-increment "modelName" field
  */
+// eslint-disable-next-line
 export type OverwriteModelNameFunction = (modelName: string, model: Model<any>) => string;
 
 export interface AutoIncrementPluginTrackerSpec {

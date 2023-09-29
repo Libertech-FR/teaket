@@ -1,6 +1,6 @@
 // noinspection ExceptionCaughtLocallyJS
 
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Filestorage } from './_schemas/filestorage.schema'
 import {
@@ -21,6 +21,8 @@ import { FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
 import { FilestorageCreateDto } from '~/core/filestorage/_dto/filestorage.dto'
 import { FsType } from '~/core/filestorage/_enum/fs-type.enum'
 import { omit } from 'radash'
+import { ModuleRef, REQUEST } from '@nestjs/core'
+import { Request } from 'express'
 
 export const EMBED_SEPARATOR = '#'
 
@@ -29,17 +31,20 @@ function hasFileExtension(path: string): boolean {
   return regex.test(path)
 }
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FilestorageService extends AbstractServiceSchema {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#']
 
   constructor(
+    protected readonly moduleRef: ModuleRef,
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage>,
     protected readonly storage: FactorydriveService,
+    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
   ) {
-    super()
+    super({ moduleRef, request })
   }
 
+  /* eslint-disable */
   public async create<T extends AbstractSchema | Document>(
     data?: FilestorageCreateDto & { file?: Express.Multer.File },
     options?: SaveOptions & { checkFilestorageLinkedTo?: boolean },
@@ -115,7 +120,7 @@ export class FilestorageService extends AbstractServiceSchema {
         stream,
         null,
       ]
-    } else if(data.type === FsType.EMBED) {
+    } else if (data.type === FsType.EMBED) {
       return this.findRawDataWithEmbed(data, projection, options)
     }
     return [data, null, null]
@@ -134,7 +139,7 @@ export class FilestorageService extends AbstractServiceSchema {
         stream,
         null,
       ]
-    } else if(data.type === FsType.EMBED) {
+    } else if (data.type === FsType.EMBED) {
       return this.findRawDataWithEmbed(data, projection, options)
     }
     return [data, null, null]
@@ -196,4 +201,6 @@ export class FilestorageService extends AbstractServiceSchema {
       data,
     ]
   }
+
+  /* eslint-enable */
 }

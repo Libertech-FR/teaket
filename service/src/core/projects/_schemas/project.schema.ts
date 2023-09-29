@@ -27,7 +27,7 @@ export class Project extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public rules?: { [key: string]: any }
+  public rules?: { [key: string]: any } // eslint-disable-line
 
   @Prop({
     type: String,

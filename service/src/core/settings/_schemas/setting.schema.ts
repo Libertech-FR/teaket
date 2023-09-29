@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { Schema as MongooseSchema } from 'mongoose'
-import { MixedSettingValue } from '~/core/settings/settings.interface'
 import { SettingFor, SettingForList } from '~/core/settings/_enum/setting-for.enum'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Schema({
   collection: 'settings',
@@ -31,7 +31,7 @@ export class Setting extends AbstractSchema {
     type: MongooseSchema.Types.Mixed,
     required: true,
   })
-  public value: MixedSettingValue
+  public value: MixedValue
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting)

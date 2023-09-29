@@ -4,10 +4,10 @@ import { Model } from 'mongoose'
 import { Setting } from '~/core/settings/_schemas/setting.schema'
 import { AbstractService } from '~/_common/abstracts/abstract.service'
 import { ConfigService } from '@nestjs/config'
-import { MixedSettingValue } from '~/core/settings/settings.interface'
 import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
 import { IdentityType } from '~/_common/types/identity.type'
 import { set } from 'radash'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Injectable()
 export class SettingsService extends AbstractService {
@@ -19,7 +19,7 @@ export class SettingsService extends AbstractService {
   }
 
   public async settings(forType: SettingFor[], identity: IdentityType): Promise<any> {
-    const settingsBase = this.config.get<MixedSettingValue>(`settings`)
+    const settingsBase = this.config.get<MixedValue>(`settings`)
     const filters = [{ for: SettingFor.ALL, scope: null }]
     forType.forEach((type) => {
       switch (type) {
@@ -46,11 +46,11 @@ export class SettingsService extends AbstractService {
     return settingsBase
   }
 
-  protected setting<T>(name: string): T | MixedSettingValue {
-    return this.config.get<MixedSettingValue>(`settings.${name}`)
+  protected setting<T>(name: string): T | MixedValue {
+    return this.config.get<MixedValue>(`settings.${name}`)
   }
 
-  public async get<T>(name: string): Promise<T | MixedSettingValue> {
+  public async get<T>(name: string): Promise<T | MixedValue> {
     const setting = await this._model.findOne({ name })
     if (setting) return setting.value
     return this.setting<T>(name)
@@ -58,9 +58,9 @@ export class SettingsService extends AbstractService {
 
   public async set<T>(
     key: string,
-    value: T | MixedSettingValue,
+    value: T | MixedValue,
     options?: { for: SettingFor, scope: string },
-  ): Promise<T | MixedSettingValue> {
+  ): Promise<T | MixedValue> {
     const updated = await this._model.findOneAndUpdate(
       { key },
       { $set: { value, ...options } },

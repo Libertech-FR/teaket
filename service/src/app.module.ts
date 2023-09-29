@@ -64,15 +64,6 @@ import { SettingsModule } from '~/core/settings/settings.module'
         ...config.get('factorydrive.options'),
       }),
     }),
-    // S3Module.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (config: ConfigService) => ({
-    //     config: {
-    //       ...config.get<S3ClientConfig>('s3.options'),
-    //     },
-    //   }),
-    // }),
     EventEmitterModule.forRoot({
       wildcard: true,
       delimiter: '.',

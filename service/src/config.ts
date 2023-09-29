@@ -12,7 +12,7 @@ import { Settings } from '~/core/settings/settings.interface'
 export interface MongoosePlugin {
   package: string
   enabled?: boolean
-  options?: Record<string, any>
+  options?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface ConfigInstance {

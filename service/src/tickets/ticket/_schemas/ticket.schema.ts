@@ -9,6 +9,7 @@ import { Types } from 'mongoose'
 import { SlaPart, SlaPartSchema } from '~/tickets/ticket/_schemas/parts/sla.part.schema'
 import { TagPart, TagPartSchema } from '~/tickets/ticket/_schemas/parts/tag.part.schema'
 import { EnvelopePart, EnvelopePartSchema } from '~/tickets/ticket/_schemas/parts/envelope.part.schema'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Schema({
   collection: 'tickets',
@@ -108,7 +109,7 @@ export class Ticket extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: any }
+  public customFields?: { [key: string]: MixedValue }
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket)

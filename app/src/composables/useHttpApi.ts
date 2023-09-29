@@ -54,9 +54,10 @@ export type ErrorStatus =
 export type HttpMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace'
 
 export interface Paths extends paths {
-  [key: string]: any
+  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MediaTypes<T, Status extends keyof any> = {
   [S in Status]: T extends {
     responses: {

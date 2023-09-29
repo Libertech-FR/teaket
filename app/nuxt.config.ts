@@ -94,6 +94,7 @@ export default defineNuxtConfig({
       'process.env.DEBUG': process.env.NODE_ENV === 'development',
     },
     plugins: [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pugPlugin(<any>{
         pretty: true,
         compilerOptions: {},

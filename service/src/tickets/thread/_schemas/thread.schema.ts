@@ -6,6 +6,7 @@ import { FragmentPart, FragmentPartSchema } from '~/tickets/thread/_schemas/part
 import { IdfsPart, IdfsPartSchema } from '~/_common/schemas/parts/idfs.part.schema'
 import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
 import { MailinfoPart, MailinfoPartSchema } from '~/tickets/thread/_schemas/parts/mailinfo.part.schema'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Schema({
   collection: 'threads',
@@ -56,7 +57,7 @@ export class Thread extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: any }
+  public customFields?: { [key: string]: MixedValue }
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread)

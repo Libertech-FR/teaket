@@ -23,7 +23,7 @@ export class CrontabsCreateDto {
   @ValidateNested({ each: true })
   @Type(() => Object)
   @ApiProperty({ type: [Object] })
-  public actions: { [key: string]: any }[]
+  public actions: { [key: string]: any }[] // eslint-disable-line
 
   @IsMongoId()
   @IsOptional()

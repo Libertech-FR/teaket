@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { AbstractSchema } from './schemas/abstract.schema'
 import {
   Document,
-  FilterQuery, HydratedDocument,
+  FilterQuery,
   Model,
   ModifyResult,
   ProjectionType,
@@ -15,7 +15,6 @@ import {
 import { AbstractService, AbstractServiceContext } from './abstract.service'
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface'
 import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constant'
-import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -29,6 +28,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     return this._model
   }
 
+  /* eslint-disable */
   public async find<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
@@ -287,4 +287,5 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     return deleted
   }
+  /* eslint-enable */
 }

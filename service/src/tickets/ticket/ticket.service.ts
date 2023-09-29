@@ -12,9 +12,8 @@ import { ThreadType } from '~/tickets/thread/_enum/thread-type.enum'
 import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
 import { SettingsService } from '~/core/settings/settings.service'
-import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
-import { State } from '../state/_schemas/state.schema'
 import { TicketLifestep } from './_enum/ticket-lifestep.enum'
+
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {
   public constructor(
@@ -25,22 +24,24 @@ export class TicketService extends AbstractServiceSchema {
     private readonly i18n: I18nService,
     // private readonly i18n: I18nService<I18nTranslations>,
     @InjectModel(Ticket.name) protected _model: Model<Ticket>,
-    @Inject(REQUEST) protected request?: Request & { user?: any },
+    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
   ) {
     super({ moduleRef, request })
   }
 
+  public async closeMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[]): Promise<UpdateQuery<Query<T, T, any, T>>> {
+    this.logger.log(`closeMany: ${ids}`)
+    return this._model.updateMany({ _id: { $in: ids } }, { $set: { lifestep: TicketLifestep.CLOSED } })
+  }
+
+  /* eslint-disable */
   public async create<T extends AbstractSchema | Document>(data?: any, options?: SaveOptions): Promise<Document<T, any, T>> {
+    // noinspection UnnecessaryLocalVariableJS
     const created = await super.create<T>(data, options)
     // await this.threadService.create({
     //   ticketId: created._id,
     // })
     return created
-  }
-
-  public async closeMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[]): Promise<UpdateQuery<Query<T, T, any, T>>> {
-    Logger.log(`closeMany: ${ids}`)
-    return await this._model.updateMany({ _id: { $in: ids } }, { $set: { lifestep: TicketLifestep.CLOSED } })
   }
 
   public async update<T extends AbstractSchema | Document>(
@@ -73,4 +74,5 @@ export class TicketService extends AbstractServiceSchema {
     })
     return updated
   }
+  /* eslint-enable */
 }

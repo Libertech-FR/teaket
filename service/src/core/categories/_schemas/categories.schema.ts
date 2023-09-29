@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { Types } from 'mongoose'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Schema({
   collection: 'categories',
@@ -53,7 +54,7 @@ export class Categories extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: any }
+  public customFields?: { [key: string]: MixedValue }
 }
 
 export const CategoriesSchema = SchemaFactory.createForClass(Categories)

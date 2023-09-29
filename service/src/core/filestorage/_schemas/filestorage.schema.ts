@@ -54,13 +54,13 @@ export class Filestorage extends AbstractSchema {
     required: false,
     type: Object,
   })
-  public tags?: { [key: string]: any }
+  public tags?: { [key: string]: any } // eslint-disable-line
 
   @Prop({
     required: false,
     type: Object,
   })
-  public acls?: { [key: string]: any }
+  public acls?: { [key: string]: any } // eslint-disable-line
 
   @Prop({
     required: false,

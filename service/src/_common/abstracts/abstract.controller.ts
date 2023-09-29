@@ -4,7 +4,7 @@ import { PaginatedResponseDto } from '~/_common/dto/paginated-response.dto'
 import { Logger } from '@nestjs/common'
 
 export interface AbstractControllerContext {
-  [key: string | number]: any
+  [key: string | number]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   moduleRef?: ModuleRef
 }

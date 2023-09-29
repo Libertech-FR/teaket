@@ -1,9 +1,7 @@
-import { Types } from 'mongoose'
-
-export type MixedSettingValue = string | Types.ObjectId | Date | number | boolean | null | object
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 export interface SettingsDefaults {
-  [key: string]: SettingsDefaults | MixedSettingValue
+  [key: string]: SettingsDefaults | MixedValue
 }
 
 export interface Settings extends SettingsDefaults {

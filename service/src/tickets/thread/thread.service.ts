@@ -1,17 +1,7 @@
 import { ConflictException, forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
-import {
-  Document,
-  FilterQuery,
-  HydratedDocument,
-  Model,
-  ProjectionType,
-  Query,
-  QueryOptions,
-  SaveOptions,
-  Types,
-} from 'mongoose'
+import { Document, FilterQuery, Model, ProjectionType, Query, QueryOptions, SaveOptions, Types } from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { TicketService } from '~/tickets/ticket/ticket.service'
@@ -21,7 +11,6 @@ import { I18nService } from 'nestjs-i18n'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
-import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
 @Injectable({ scope: Scope.REQUEST })
 export class ThreadService extends AbstractServiceSchema {
@@ -38,6 +27,7 @@ export class ThreadService extends AbstractServiceSchema {
     super({ moduleRef, request, eventEmitter })
   }
 
+  /* eslint-disable */
   public async findAndCount<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
@@ -75,4 +65,5 @@ export class ThreadService extends AbstractServiceSchema {
     //TODO: check acl
     return await super.delete(_id, options)
   }
+  /* eslint-enable */
 }

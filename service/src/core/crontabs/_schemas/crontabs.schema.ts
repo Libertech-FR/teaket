@@ -27,7 +27,7 @@ export class Crontabs extends AbstractSchema {
     required: true,
     type: [Object],
   })
-  public actions: { [key: string]: any }[]
+  public actions: { [key: string]: any }[] // eslint-disable-line
 
   @Prop({ type: Types.ObjectId })
   public pluginId?: ObjectId

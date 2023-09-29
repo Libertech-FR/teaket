@@ -2,6 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType } from 'class-validator'
 import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
@@ -42,12 +43,12 @@ export class FilestorageCreateDto extends CustomFieldsDto {
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  public tags?: { [key: string]: any }
+  public tags?: { [key: string]: MixedValue }
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  public acls?: { [key: string]: any }
+  public acls?: { [key: string]: any } // eslint-disable-line
 }
 
 export class FilestorageDto extends FilestorageCreateDto {

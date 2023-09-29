@@ -13,6 +13,7 @@ import * as process from 'process'
 import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware'
 import config from '~/config'
 
+// eslint-disable-next-line
 declare const module: any
 ;(async (): Promise<void> => {
   const cfg = config()
@@ -25,6 +26,7 @@ declare const module: any
     await app.close()
     process.exit(0)
   })
+  // eslint-disable-next-line
   app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by')
     next()

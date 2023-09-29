@@ -69,6 +69,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   public async authenticateWithLocal(username: string, password: string): Promise<Identities> {
     try {
+      //TODO: change any
       const user: any = await this.identityService.findOne({ username })
       if (user && await argon2Verify(user.password, password)) {
         return user
@@ -78,6 +79,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
+  //TODO: change any
   public async verifyIdentity(payload: JwtPayload & { identity: IdentityType }): Promise<any> {
     try {
       if (payload.scopes.includes('offline')) {
@@ -123,6 +125,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
+  //TODO: change any
   public async getSessionData(identity: IdentityType): Promise<any> {
     const entity = await this.entityService.findOne({ _id: identity.entityId }, {
       projection: {

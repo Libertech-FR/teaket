@@ -21,7 +21,7 @@ export class ProjectCreateDto extends CustomFieldsDto {
   @IsObject()
   @IsOptional()
   @ApiProperty({ type: Object })
-  public rules?: { [key: string]: any }
+  public rules?: { [key: string]: any } // eslint-disable-line
 
   @IsString()
   @IsOptional()
