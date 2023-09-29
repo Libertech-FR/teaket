@@ -9,19 +9,11 @@ q-scroll-area(ref="chatScroll")
                 q-separator(inset)
 
         div(v-for="(message, index) in value" :id="message._id").q-mx-md
-            //- div(v-for="fragment in message.fragments")
-            q-chat-message(
-                :sent="message.metadata.createdBy === user.username"
-                :name="message.metadata.createdBy" size="10"
+            component(
+                :is="getThreadHookName(message.type)"
+                :data="message"
+                @email:response="emailReponse($event)"
             )
-                template(v-slot:stamp)
-                    span {{ getTimeFrom(message.metadata.createdAt) }}
-                        q-tooltip.text-body2 {{ getHour(message.metadata.createdAt) }}
-                template(v-slot:default)
-                    div
-                        q-chip(v-for='attachment in message.attachments' :key='attachment._id' icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
-                        q-separator.q-my-xs(v-if="message.fragments.file")
-                        div(v-for='raw in message.fragments.raw' v-html="raw.message")
 </template>
 
 <script lang="ts" setup>
@@ -29,11 +21,10 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app';
 import { useHttpApi } from '~/composables';
 import { useDayjs, usePinia } from "#imports";
-import { generateMongoId } from '~/utils';
 import type { Fragments, Threads } from '~/types';
 import type { components } from '#build/types/service-api'
-import { FsType } from '~/utils'
 import { useQuasar } from 'quasar';
+import { ThreadType } from '../../utils';
 
 type ThreadDto = components['schemas']['ThreadDto']
 
@@ -46,13 +37,20 @@ const user = store.state.value.auth.user
 onMounted(() => {
     scroll()
 })
+
+const emit = defineEmits(['email:response'])
+const emailReponse = (data: ThreadDto) => {
+    emit('email:response', data)
+}
+
 const chatScroll = ref(null)
 const baseQuery = ref({
     "filters[ticketId]": `${route.params.id}`,
     "sort[metadata.createdAt]": 'asc',
     "limit": 999,
 })
-const { data: threads } = await useHttpApi(`tickets/thread`, {
+
+const { data: threads, refresh, error } = await useHttpApi(`tickets/thread`, {
     method: 'get',
     query: computed(() => {
         return {
@@ -61,6 +59,35 @@ const { data: threads } = await useHttpApi(`tickets/thread`, {
         }
     })
 })
+
+if (error.value) {
+    $q.notify({
+        message: 'Impossible de charger les messages',
+        type: 'negative'
+    })
+}
+
+
+const threadsRefresh = async () => {
+    await refresh()
+    scroll()
+}
+
+const getThreadHookName = (type: ThreadType) => {
+    const baseUrl = 'tk-threadsTypes'
+    switch (type) {
+        case ThreadType.EXTERNAL:
+        case ThreadType.INTERNAL:
+        case ThreadType.OUTGOING:
+            return `${baseUrl}Base`
+        case ThreadType.INCOMING:
+            return `${baseUrl}Mail`
+        case ThreadType.SYSTEM:
+            return `${baseUrl}System`
+        default:
+            return `${baseUrl}Base`
+    }
+}
 
 const getMessageByDay = computed((): Threads => {
     return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {
@@ -90,14 +117,9 @@ const scroll = () => {
     chatScroll.value?.setScrollPosition('vertical', target.scrollHeight, 0)
 }
 
-
-const getTimeFrom = (time: string) => {
-    return dayjs().to(dayjs(time))
-}
-
-const getHour = (time: string) => {
-    return dayjs(time).format('DD-MM-YYYY HH:mm')
-}
-
+defineExpose({
+    scroll,
+    threadsRefresh,
+})
 
 </script>

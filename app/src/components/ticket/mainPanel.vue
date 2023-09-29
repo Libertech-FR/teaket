@@ -2,12 +2,14 @@
 q-card(style="height: 100%").column
   q-toolbar.col
     q-toolbar-title {{ sequence }} | {{ subject }}
-  tk-threadsList.col-8
   tk-SearchfiltersThreads.col
-  tk-threadsEditor.col-3
+  tk-threadsList.col-8(ref="threadsListRef" @email:response="emailReponse($event)")
+  tk-threadsEditor.col-3(ref="threadsEditorRef" @refreshThreadsList="refreshThreadsList")
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
+
 const props = defineProps({
   sequence: {
     type: String,
@@ -17,9 +19,16 @@ const props = defineProps({
     type: String,
     required: true
   },
-  disabled: {
-    type: Boolean,
-    default: false
-  }
 })
+
+const threadsListRef = ref(null)
+const threadsEditorRef = ref(null)
+
+const refreshThreadsList = () => {
+  threadsListRef.value?.$.exposed.threadsRefresh()
+}
+
+const emailReponse = (data: ThreadDto) => {
+  threadsEditorRef.value?.$.exposed.emailReponse(data)
+}
 </script>

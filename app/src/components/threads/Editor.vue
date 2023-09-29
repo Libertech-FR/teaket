@@ -10,7 +10,7 @@
             //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
             q-editor(
                 v-model="message" placeholder="Votre message ..."
-                :definitions="editorDefinitions" 
+                :definitions="editorDefinitions" :disable="isDisabledTicket"
                 :toolbar="editorToolbar" dense style="height: 100%"
             ).col
                 template(v-slot:threadTypes)
@@ -25,7 +25,7 @@
                                     q-item-label {{ type.label }}
             q-btn(
                 icon="mdi-send" size="md" color="primary" flat
-                @click="sendMessage"
+                @click="isFullscreen = true"
             ).col-1
                 q-tooltip.text-body2 Envoyer
 
@@ -35,13 +35,18 @@
 
     q-dialog(v-model="isFullscreen")
         q-card
+            q-card-section.bg-grey-2 
+                q-input(dense label="From" v-model="mailInfo.from")
+                q-input(dense label="To" v-model="mailInfo.to")
+                q-input(dense label="Copy" v-model="mailInfo.cc")
+                q-input(dense label="Subject" v-model="mailInfo.subject")
             q-card-section
                 q-editor(
                     min-height="50vh" min-width="50vw"
                     v-model="message" placeholder="Votre message ..."
                     :definitions="editorDefinitions" 
                     :toolbar="editorToolbar" class="q-pa-none"
-                    :disable="disabled" ref="dropZoneRef"
+                    :readonly="isDisabledTicket" ref="dropZoneRef"
                 )
             q-card-section.q-pa-sm
                 div(ref="dropZoneDialogRef").row.center.bg-grey-3
@@ -49,16 +54,21 @@
                         q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
                         span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
             q-card-section
-                q-chip(v-for="attachement in attachements" :key="attachement.id" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
+                q-scroll-area(style="width: 100%; height: 100%")
+                    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+                        q-chip(v-for="attachement in attachements" :key="attachement.id" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
 
-        //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
-        //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
-        //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
+            .row
+                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)").col-6
+                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)").col-6
+                //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
+                //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
+                //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
 
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, inject } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app';
 import { useHttpApi } from '~/composables';
 import { useDayjs, usePinia } from "#imports";
@@ -72,6 +82,9 @@ import ObjectID from 'bson-objectid';
 
 type ThreadCreateDto = components['schemas']['ThreadCreateDto']
 type FsPart = components["schemas"]["IdfsPartDto"]
+type MailinfoPartDto = components["schemas"]["MailinfoPartDto"]
+
+const emit = defineEmits(['refreshThreadsList'])
 
 const dayjs = useDayjs()
 const store = usePinia()
@@ -91,6 +104,12 @@ const dropZoneDialogRef = ref<HTMLDivElement>()
 const editorDialog = ref()
 const currentThreadId = ref<ObjectID | null>(null)
 const attachements = ref<FsPart[]>([])
+const mailInfo = ref({
+    from: '',
+    to: '',
+    cc: '',
+    subject: ''
+})
 
 const onDrop = (files: File[] | null) => {
     if (!files) return
@@ -131,6 +150,14 @@ const uploadFile = async (file: File) => {
     $q.notify('Fichier envoyé')
 }
 
+const emailReponse = (data: MailinfoPartDto) => {
+    mailInfo.value.to = data.from.address
+    mailInfo.value.from = data.to[0].address
+    mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
+    isFullscreen.value = true
+    console.log(data)
+}
+
 const removeAttachment = (id: string) => {
     const { data, error } = useHttpApi(`core/filestorage/${id}`, {
         method: 'delete'
@@ -146,30 +173,28 @@ const removeAttachment = (id: string) => {
     $q.notify('Fichier supprimé')
 }
 
-const sendMessage = async () => {
-    const payload: ThreadCreateDto = {
-        _id: currentThreadId,
-        attachments: attachements.value,
-        ticketId: generateMongoId(route.params.id.toString()),
-        fragments: [
-            {
+const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
+    const { data: thread, error } = useHttpApi(`tickets/thread`, {
+        method: 'post',
+        body: {
+            _id: currentThreadId.value,
+            attachments: attachements.value,
+            ticketId: generateMongoId(route.params.id.toString()),
+            fragments: [{
                 id: generateMongoId(),
                 disposition: 'raw',
                 message: message.value
-            }
-        ],
-        metadata: {
-            createdBy: user.username,
-            createdAt: dayjs().toISOString(),
-            lastUpdatedAt: dayjs().toISOString(),
-            lastUpdatedBy: user.username
-        },
-        type: ThreadType.OUTGOING
-    }
-    const { data: thread, error } = await useHttpApi(`tickets/thread`, {
-        method: 'post',
-        body: payload
+            }],
+            metadata: {
+                createdBy: user.username,
+                createdAt: dayjs().toISOString(),
+                lastUpdatedAt: dayjs().toISOString(),
+                lastUpdatedBy: user.username
+            },
+            type
+        }
     })
+
     if (error.value) {
         $q.notify({
             message: 'Impossible d\'envoyer le message',
@@ -177,22 +202,23 @@ const sendMessage = async () => {
         })
         return
     }
-    threads.value?.data.push(thread.value?.data)
-    message.value = ''
-    scroll()
-    attachements.value = []
-    $q.notify('Message envoyé')
 
+    message.value = ''
+    attachements.value = []
+    currentThreadId.value = generateMongoId()
+    isFullscreen.value = false
+    $q.notify('Message envoyé')
+    emit('refreshThreadsList')
 }
 
 const editorDefinitions = computed(() => (
     {
-        send: {
-            tip: 'Envoyer',
-            icon: 'mdi-send',
-            label: 'Envoyer',
-            handler: sendMessage
-        },
+        // send: {
+        //     tip: 'Envoyer',
+        //     icon: 'mdi-send',
+        //     label: 'Envoyer',
+        //     handler: sendMessage
+        // },
         attach: {
             tip: 'Joindre un fichier',
             icon: 'mdi-paperclip',
@@ -213,6 +239,12 @@ const editorDefinitions = computed(() => (
 
 const editorToolbar = computed(() => {
     return [['left', 'center', 'right', 'justify'], ['bold', 'italic', 'underline', 'strike'], ['undo', 'redo'], ['fullscreen']]
+})
+
+const isDisabledTicket = inject('isDisabledTicket')
+
+defineExpose({
+    emailReponse
 })
 
 </script>
