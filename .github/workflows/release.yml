@@ -1,3 +1,6 @@
+name: Release
+
+on:
   workflow_dispatch:
     inputs:
       version_increment:
