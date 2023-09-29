@@ -6,7 +6,7 @@ q-scroll-area(:style="{height: '100%'}")
                 q-btn(@click="showCloseTicketDialog()" color="red" icon="mdi-close" size="md" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Cloturer
                 q-btn(
-                    v-if="!props.ticketData.envelope.assigned.find((user: any) => user.id === store.state.value.auth.user._id)"
+                    v-if="!props.ticketData.envelope.assigned.find((user) => user.id === store.state.value.auth.user._id)"
                     color="green" icon="mdi-clipboard-arrow-down-outline" @click="assignTicket" size="md" :disable="isDisabledTicket"
                 ) 
                     q-tooltip.text-body2 M'assigner le ticket
@@ -132,6 +132,10 @@ type IdnamePartDto = components["schemas"]["IdnamePartDto"]
 type SlaPartDto = components["schemas"]["SlaPartDto"]
 type EntityPartDto = components["schemas"]["EntityPartDto"]
 type TicketType = components['schemas']['TicketDto']
+type Entity = components['schemas']['EntityDto']
+type State = components['schemas']['StateDto']
+type Project = components['schemas']['ProjectDto']
+type Sla = components['schemas']['SlaDto']
 const props = defineProps({
     ticketData: {
         type: Object,
@@ -186,7 +190,7 @@ if (entitiesError.value) {
 }
 
 const observers = computed(() => {
-    return entities.value?.data.reduce((acc: any, entity: any) => {
+    return entities.value?.data.reduce((acc: { id: string, name: string, type: number }[], entity: Entity) => {
         if (entity.type <= EntityType.OTHER) {
             acc.push({
                 id: entity._id,
@@ -199,7 +203,7 @@ const observers = computed(() => {
 })
 
 const assigned = computed(() => {
-    return entities.value?.data.reduce((acc: any, entity: any) => {
+    return entities.value?.data.reduce((acc: { id: string, name: string, type: number }[], entity: Entity) => {
         if (entity.type <= EntityType.AGENT) {
             acc.push({
                 id: entity._id,
@@ -212,19 +216,19 @@ const assigned = computed(() => {
 })
 
 const typeOfTicket = computed(() => {
-    return ticketType.find((type: any) => type.value === props.ticketData.type)
+    return ticketType.find((type) => type.value === props.ticketData.type)
 })
 
 const lifestepOfTicket = computed(() => {
-    return lifeSteps.find((step: any) => step.value === props.ticketData.lifestep)
+    return lifeSteps.find((step) => step.value === props.ticketData.lifestep)
 })
 
 const stateOfTicket = computed(() => {
-    return states.value?.data.find((state: any) => state._id === props.ticketData.state?.id)
+    return states.value?.data.find((state: State) => state._id === props.ticketData.state?.id)
 })
 
 const getProjectsData = computed(() => {
-    return projects.value?.data.map((project: any) => {
+    return projects.value?.data.map((project: Project) => {
         return {
             id: project._id,
             name: project.name,
@@ -233,7 +237,7 @@ const getProjectsData = computed(() => {
 })
 
 const getSlaData = computed(() => {
-    return sla.value?.data.map((sla: any) => {
+    return sla.value?.data.map((sla: Sla) => {
         return {
             id: sla._id,
             name: sla.name,
@@ -382,7 +386,7 @@ const unasignTicket = async () => {
         body: {
             envelope: {
                 ...props.ticketData.envelope,
-                assigned: props.ticketData.envelope.assigned.filter((user: any) => user.id !== store.state.value.auth.user._id)
+                assigned: props.ticketData.envelope.assigned.filter((user: { id: string, name: string, type: number }) => user.id !== store.state.value.auth.user._id)
             }
         }
     })

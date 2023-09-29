@@ -252,7 +252,7 @@ const pagination = ref<QTableProps['pagination']>({
   descending: true
 })
 
-const onRequest = async (props: any) => {
+const onRequest = async (props: QTableProps) => {
   const { page, rowsPerPage, sortBy, descending } = props.pagination
   pagination.value!.rowsNumber = tickets.value?.total
   pagination.value!.page = page
@@ -309,9 +309,9 @@ const fieldsList = computed(() => {
   )
 })
 
-const getState = (state: { id: string, name: string }) => {
-  const findedState = states.value?.data.find((s: any) => {
-    return s._id === state.id
+const getState = (stateParam: { id: string, name: string }) => {
+  const findedState = states.value?.data.find((state: State) => {
+    return state._id === stateParam.id
   })
   return findedState
 }
