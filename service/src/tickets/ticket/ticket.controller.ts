@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, Res } from '@nestjs/common'
 import { TicketService } from './ticket.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { TicketCreateDto, TicketDto, TicketUpdateDto } from './_dto/ticket.dto'
@@ -38,6 +38,16 @@ export class TicketController extends AbstractController {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
+      data,
+    })
+  }
+
+  @Post('close-many')
+  @ApiParam({ name: '_ids', type: Array<string> })
+  public async closeMany(@Res() res: Response, @Body() body: { ids: Types.ObjectId[] }) {
+    const data = await this._service.closeMany(body.ids)
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
       data,
     })
   }

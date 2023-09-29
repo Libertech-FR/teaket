@@ -28,6 +28,7 @@ export class MongooseValidationFilter implements ExceptionFilter {
     )
   }
 
+  // eslint-disable-next-line
   protected getValidationErrors(err: Error.ValidationError | Error.CastError | ValidationError): Record<string, any> {
     const validations = {}
     if (err instanceof Error.ValidationError) {

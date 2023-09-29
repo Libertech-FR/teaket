@@ -1,43 +1,54 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
-import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty } from 'class-validator'
+import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType } from 'class-validator'
 import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
   @IsNotEmpty()
   @ApiProperty({ enum: FsTypeList })
-  type: FsType
+  public type: FsType
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  namespace: string
+  public namespace: string
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  path: string
+  public path: string
+
+  @IsOptional()
+  @IsMongoId()
+  @ApiProperty()
+  public linkedTo?: string
 
   @IsOptional()
   @IsString()
   @ApiProperty()
-  comments?: string
+  public comments?: string
+
+  @IsOptional()
+  @IsMimeType()
+  @ApiProperty()
+  public mime?: string
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty()
-  hidden?: boolean
+  public hidden?: boolean
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  tags?: { [key: string]: any }
+  public tags?: { [key: string]: MixedValue }
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: Object })
-  acls?: { [key: string]: any }
+  public acls?: { [key: string]: any } // eslint-disable-line
 }
 
 export class FilestorageDto extends FilestorageCreateDto {

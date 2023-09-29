@@ -5,7 +5,7 @@ import { Response } from 'express'
 import { Public } from './_common/decorators/public.decorator'
 import { ShutdownService } from '~/shutdown.service'
 import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator'
-import { ApiExtraModels, ApiHideProperty, getSchemaPath } from '@nestjs/swagger'
+import { ApiExtraModels, getSchemaPath } from '@nestjs/swagger'
 import { AppInfoDto } from '~/_dto/app.dto'
 
 @Public()
@@ -29,6 +29,7 @@ export class AppController extends AbstractController {
 
   @Get('shutdown')
   public shutdown(@Res() res: Response): Response {
+    //TODO: verify auth
     this._shutdown.shutdown()
     return res.json({})
   }

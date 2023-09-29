@@ -35,7 +35,7 @@ export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart)
       case FragmentType.RAW: {
         delete this.filestorage
         if (!this.message) {
-          next(new Error('Message is required'))
+          next(new Error('Message field is required'))
         }
         break
       }
@@ -43,7 +43,7 @@ export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart)
       case FragmentType.FILE: {
         delete this.message
         if (!this.filestorage) {
-          next(new Error('Filestorage is required'))
+          next(new Error('Filestorage field is required'))
         }
         break
       }

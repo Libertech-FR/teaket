@@ -1,21 +1,29 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
 import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { ThreadType, ThreadTypeList } from '~/tickets/thread/_enum/thread-type.enum'
+import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
 import { Types } from 'mongoose'
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
+import { MailinfoPartDto } from '~/tickets/thread/_dto/parts/mailinfo.part.dto'
 
-export class ThreadCreateDto {
+export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsMongoId()
   @ApiProperty()
-  public ticketId: string
+  public ticketId: Types.ObjectId
 
   @IsNumber()
   @IsEnum(ThreadTypeList)
   @ApiProperty({ enum: ThreadTypeList })
   public type: ThreadType
+
+  @IsMongoId()
+  @IsOptional()
+  @ApiProperty()
+  public threadId?: Types.ObjectId
 
   @ValidateNested()
   @IsOptional()
@@ -40,6 +48,12 @@ export class ThreadCreateDto {
   @Type(() => IdfsPartDto)
   @ApiProperty({ type: [IdfsPartDto] })
   public attachments?: IdfsPartDto[]
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => MailinfoPartDto)
+  @ApiProperty({ type: MailinfoPartDto })
+  public mailinfo?: MailinfoPartDto
 }
 
 export class ThreadDto extends ThreadCreateDto {
@@ -48,5 +62,4 @@ export class ThreadDto extends ThreadCreateDto {
   public _id: string
 }
 
-export class ThreadUpdateDto extends PartialType(ThreadCreateDto) {
-}
+export class ThreadUpdateDto extends PartialType(ThreadCreateDto) {}

@@ -28,6 +28,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     return this._model
   }
 
+  /* eslint-disable */
   public async find<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
@@ -161,7 +162,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         session: typeof arguments[1] === 'object' && 'session' in arguments[1] ? 'session' : undefined,
       },
     })
-    this.logger.debug(['create', JSON.stringify(Object.values(arguments))].join(' '))
+    this.logger.debug(['create', JSON.stringify(logInfos)].join(' '))
     if (this.eventEmitter) {
       const beforeEvents = await this.eventEmitter?.emitAsync([
         this.moduleName.toLowerCase(),
@@ -175,14 +176,15 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+    console.log('this.request?.user', this.request?.user)
     const document: Document<T, any, T> = new this._model({
-      ...data,
       metadata: {
-        createdBy: this.request?.user || 'anonymous',
+        createdBy: this.request?.user?.username || 'anonymous',
         createdAt: new Date(),
-        lastUpdatedBy: this.request?.user || 'anonymous',
+        lastUpdatedBy: this.request?.user?.username || 'anonymous',
         lastUpdatedAt: new Date(),
       },
+      ...data,
     })
     let created = document.save(options)
     if (this.eventEmitter) {
@@ -229,7 +231,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       .findByIdAndUpdate<Query<T | null, T, any, T>>({ _id }, {
         ...update,
         metadata: {
-          lastUpdatedBy: this.request.user || 'anonymous',
+          lastUpdatedBy: this.request?.user?.username || 'anonymous',
           lastUpdatedAt: new Date(),
         },
       }, {
@@ -285,4 +287,5 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     return deleted
   }
+  /* eslint-enable */
 }

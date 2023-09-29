@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { IsString, IsNotEmpty, IsObject, IsOptional, ValidateNested, IsMongoId } from 'class-validator'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 export class PreferencesCreateDto {
   @IsString()
@@ -16,7 +17,7 @@ export class PreferencesCreateDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @ApiProperty({ type: Object })
-  public data?: { [key: string]: any }
+  public data?: { [key: string]: MixedValue }
 }
 
 export class PreferencesDto extends PreferencesCreateDto {

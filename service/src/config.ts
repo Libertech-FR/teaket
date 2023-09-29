@@ -4,14 +4,23 @@ import { IAuthModuleOptions } from '@nestjs/passport'
 import { SwaggerCustomOptions } from '@nestjs/swagger'
 import { HelmetOptions } from 'helmet'
 import { RedisOptions } from 'ioredis'
+import * as process from 'process'
+import { StorageManagerConfig } from '@streamkits/nestjs_module_factorydrive'
+import { AmazonWebServicesS3StorageConfig } from '@streamkits/nestjs_module_factorydrive-s3'
+import { Settings } from '~/core/settings/settings.interface'
 
 export interface MongoosePlugin {
   package: string
   enabled?: boolean
-  options?: Record<string, any>
+  options?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface ConfigInstance {
+  application: {
+    bodyParser: {
+      limit: string
+    }
+  }
   helmet: HelmetOptions
   mongoose: {
     uri: string
@@ -31,6 +40,17 @@ export interface ConfigInstance {
   // oidc: {
   //   options: BuildOpenIdClientOptions
   // }
+  factorydrive: {
+    options: StorageManagerConfig | {
+      disks: {
+        [key: string]: {
+          driver: 's3'
+          config: AmazonWebServicesS3StorageConfig
+        }
+      }
+    }
+  }
+  settings: Settings
   i18n: {
     fallbackLanguage: string
   }
@@ -42,6 +62,11 @@ export interface ConfigInstance {
 }
 
 export default (): ConfigInstance => ({
+  application: {
+    bodyParser: {
+      limit: '500mb',
+    },
+  },
   helmet: {
     contentSecurityPolicy: {
       directives: {
@@ -103,6 +128,58 @@ export default (): ConfigInstance => ({
   //     },
   //   },
   // },
+  factorydrive: {
+    options: {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage',
+          },
+        },
+        s3: {
+          driver: 's3',
+          config: {
+            credentials: {
+              accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
+              secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+            },
+            endpoint: 'http://localhost:9000/',
+            region: 'us-east-1',
+            bucket: 'teaket',
+            forcePathStyle: true,
+          },
+        },
+        ticket: {
+          driver: 's3',
+          config: {
+            credentials: {
+              accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
+              secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+            },
+            endpoint: 'http://localhost:9000/',
+            region: 'us-east-1',
+            bucket: 'teaket',
+            forcePathStyle: true,
+          },
+        },
+      },
+    },
+  },
+  settings: {
+    tickets: {
+      ticket: {
+        schema: {
+          sequence: {
+            prefix: 'TK',
+            suffix: '',
+            length: 6,
+          },
+        }
+      }
+    },
+  },
   i18n: {
     fallbackLanguage: 'en',
   },

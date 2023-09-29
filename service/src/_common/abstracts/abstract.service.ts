@@ -4,10 +4,10 @@ import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 
 export interface AbstractServiceContext {
-  [key: string | number]: any
+  [key: string | number]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   moduleRef?: ModuleRef
-  request?: Request & { user?: any }
+  request?: Request & { user?: Express.User }
   eventEmitter?: EventEmitter2
 }
 
@@ -15,7 +15,7 @@ export interface AbstractServiceContext {
 export abstract class AbstractService {
   protected logger: Logger
   protected moduleRef: ModuleRef
-  protected request?: Request & { user?: any }
+  protected request?: Request & { user?: Express.User & any } // eslint-disable-line
   protected eventEmitter?: EventEmitter2
 
   protected constructor(context?: AbstractServiceContext) {

@@ -8,6 +8,8 @@ import { ModuleRef } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { IdentityType } from '~/_common/types/identity.type'
 import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator'
+import { SettingsService } from '~/core/settings/settings.service'
+import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
 
 @Public()
 @ApiTags('core')
@@ -16,6 +18,7 @@ export class AuthController extends AbstractController {
   constructor(
     protected moduleRef: ModuleRef,
     private readonly service: AuthService,
+    private readonly settings: SettingsService,
   ) {
     super()
   }
@@ -34,11 +37,16 @@ export class AuthController extends AbstractController {
   @UseGuards(AuthGuard('jwt'))
   public async session(@Res() res: Response, @ReqIdentity() identity: IdentityType): Promise<Response> {
     const user = await this.service.getSessionData(identity)
+    const settings = await this.settings.settings([SettingFor.USER, SettingFor.ROLE], identity)
     return res.status(HttpStatus.OK).json({
-      user,
+      user: {
+        ...user,
+        settings,
+      },
     })
   }
 
+  //TODO: change any
   @Post('refresh')
   public async refresh(@Res() res: Response, @Body() body: any): Promise<Response> {
     const tokens = await this.service.renewTokens(body.refresh_token)

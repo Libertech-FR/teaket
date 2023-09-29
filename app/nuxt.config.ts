@@ -3,6 +3,7 @@ import pugPlugin from 'vite-plugin-pug'
 import openapiTS from 'openapi-typescript'
 import { writeFileSync } from 'fs'
 import { resolve } from 'path'
+import timezone from 'dayjs/plugin/timezone'
 
 const TK_APP_API_URL = process.env.TK_APP_API_URL || 'http://localhost:7100'
 
@@ -27,15 +28,7 @@ export default defineNuxtConfig({
     global: true,
     dirs: [{ path: '~/components', prefix: 'tk' }],
   },
-  modules: [
-    '@nuxt-alt/auth',
-    '@nuxt-alt/http',
-    '@pinia/nuxt',
-    'nuxt-quasar-ui',
-    '@vueuse/nuxt',
-    'dayjs-nuxt',
-    ...appSetup(),
-  ],
+  modules: ['@nuxt-alt/auth', '@nuxt-alt/http', '@pinia/nuxt', 'nuxt-quasar-ui', '@vueuse/nuxt', 'dayjs-nuxt', ...appSetup()],
   auth: {
     globalMiddleware: true,
     rewriteRedirects: true,
@@ -73,19 +66,38 @@ export default defineNuxtConfig({
       },
     },
   },
+  dayjs: {
+    locales: ['fr', 'en'],
+    defaultLocale: 'fr',
+    defaultTimezone: 'Paris',
+    plugins: ['timezone', 'relativeTime'],
+  },
+  pinia: {
+    autoImports: ['defineStore'],
+  },
   appConfig: {
     customSlots: {},
   },
   quasar: {
     iconSet: 'mdi-v5',
+    plugins: ['Notify'],
+    config: {
+      notify: {
+        timeout: 2500,
+        position: 'top-right',
+        actions: [{ icon: 'mdi-close', color: 'white' }],
+      },
+    },
   },
   vite: {
     define: {
       'process.env.DEBUG': process.env.NODE_ENV === 'development',
     },
     plugins: [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pugPlugin(<any>{
         pretty: true,
+        compilerOptions: {},
       }),
     ],
   },
@@ -100,7 +112,7 @@ export default defineNuxtConfig({
     shim: false,
   },
   hooks: {
-    'ready': async () => {
+    ready: async () => {
       console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
       try {
         const fileData = await openapiTS(`${TK_APP_API_URL}/swagger/json`)
@@ -109,6 +121,6 @@ export default defineNuxtConfig({
       } catch (error) {
         console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
       }
-    }
-  }
+    },
+  },
 })

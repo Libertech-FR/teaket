@@ -27,6 +27,7 @@ export class ThreadService extends AbstractServiceSchema {
     super({ moduleRef, request, eventEmitter })
   }
 
+  /* eslint-disable */
   public async findAndCount<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
@@ -34,23 +35,35 @@ export class ThreadService extends AbstractServiceSchema {
   ): Promise<[Query<Array<T>, T, any, T>[], number]> {
     if (!filter.ticketId) throw new ConflictException('Search must be contain filter by ticketId')
     //TODO: check acl
-    return await super.findAndCount({
-      ...filter,
-      ticketId: new Types.ObjectId(filter.ticketId),
-    }, projection, options)
+    return await super.findAndCount(
+      {
+        ...filter,
+        ticketId: new Types.ObjectId(filter.ticketId),
+      },
+      projection,
+      options,
+    )
   }
 
-  public async create<T extends AbstractSchema | Document>(data?: ThreadCreateDto, options?: SaveOptions): Promise<Document<T, any, T>> {
-    const count = await this.ticketService.count({ _id: data.ticketId })
-    if (!count) throw new ConflictException(this.i18n.t(`thread.service.create.ticketNotFound`))
+  public async create<T extends AbstractSchema | Document>(data?: ThreadCreateDto, options?: SaveOptions & {
+    checkTicketId?: boolean
+  }): Promise<Document<T, any, T>> {
+    if (options?.checkTicketId !== false) {
+      const count = await this.ticketService.count({ _id: data.ticketId })
+      if (!count) throw new ConflictException(this.i18n.t(`thread.service.create.ticketNotFound`))
+    }
+    data.ticketId = new Types.ObjectId(data.ticketId)
+    data.fragments.map((fragment) => {
+      fragment.id = new Types.ObjectId()
+      return fragment
+    })
+
     return await super.create(data, options)
   }
 
-  public async delete<T extends AbstractSchema | Document>(
-    _id: Types.ObjectId | any,
-    options?: QueryOptions<T> | null | undefined,
-  ): Promise<Query<T, T, any, T>> {
+  public async delete<T extends AbstractSchema | Document>(_id: Types.ObjectId | any, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>> {
     //TODO: check acl
     return await super.delete(_id, options)
   }
+  /* eslint-enable */
 }

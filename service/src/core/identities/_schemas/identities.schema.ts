@@ -3,6 +3,7 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { StatePart, StatePartSchema } from '~/core/identities/_schemas/parts/state.part.schema'
 import { SecurityPart, SecurityPartSchema } from '~/core/identities/_schemas/parts/security.part.schema'
 import { Types } from 'mongoose'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 const DEFAULT_THIRD_PARTY_AUTH = 'local'
 
@@ -81,7 +82,7 @@ export class Identities extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: any }
+  public customFields?: { [key: string]: MixedValue }
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities).pre('save', function (this: Identities, next: () => void): void {

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { RulePart, RulePartSchema } from '~/tickets/state/_schemas/parts/rules.part.schema'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 
 @Schema({
   collection: 'states',
@@ -49,7 +50,7 @@ export class State extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: any }
+  public customFields?: { [key: string]: MixedValue }
 }
 
 export const StateSchema = SchemaFactory.createForClass(State)

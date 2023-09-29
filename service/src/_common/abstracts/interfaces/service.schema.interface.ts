@@ -1,7 +1,18 @@
-import { Document, FilterQuery, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
+import {
+  Document,
+  FilterQuery,
+  ModifyResult,
+  ProjectionType,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose'
 import { AbstractSchema } from '../schemas/abstract.schema'
 
 export interface ServiceSchemaInterface {
+  /* eslint-disable */
   find<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
@@ -33,4 +44,5 @@ export interface ServiceSchemaInterface {
   ): Promise<ModifyResult<Query<T, T, any, T>>>
 
   delete<T extends AbstractSchema | Document>(_id: Types.ObjectId | any, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>>
+  /* eslint-enable */
 }

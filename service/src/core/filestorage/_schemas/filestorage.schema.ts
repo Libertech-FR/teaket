@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
+import { Types } from 'mongoose'
 
 @Schema({
   collection: 'filestorage',
@@ -14,11 +15,15 @@ export class Filestorage extends AbstractSchema {
   })
   public type: FsType
 
-  // text/html, application/pdf
   @Prop({
     type: String,
   })
   public mime?: string
+
+  @Prop({
+    type: Types.ObjectId,
+  })
+  public linkedTo?: Types.ObjectId
 
   @Prop({
     required: true,
@@ -49,13 +54,13 @@ export class Filestorage extends AbstractSchema {
     required: false,
     type: Object,
   })
-  public tags?: { [key: string]: any }
+  public tags?: { [key: string]: any } // eslint-disable-line
 
   @Prop({
     required: false,
     type: Object,
   })
-  public acls?: { [key: string]: any }
+  public acls?: { [key: string]: any } // eslint-disable-line
 
   @Prop({
     required: false,
@@ -66,3 +71,7 @@ export class Filestorage extends AbstractSchema {
 
 export const FilestorageSchema = SchemaFactory.createForClass(Filestorage)
   .index({ namespace: 1, path: 1 }, { unique: true })
+
+FilestorageSchema.virtual('filename').get(function(this: Filestorage): string {
+  return this.path.split('/').pop()
+})

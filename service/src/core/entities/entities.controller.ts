@@ -21,6 +21,7 @@ export class EntitiesController extends AbstractController {
   protected static readonly projection: PartialProjectionType<EntitiesDto> = {
     profile: 1,
     state: 1,
+    type: 1,
   }
 
   public constructor(private readonly _service: EntitiesService) {

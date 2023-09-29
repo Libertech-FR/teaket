@@ -18,6 +18,9 @@ import { AcceptLanguageResolver, CookieResolver, HeaderResolver, I18nModule, Que
 import { join } from 'path'
 import { ExtensionsModule } from '~/extensions/extensions.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
+import { FactorydriveModule, FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
+import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
+import { SettingsModule } from '~/core/settings/settings.module'
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
       isGlobal: true,
       load: [config],
     }),
+    SettingsModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -51,6 +55,13 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
           ...config.get<RedisOptions>('ioredis.options'),
           url: config.get<string>('ioredis.uri'),
         },
+      }),
+    }),
+    FactorydriveModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        ...config.get('factorydrive.options'),
       }),
     }),
     EventEmitterModule.forRoot({
@@ -104,4 +115,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
   ],
 })
 export class AppModule {
+  public constructor(storage: FactorydriveService) {
+    storage.registerDriver('s3', AwsS3Storage)
+  }
 }

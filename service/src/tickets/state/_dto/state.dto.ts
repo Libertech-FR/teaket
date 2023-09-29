@@ -27,7 +27,7 @@ export class StatesCreateDto extends CustomFieldsDto {
   @IsOptional()
   @ApiProperty()
   @ApiProperty({ type: [Object] })
-  public rules: { [key: string]: any }[]
+  public rules: { [key: string]: any }[] // eslint-disable-line
 
   @IsOptional()
   @IsString()

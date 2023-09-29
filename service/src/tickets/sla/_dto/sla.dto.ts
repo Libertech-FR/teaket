@@ -26,7 +26,7 @@ export class SlaCreateDto extends CustomFieldsDto {
   @IsArray()
   @IsOptional()
   @ApiProperty({ type: [Object] })
-  public rules: { [key: string]: any }[]
+  public rules: { [key: string]: any }[] // eslint-disable-line @typescript-eslint/no-explicit-any
 
   @IsOptional()
   @IsString()

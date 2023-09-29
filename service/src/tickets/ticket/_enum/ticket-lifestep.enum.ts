@@ -6,5 +6,5 @@ export enum TicketLifestep {
 }
 
 export const TicketLifestepList: number[] = Object.keys(TicketLifestep)
-  .filter((k) => typeof TicketLifestep[k as any] === 'number')
-  .map((k) => parseInt(TicketLifestep[k as any], 10))
+  .filter((k) => typeof TicketLifestep[k as any] === 'number') // eslint-disable-line
+  .map((k) => parseInt(TicketLifestep[k as any], 10)) // eslint-disable-line
