@@ -17,7 +17,7 @@ q-scroll-area(:style="{height: '100%'}")
                     q-tooltip.text-body2 Imprimer
                 q-btn(color="info" icon="mdi-content-save-all" @click="console.log('Save')" size="md" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Sauvegarder
-                q-btn(color="red" icon="mdi-arrow-left" @click="console.log(router.go(-1))" size="md")
+                q-btn(color="red" icon="mdi-arrow-left" @click="router.go(-1)" size="md")
                     q-tooltip.text-body2 Retour
         q-card-section.text-right
             span.text-caption(v-if="countdown>0") Enregistrement des changements dans {{ countdown }}s
@@ -248,7 +248,6 @@ let timeoutId: NodeJS.Timeout
 let intervalId: NodeJS.Timeout
 
 const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto | EntityPartDto[] | LifeStep }) => {
-    console.log('ticket', ticket)
     clearTimeout(timeoutId)
     clearInterval(intervalId)
     if (ticket.field === 'envelope.senders') {
@@ -285,7 +284,6 @@ const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto |
             body: body.value
         })
         body.value = {}
-        console.log('updated')
         emit('fetch:ticketData')
     }, 3000)
 }

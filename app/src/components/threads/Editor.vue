@@ -131,7 +131,6 @@ const uploadFile = async (file: File) => {
         method: 'post',
         body: formData
     })
-    console.log(error.value)
     if (error.value) {
         $q.notify({
             message: 'Impossible d\'envoyer le fichier',
@@ -155,7 +154,6 @@ const emailReponse = (data: MailinfoPartDto) => {
     mailInfo.value.from = data.to[0].address
     mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
     isFullscreen.value = true
-    console.log(data)
 }
 
 const removeAttachment = (id: string) => {
@@ -213,20 +211,6 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
 
 const editorDefinitions = computed(() => (
     {
-        // send: {
-        //     tip: 'Envoyer',
-        //     icon: 'mdi-send',
-        //     label: 'Envoyer',
-        //     handler: sendMessage
-        // },
-        attach: {
-            tip: 'Joindre un fichier',
-            icon: 'mdi-paperclip',
-            label: 'Joindre un fichier',
-            handler: () => {
-                console.log('joindre')
-            }
-        },
         fullscreen: {
             tip: 'Plein écran',
             icon: isFullscreen.value ? 'mdi-fullscreen-exit' : 'mdi-fullscreen',

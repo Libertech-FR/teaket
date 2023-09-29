@@ -56,7 +56,6 @@ export class ThreadController extends AbstractController {
           fragments: thread.fragments.map((frag: FragmentPart) => {
             const fragment: FragmentPartDto & { filestorage?: { link?: string } } = { ...frag.toObject() }
             if (frag.disposition === FragmentType.FILE && frag.filestorage) {
-              console.log('frag.filestorage', fragment)
               fragment.filestorage.link = '/' + ['core', 'filestorage', frag.filestorage.id, 'raw'].join('/') + '?' + [`signature=empty`].join('&')
             }
             return fragment
