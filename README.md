@@ -6,11 +6,11 @@
   <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/libertech-fr/teaket/total">
   <img alt="GitHub" src="https://img.shields.io/github/license/libertech-fr/teaket">
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/libertech-fr/teaket">
+  <a href="https://github.com/Libertech-Fr/teaket/actions/workflows/release.yml?event=workflow_dispatch"><img alt="GitHub contributors" src="https://github.com/Libertech-Fr/teaket/actions/workflows/release.yml/badge.svg"></a>
 </p>
 <br>
 
 # Teaket - Simple and modular ticketing
-[![Release](https://github.com/Libertech-Fr/teaket/actions/workflows/release.yml/badge.svg)](https://github.com/Libertech-Fr/teaket/actions/workflows/release.yml?event=workflow_dispatch)
 ## Getting started
 [WIP]
 ## Support
