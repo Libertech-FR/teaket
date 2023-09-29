@@ -45,6 +45,7 @@ jobs:
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
           context: ./service/
+          is_branch_protected: true
 
   build-app:
     runs-on: ubuntu-latest
@@ -67,3 +68,4 @@ jobs:
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
           context: ./app/
+          is_branch_protected: true
