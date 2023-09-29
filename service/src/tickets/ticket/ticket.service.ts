@@ -1,17 +1,7 @@
-import { forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
+import { forwardRef, Inject, Injectable, Logger, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Ticket } from './_schemas/ticket.schema'
-import {
-  Document,
-  HydratedDocument,
-  Model,
-  ModifyResult,
-  Query,
-  QueryOptions,
-  SaveOptions,
-  Types,
-  UpdateQuery,
-} from 'mongoose'
+import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
@@ -23,7 +13,8 @@ import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
 import { SettingsService } from '~/core/settings/settings.service'
 import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
-
+import { State } from '../state/_schemas/state.schema'
+import { TicketLifestep } from './_enum/ticket-lifestep.enum'
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {
   public constructor(
@@ -47,6 +38,11 @@ export class TicketService extends AbstractServiceSchema {
     return created
   }
 
+  public async closeMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[]): Promise<UpdateQuery<Query<T, T, any, T>>> {
+    Logger.log(`closeMany: ${ids}`)
+    return await this._model.updateMany({ _id: { $in: ids } }, { $set: { lifestep: TicketLifestep.CLOSED } })
+  }
+
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     update: UpdateQuery<T>,
@@ -56,11 +52,7 @@ export class TicketService extends AbstractServiceSchema {
     const beforeData = await this.findById<T>(_id)
     await this._model.db.transaction(async (session) => {
       updated = await super.update<T>(_id, update, { ...options, session })
-      const diff = await reduce(
-        Object.keys(update),
-        async (acc, key)   => isEqual(update[key], beforeData[key]) ? acc : acc.concat(key),
-        [],
-      )
+      const diff = await reduce(Object.keys(update), async (acc, key) => (isEqual(update[key], beforeData[key]) ? acc : acc.concat(key)), [])
       if (diff.length) {
         const message = this.i18n.t(`ticket.service.update.newFragment`, {
           args: {

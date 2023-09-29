@@ -5,7 +5,7 @@ q-page
     tk-searchfilters(:fields="fieldsList")
   .q-pa-md
     q-table(
-      :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="sequence" :visible-columns="visibleColumns"
+      :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
       v-model:pagination="pagination" title="Tickets" @request="onRequest"
       rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
       :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
@@ -20,8 +20,10 @@ q-page
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
             q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
-            q-btn(flat icon="mdi-delete" color="primary" rounded @click="deleteTickets" size="md" :disable="selected.length === 0")
-              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les tickets sélectionnés
+            q-btn(flat icon="mdi-delete" color="primary" rounded @click="closeTicketsDialog = true" size="md" :disable="selected.length === 0")
+              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Cloturer les tickets sélectionnés
+            q-btn(flat icon="mdi-close" color="primary" rounded @click="selected = []" size="md")
+              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la selection
         .col-12.col-sm.flex.justify-end
           q-btn-group(rounded flat)
             q-btn(flat icon="mdi-table-headers-eye" color="primary")
@@ -65,6 +67,15 @@ q-page
           span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
           span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
             q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
+
+  q-dialog(v-model="closeTicketsDialog")
+    q-card.q-pa-sm
+      q-card-section.row.items-center
+        .col-12.text-h6.text-center
+          | Voulez vous vraiment cloturer les tickets sélectionnés ?
+      q-card-actions
+        q-btn(color="red" label="Annuler" flat @click="closeTicketsDialog = false")
+        q-btn(color="green" label="Confirmer" flat @click="closeTickets")
 </template>
 
 <script lang="ts" setup>
@@ -72,6 +83,7 @@ import { ref, provide } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
 import { computed, useDayjs, onMounted } from "#imports";
 import { useRoute, useRouter } from "nuxt/app";
+import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
 import { ticketType, lifeSteps } from "#imports";
@@ -81,7 +93,9 @@ type State = components["schemas"]['StatesDto']
 const daysjs = useDayjs()
 const route = useRoute()
 const router = useRouter()
+const $q = useQuasar()
 
+const closeTicketsDialog = ref<boolean>(false)
 const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ticket', {
   method: 'get',
   query: computed(() => {
@@ -89,13 +103,34 @@ const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ti
       ...route.query,
     }
   })
-}).catch((err) => console.error(err))
+})
+
+if (error.value) {
+  $q.notify({
+    message: 'Impossible de récupérer les tickets',
+    type: 'negative'
+  })
+}
 const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('/core/categories', {
   method: 'get'
 })
+
+if (categoriesError.value) {
+  $q.notify({
+    message: 'Impossible de récupérer les catégories',
+    type: 'negative'
+  })
+}
 const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
   method: 'get'
 })
+
+if (statesError.value) {
+  $q.notify({
+    message: 'Impossible de récupérer les états',
+    type: 'negative'
+  })
+}
 
 onMounted(async () => {
   pagination.value!.rowsNumber = tickets.value?.total
@@ -105,7 +140,7 @@ onMounted(async () => {
   pagination.value!.rowsPerPage = parseInt(limit as string)
   pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
 
-  let sortKey = 'updatedAt'
+  let sortKey = 'metadata.lastUpdatedAt'
   let sortDirection = 'desc'
   for (const key in query) {
     if (key.startsWith('sort')) {
@@ -298,8 +333,31 @@ const mergeTickets = () => {
   console.log('mergeTickets')
 }
 
-const deleteTickets = () => {
-  console.log('deleteTickets')
+const openCloseTicketsModale = () => {
+  closeTicketsDialog.value = true
+}
+
+const closeTickets = async () => {
+  const { data, error } = await useHttpApi('/tickets/ticket/close-many', {
+    method: 'post',
+    body: {
+      ids: selected.value.map(s => s._id)
+    }
+  })
+  if (error.value) {
+    closeTicketsDialog.value = false
+    $q.notify({
+      message: 'Impossible de cloturer les tickets',
+      type: 'negative'
+    })
+  } else {
+    refresh()
+    closeTicketsDialog.value = false
+    $q.notify({
+      message: 'Tickets cloturés',
+      type: 'positive'
+    })
+  }
 }
 
 provide('fieldsList', fieldsList)
