@@ -9,6 +9,7 @@ import { Readable } from 'stream'
 export class TransformersFilestorageService extends AbstractService {
 
   public static readonly TRANSFORMERS = {
+    'text/plain': TransformersFilestorageService.transformPlain,
     'message/rfc822': TransformersFilestorageService.transformEml,
   }
 
@@ -36,6 +37,13 @@ export class TransformersFilestorageService extends AbstractService {
       return
     }
     await TransformersFilestorageService.TRANSFORMERS[mimeType](res, data, stream)
+  }
+
+  public static async transformPlain(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}"`)
+    stream.pipe(res)
+    return
   }
 
   protected static async transformEml(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
