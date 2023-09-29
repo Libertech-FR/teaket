@@ -25,6 +25,8 @@ export class ThreadController extends AbstractController {
     fragments: 1,
     metadata: 1,
     attachments: 1,
+    type: 1,
+    mailinfo: 1,
   }
 
   public constructor(private readonly _service: ThreadService) {
@@ -55,14 +57,7 @@ export class ThreadController extends AbstractController {
             const fragment: FragmentPartDto & { filestorage?: { link?: string } } = { ...frag.toObject() }
             if (frag.disposition === FragmentType.FILE && frag.filestorage) {
               console.log('frag.filestorage', fragment)
-              fragment.filestorage.link = '/' + [
-                'core',
-                'filestorage',
-                frag.filestorage.id,
-                'raw',
-              ].join('/') + '?' + [
-                `signature=empty`,
-              ].join('&')
+              fragment.filestorage.link = '/' + ['core', 'filestorage', frag.filestorage.id, 'raw'].join('/') + '?' + [`signature=empty`].join('&')
             }
             return fragment
           }),
