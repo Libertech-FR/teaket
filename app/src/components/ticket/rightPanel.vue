@@ -8,12 +8,12 @@ q-scroll-area(:style="{height: '100%'}")
                 q-btn(
                     v-if="!props.ticketData.envelope.assigned.find((user) => user.id === store.state.value.auth.user._id)"
                     color="green" icon="mdi-clipboard-arrow-down-outline" @click="assignTicket" size="md" :disable="isDisabledTicket"
-                ) 
+                )
                     q-tooltip.text-body2 M'assigner le ticket
-                q-btn(v-else color="red" icon="mdi-clipboard-arrow-up-outline" size="md" @click="unasignTicket" :disable="isDisabledTicket") 
+                q-btn(v-else color="red" icon="mdi-clipboard-arrow-up-outline" size="md" @click="unasignTicket" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Me désassigner le ticket
 
-                q-btn(color="primary" icon="mdi-printer" @click="console.log('Imprimer')" size="md")
+                //q-btn(color="primary" icon="mdi-printer" @click="console.log('Imprimer')" size="md")
                     q-tooltip.text-body2 Imprimer
                 q-btn(color="info" icon="mdi-content-save-all" @click="console.log('Save')" size="md" :disable="isDisabledTicket")
                     q-tooltip.text-body2 Sauvegarder
@@ -28,7 +28,7 @@ q-scroll-area(:style="{height: '100%'}")
                     q-card-section
                         q-select.q-my-xs(
                             @update:model-value="updateData({field: 'envelope.senders', value: $event})"
-                            label="Appelant(s)" filled 
+                            label="Appelant(s)" filled
                             v-model="ticketDataRef.envelope.senders"
                             option-label="name"
                             use-input use-chips multiple
@@ -37,7 +37,7 @@ q-scroll-area(:style="{height: '100%'}")
                         q-select.q-my-xs(
                             option-label="name"
                             @update:model-value="updateData({field: 'envelope.observers', value: $event})"
-                            label="Concerné(s)" filled 
+                            label="Concerné(s)" filled
                             v-model="ticketDataRef.envelope.observers"
                             use-input use-chips multiple
                             :disable="isDisabledTicket"
@@ -46,7 +46,7 @@ q-scroll-area(:style="{height: '100%'}")
                         q-select.q-my-xs(
                             option-label="name"
                             @update:model-value="updateData({field: 'envelope.assigned', value: $event})"
-                            label="Assigné(s)" filled 
+                            label="Assigné(s)" filled
                             v-model="ticketDataRef.envelope.assigned"
                             use-input use-chips multiple
                             :disable="isDisabledTicket"
@@ -55,15 +55,15 @@ q-scroll-area(:style="{height: '100%'}")
             q-expansion-item(label="Informations").bg-gray-4
                 q-card
                     q-card-section
-                        .row.items-center 
-                            .col-6 Type de ticket : 
+                        .row.items-center
+                            .col-6 Type de ticket :
                             .col-6
                                 q-chip(:icon="typeOfTicket.icon" :color="typeOfTicket.color" outline).q-mx-auto {{ typeOfTicket.label }}
                         q-select.q-my-xs(
-                            label="Projet(s)" filled 
+                            label="Projet(s)" filled
                             @update:model-value="updateData({field: 'project', value: $event})"
                             v-model="ticketDataRef.project"
-                            :options="getProjectsData" 
+                            :options="getProjectsData"
                             option-label="name"
                             :disable="isDisabledTicket"
                         )
@@ -71,7 +71,7 @@ q-scroll-area(:style="{height: '100%'}")
                             label="Priorité" filled
                             @update:model-value="updateData({field: 'priority', value: $event})"
                             v-model="ticketDataRef.priority"
-                            :options="priority" 
+                            :options="priority"
                             option-label="name"
                             :disable="isDisabledTicket"
                         )
@@ -79,7 +79,7 @@ q-scroll-area(:style="{height: '100%'}")
                             label="Impact" filled
                             @update:model-value="updateData({field: 'impact', value: $event})"
                             v-model="ticketDataRef.impact"
-                            :options="impact" 
+                            :options="impact"
                             option-label="name"
                             :disable="isDisabledTicket"
                         )
@@ -87,7 +87,7 @@ q-scroll-area(:style="{height: '100%'}")
                             label="SLA" filled
                             @update:model-value="updateData({field: 'sla', value: $event})"
                             v-model="ticketDataRef.sla"
-                            :options="getSlaData" 
+                            :options="getSlaData"
                             option-label="name"
                             :disable="isDisabledTicket"
                         )
@@ -98,15 +98,15 @@ q-scroll-area(:style="{height: '100%'}")
                 q-card
                     q-card-section
                         .row.justify-between.items-center
-                            .col-3 Etat : 
+                            .col-3 Etat :
                             .col
                                 q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
                             .col-3
                                 q-space
                                 q-btn(color="red" icon="mdi-close" size="md" flat @click="showCloseTicketDialog()" fab :disable="isDisabledTicket")
                                     q-tooltip.text-body2 Cloturer
-                        .row.items-center 
-                            .col-3 Status : 
+                        .row.items-center
+                            .col-3 Status :
                             .col
                                 q-chip(:icon="stateOfTicket?.icon" :color="stateOfTicket?.color" outline).q-mx-auto {{ stateOfTicket?.name }}
         q-dialog(v-model="closeTicketDialog")

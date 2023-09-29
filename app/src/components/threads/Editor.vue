@@ -15,12 +15,12 @@
             ).col
                 template(v-slot:threadTypes)
                     q-btn-dropdown(
-                        v-model="threadType" :options="threadTypes" 
+                        v-model="threadType" :options="threadTypes"
                         no-wrap unelevated no-caps dense flat
                         label="Type de thread" :icon="threadType.icon" :color="threadType.color"
                     )
                         q-list(dense)
-                            q-item(clickable v-for="threadType in threadTypes" :key="type.value" v-ripple tag="label")
+                            q-item(clickable v-for="(threadType, key) in threadTypes" :key="key" v-ripple tag="label")
                                 q-item-section
                                     q-item-label {{ type.label }}
             q-btn(
@@ -35,7 +35,7 @@
 
     q-dialog(v-model="isFullscreen")
         q-card
-            q-card-section.bg-grey-2 
+            q-card-section.bg-grey-2
                 q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
                 q-input(dense label="To" v-model="mailInfo.to" :disable="isDisabledTicket")
                 q-input(dense label="Copy" v-model="mailInfo.cc" :disable="isDisabledTicket")
@@ -44,7 +44,7 @@
                 q-editor(
                     min-height="50vh" min-width="50vw"
                     v-model="message" placeholder="Votre message ..."
-                    :definitions="editorDefinitions" 
+                    :definitions="editorDefinitions"
                     :toolbar="editorToolbar" class="q-pa-none"
                     :readonly="isDisabledTicket" ref="dropZoneRef"
                 )
@@ -56,7 +56,7 @@
             q-card-section
                 q-scroll-area(style="width: 100%; height: 100%")
                     q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-                        q-chip(v-for="attachement in attachements" :key="attachement.id" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
+                        q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
 
             .row
                 q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledTicket").col-6
@@ -206,7 +206,7 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
         }
     })
 
-    if (error.value) {
+    if (error && error.value) {
         $q.notify({
             message: 'Impossible d\'envoyer le message',
             type: 'negative'

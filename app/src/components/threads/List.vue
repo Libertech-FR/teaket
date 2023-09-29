@@ -8,7 +8,7 @@ q-scroll-area(ref="chatScroll")
                 span {{ key }}
                 q-separator(inset)
 
-        div(v-for="(message, index) in value" :id="message._id").q-mx-md
+        div(v-for="(message, index) in value" :id="message._id" :key='index').q-mx-md
             component(
                 :is="getThreadHookName(message.type)"
                 :data="message"
