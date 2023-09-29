@@ -23,13 +23,13 @@ export class TransformersFilestorageService extends AbstractService {
   public async transform(mime: string, res: Response, data: Filestorage, stream: NodeJS.ReadableStream, parent?: Filestorage): Promise<void> {
     if (data.type === FsType.EMBED && parent) {
       const parentMimeType = mime || parent.mime || 'application/octet-stream'
-      if (!TransformersFilestorageService.EMBED_TRANSFORMERS[parentMimeType]) {
+      if (!TransformersFilestorageService.EMBED_TRANSFORMERS.hasOwnProperty(parentMimeType)) {
         throw new Error(`No transformer for mime type ${parentMimeType}`)
       }
       return TransformersFilestorageService.EMBED_TRANSFORMERS[parentMimeType](mime, res, data, stream)
     }
     const mimeType = mime || data.mime || 'application/octet-stream'
-    if (!TransformersFilestorageService.TRANSFORMERS[mimeType]) {
+    if (!TransformersFilestorageService.TRANSFORMERS.hasOwnProperty(mimeType)) {
       res.setHeader('Content-Type', mimeType)
       res.setHeader('Content-Disposition', `attachment; filename="${(data as any).filename}"`)
       stream.pipe(res)
@@ -61,7 +61,7 @@ export class TransformersFilestorageService extends AbstractService {
     if (!embed) throw new Error(`No embed found for ${embedId}`)
     const streamEmbed = Readable.from(embed.content)
     const mimeType = mime || data.mime || 'application/octet-stream'
-    if (!TransformersFilestorageService.TRANSFORMERS[mimeType]) {
+    if (!TransformersFilestorageService.TRANSFORMERS.hasOwnProperty(mimeType)) {
       res.setHeader('Content-Type', mimeType)
       res.setHeader('Content-Disposition', `attachment; filename="${embedId}"`)
       streamEmbed.pipe(res)
