@@ -45,7 +45,6 @@ export class DtoValidationPipe extends ValidationPipe {
         })
       },
     })
-    console.log('request', JSON.stringify(request.body, null, 2))
   }
 
   public validationRecursive(error: ValidationError, prefix = ''): ValidationRecursive {

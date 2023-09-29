@@ -192,7 +192,6 @@ export class FilestorageService extends AbstractServiceSchema {
     options?: QueryOptions<T> | null | undefined,
   ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream, (Document<any, any, Filestorage> & Filestorage) | null]> {
     const data = await this.findById<Document<any, any, Filestorage> & Filestorage>(embedFilestorage.linkedTo, projection, options)
-    console.log('data', data)
     if (!data) throw new BadRequestException(`Filestorage ${embedFilestorage.linkedTo} not found`)
     const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
     return [

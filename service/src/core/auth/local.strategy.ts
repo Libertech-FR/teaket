@@ -7,7 +7,6 @@ import { IdentityState } from '~/core/identities/_enum/identity-state.enum'
 import { ExcludeIdentityType, IdentityType } from '~/_common/types/identity.type'
 import { omit } from 'radash'
 
-
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   public constructor(private readonly auth: AuthService) {

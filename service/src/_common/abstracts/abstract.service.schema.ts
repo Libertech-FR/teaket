@@ -176,7 +176,6 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
-    console.log('this.request?.user', this.request?.user)
     const document: Document<T, any, T> = new this._model({
       metadata: {
         createdBy: this.request?.user?.username || 'anonymous',
