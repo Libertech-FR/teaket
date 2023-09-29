@@ -16,7 +16,7 @@ q-page
           q-btn-group(rounded flat)
             q-btn(icon="mdi-eye-check-outline" color="primary" rounded @click="markAsRead" size="md" :disable="selected.length === 0" primary)
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Marqué comme lu
-            q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="selected.length === 0 || selected.length === 1")
+            q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="true ||selected.length === 0 || selected.length === 1")
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
             q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
@@ -34,7 +34,7 @@ q-page
                     q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
             q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
-            q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')") Créer
+            q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')" disabled) Créer
 
       template(v-slot:body-cell-actions="props")
         q-td(:props="props")

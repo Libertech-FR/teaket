@@ -103,7 +103,7 @@ q-scroll-area(:style="{height: '100%'}")
                                 q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
                             .col-3
                                 q-space
-                                q-btn(color="red" icon="mdi-close" size="md" flat @click="showCloseTicketDialog()" fab)
+                                q-btn(color="red" icon="mdi-close" size="md" flat @click="showCloseTicketDialog()" fab :disable="isDisabledTicket")
                                     q-tooltip.text-body2 Cloturer
                         .row.items-center 
                             .col-3 Status : 

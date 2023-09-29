@@ -36,10 +36,10 @@
     q-dialog(v-model="isFullscreen")
         q-card
             q-card-section.bg-grey-2 
-                q-input(dense label="From" v-model="mailInfo.from")
-                q-input(dense label="To" v-model="mailInfo.to")
-                q-input(dense label="Copy" v-model="mailInfo.cc")
-                q-input(dense label="Subject" v-model="mailInfo.subject")
+                q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
+                q-input(dense label="To" v-model="mailInfo.to" :disable="isDisabledTicket")
+                q-input(dense label="Copy" v-model="mailInfo.cc" :disable="isDisabledTicket")
+                q-input(dense label="Subject" v-model="mailInfo.subject" :disable="isDisabledTicket")
             q-card-section
                 q-editor(
                     min-height="50vh" min-width="50vw"
@@ -59,8 +59,8 @@
                         q-chip(v-for="attachement in attachements" :key="attachement.id" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
 
             .row
-                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)").col-6
-                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)").col-6
+                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledTicket").col-6
+                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledTicket").col-6
                 //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
                 //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
                 //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
@@ -112,7 +112,20 @@ const mailInfo = ref({
 })
 
 const onDrop = (files: File[] | null) => {
-    if (!files) return
+    if (isDisabledTicket) {
+        $q.notify({
+            message: 'Impossible d\'envoyer le fichier, le ticket est fermé',
+            type: 'negative'
+        })
+        return
+    }
+    if (!files) {
+        $q.notify({
+            message: 'Impossible d\'envoyer le fichier',
+            type: 'negative'
+        })
+        return
+    }
     for (const file of files) {
         uploadFile(file)
     }
@@ -205,7 +218,10 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
     attachements.value = []
     currentThreadId.value = generateMongoId()
     isFullscreen.value = false
-    $q.notify('Message envoyé')
+    $q.notify({
+        message: 'Message envoyé',
+        type: 'positive'
+    })
     emit('refreshThreadsList')
 }
 
