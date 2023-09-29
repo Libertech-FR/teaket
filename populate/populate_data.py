@@ -14,6 +14,7 @@ load_dotenv()
 
 # Get the MongoDB URL from the environment variables
 mongo_url = os.getenv("MONGODB_URL")
+token_path = os.path.join(os.path.dirname(__file__), '.dev-token.json')
 collections = [
     {
         "name": "identities",
@@ -88,24 +89,35 @@ collections = [
 
 api_endpoint = os.getenv("API_BASE_URL")
 
-async def populate_collection(collection):
+
+async def populate_collection(collection, token):
     logger.info(f"Populating {collection.get('name')}...")
     file_path = os.path.join(os.path.dirname(__file__), 'seeds', collection.get('file'))
+    headers = {
+        "Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"
+    }
     with open(file_path) as f:
         datas = json.load(f)
         for data in datas:
             try:
-                response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", json=data)
+                response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
                 response.raise_for_status()
                 logger.info(f"{collection.get('name')} inserted")
             except Exception as e:
                 logger.warning(f"Failed to insert {collection.get('name')}: {e}")
+                error_message = response.json().get('message')
+                logger.warning(f"Failed to insert {collection.get('name')}: {error_message}")
+
 
 async def main():
-    collection_tasks = [populate_collection(col) for col in collections]
+    with open(token_path) as f:
+        token = json.load(f).get("access_token")
+        logger.info(f"Load DEV Token <{token}>")
+    collection_tasks = [populate_collection(col, token) for col in collections]
     await asyncio.gather(*collection_tasks)
 
     print("DB populated")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
