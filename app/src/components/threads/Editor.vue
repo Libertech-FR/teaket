@@ -218,7 +218,10 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
     attachements.value = []
     currentThreadId.value = generateMongoId()
     isFullscreen.value = false
-    $q.notify('Message envoyé')
+    $q.notify({
+        message: 'Message envoyé',
+        type: 'positive'
+    })
     emit('refreshThreadsList')
 }
 
