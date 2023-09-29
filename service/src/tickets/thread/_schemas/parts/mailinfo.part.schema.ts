@@ -22,6 +22,11 @@ export class MailinfoPart extends Document {
   })
   public to?: MailaddressPart[]
 
+  @Prop({
+    type: [MailaddressPartSchema],
+  })
+  public cc?: MailaddressPart[]
+
   /**
    * @description TheadType=INCOMING ONLY !
    */

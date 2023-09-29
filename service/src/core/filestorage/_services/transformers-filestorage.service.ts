@@ -44,6 +44,7 @@ export class TransformersFilestorageService extends AbstractService {
     const { simpleParser } = await import('mailparser')
     const parsed = await simpleParser(stream)
     res.render('core/filestorage/transformers/eml', {
+      data,
       parsed,
     })
   }

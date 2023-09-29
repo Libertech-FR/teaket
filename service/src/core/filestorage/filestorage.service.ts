@@ -59,7 +59,7 @@ export class FilestorageService extends AbstractServiceSchema {
           if (!basePath || !hasFileExtension(basePath)) {
             partPath.push(file.originalname)
           }
-          payload.mime = file.mimetype
+          payload.mime = data.mime || file.mimetype
           await this.storage.getDisk(data.namespace).put(partPath.join('/'), file.buffer)
           break
         }

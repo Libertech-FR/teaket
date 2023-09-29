@@ -20,6 +20,7 @@ import { TicketLifestep } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { MailsWebhookDto } from '~/tickets/mails/_dto/mails.dto'
 import { isArray, pick } from 'radash'
 import { MailaddressPartDto } from '~/_common/dto/parts/mailaddress.part.dto'
+import { Thread } from '~/tickets/thread/_schemas/thread.schema'
 
 @Injectable()
 export class MailsService extends AbstractService {
@@ -40,27 +41,22 @@ export class MailsService extends AbstractService {
       from: parsed.from.text,
       subject: parsed.subject,
     }, null, 2)}`)
-    if (parsed.inReplyTo) {
-      this.logger.log(`Email detected as reply to ${parsed.inReplyTo}`)
-      const checkEmail = await this.filestorage.model.findOne({
-        'customFields.email.messageId': parsed.inReplyTo,
-      }) as Filestorage
-      if (checkEmail) {
-        const checkTicket = await this.ticket.model.findById(checkEmail?.customFields?.ticketId)
-        console.log('checkTicket', checkTicket)
-        this.logger.log(`Email already processed ${parsed.messageId}`)
-        return
-      }
-      console.log('checkEmail', checkEmail)
-      return
-    }
-    const checkEmail = await this.filestorage.model.findOne({
-      'customFields.email.messageId': parsed.messageId,
-    }) as Filestorage
+    const checkEmail = await this.thread.model.findOne({
+      'mailinfo.messageId': parsed.messageId,
+    }) as Thread
     if (checkEmail) {
-      const checkTicket = await this.ticket.model.findById(checkEmail?.customFields?.ticketId)
-      console.log('checkTicket', checkTicket)
-      this.logger.log(`Email already processed ${parsed.messageId}`)
+      this.logger.warn(`Email already processed ${parsed.messageId} in ticket ${checkEmail.ticketId} and thread ${checkEmail._id}`)
+      throw new BadRequestException(`Email already processed ${parsed.messageId} in ticket ${checkEmail.ticketId} and thread ${checkEmail._id}`)
+    }
+    if (parsed.inReplyTo) {
+      this.logger.log(`Existing ticket processing...`)
+      await this.ticket.model.db.transaction(async (session) => {
+        const [existTicket, existStoredFile] = await this.triggerInReplyTo(session, { body, parsed, file })
+        await this.triggerWebhookThread(session, { body, ticket: existTicket, storedFile: existStoredFile, parsed, file })
+      }).catch((e) => {
+        this.logger.error(e.message, e.stack)
+        throw new BadRequestException(e.message, { cause: e })
+      })
       return
     }
     this.logger.log(`New ticket processing...`)
@@ -71,6 +67,59 @@ export class MailsService extends AbstractService {
       this.logger.error(e.message, e.stack)
       throw new BadRequestException(e.message, { cause: e })
     })
+  }
+
+  protected async triggerInReplyTo(session: ClientSession, context: {
+    body: MailsWebhookDto,
+    parsed: ParsedMail,
+    file: Express.Multer.File,
+  }): Promise<[Ticket, Filestorage]> {
+    this.logger.log(`Email detected as reply to ${context.parsed.inReplyTo}`)
+    const checkReplyEmail = await this.thread.model.findOne({
+      'mailinfo.messageId': context.parsed.inReplyTo,
+    }) as Thread
+    if (!checkReplyEmail) {
+      this.logger.warn(`Email considered as reply to ${context.parsed.inReplyTo} but no original thread found`)
+      //TODO: check with from email contains +sequence and integrate if ticket exists
+      const repliedTo = Object.values(isArray(context.parsed.to) ? context.parsed.to : [context.parsed.to])
+        .map((to) => to.value[0].address)
+        .find((address) => address.includes('+'))
+      if (repliedTo) {
+        const repliedToId = repliedTo.split('@').shift().split('+').pop()
+        this.logger.log(`Email detected as reply to ${context.parsed.inReplyTo} with sequence ${repliedToId}`)
+        const existTicketBySequence = await this.ticket.model.findOne({ sequence: repliedToId }) as Ticket
+        if (existTicketBySequence) {
+          const existStoredFile = await this.filestorage.model.findOne({
+            _id: checkReplyEmail.mailinfo.filestorage.id,
+          }) as Filestorage
+          if (!existStoredFile) {
+            throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original filestorage found`)
+          }
+          return [
+            existTicketBySequence,
+            existStoredFile,
+          ]
+        }
+        this.logger.warn(`Email considered as reply to ${context.parsed.inReplyTo} but no original ticket found`)
+      }
+      throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original thread found`)
+    }
+    const existTicket = await this.ticket.model.findOne({
+      _id: checkReplyEmail.ticketId,
+    }) as Ticket
+    const existStoredFile = await this.filestorage.model.findOne({
+      _id: checkReplyEmail.mailinfo.filestorage.id,
+    }) as Filestorage
+    if (!existTicket) {
+      throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original ticket found`)
+    }
+    if (!existStoredFile) {
+      throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original filestorage found`)
+    }
+    return [
+      existTicket,
+      existStoredFile,
+    ]
   }
 
   protected async triggerWebhookTicket(session: ClientSession, context: {
@@ -176,7 +225,9 @@ export class MailsService extends AbstractService {
           entityId: entityTo._id,
         } as MailaddressPartDto
       }))
+    const newThreadId = new Types.ObjectId()
     const thread = await this.thread.create(<ThreadCreateDto>{
+      _id: newThreadId,
       ticketId: context.ticket._id,
       type: ThreadType.INCOMING,
       fragments: [
@@ -200,6 +251,7 @@ export class MailsService extends AbstractService {
           linkedTo: context.storedFile._id,
           mime: attachment.contentType,
           customFields: {
+            threadId: newThreadId,
             ticketId: context.ticket._id,
             emailHeaders: attachment.headers,
           },

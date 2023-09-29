@@ -66,4 +66,7 @@ buildseeds: ## Build populate image
 	docker build -t seeding -f ./populate/Dockerfile ./populate
 
 populate-db: ## Populate database
-	docker run --rm --network dev -v ./populate:/app -v ./service/.dev-token.json:/app/.dev-token.json seeding
+	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding
+
+populate-from-gaiasys: ## Populate database
+	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding python populate_from_gaiasys.py

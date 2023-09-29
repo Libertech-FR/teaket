@@ -21,6 +21,11 @@ export class MailinfoPartDto {
   @ApiProperty({ type: [MailaddressPartDto] })
   public to?: MailaddressPartDto[]
 
+  @IsOptional()
+  @Type(() => MailaddressPartDto)
+  @ApiProperty({ type: [MailaddressPartDto] })
+  public cc?: MailaddressPartDto[]
+
   /**
    * @description TheadType=INCOMING ONLY !
    */
