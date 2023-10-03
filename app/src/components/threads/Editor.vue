@@ -36,7 +36,7 @@
     q-dialog(v-model="isFullscreen")
         q-card
             q-card-section.bg-grey-2
-                q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
+                //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
                 q-input(dense label="To" v-model="mailInfo.to" :disable="isDisabledTicket")
                 q-input(dense label="Copy" v-model="mailInfo.cc" :disable="isDisabledTicket")
                 q-input(dense label="Subject" v-model="mailInfo.subject" :disable="isDisabledTicket")
