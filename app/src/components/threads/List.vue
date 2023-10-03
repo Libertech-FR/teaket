@@ -10,9 +10,15 @@ q-scroll-area(ref="chatScroll")
 
         div(v-for="(message, index) in value" :id="message._id" :key='index').q-mx-md
             component(
+                v-if="getThreadHookName(message.type) === 'tk-threadsTypesMail'"
                 :is="getThreadHookName(message.type)"
                 :data="message"
                 @email:response="emailReponse($event)"
+            )
+            component(
+                v-else
+                :is="getThreadHookName(message.type)"
+                :data="message"
             )
 </template>
 
