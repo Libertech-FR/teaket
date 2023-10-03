@@ -2,18 +2,17 @@ import os
 import json
 import asyncio
 
-import bson
-import paramiko
+from paramiko import SSHClient, AutoAddPolicy
 from logging import Logger
 from datetime import datetime
-import re
+from re import match
 
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import logging
-import base64
-import requests
+from base64 import b64decode
+from requests import get, post, exceptions
 from bson import ObjectId
 
 # Configure logging
@@ -22,8 +21,8 @@ logger: Logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-ssh = paramiko.SSHClient()
-ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh = SSHClient()
+ssh.set_missing_host_key_policy(AutoAddPolicy())
 
 ssh.connect(
     os.getenv("IMPORT_SSH_HOSTNAME"),
@@ -36,7 +35,7 @@ ssh.connect(
 mongo_url = os.getenv("MONGODB_URL")
 token_path = os.path.join(os.path.dirname(__file__), '.dev-token.json')
 import_mongo_url = os.getenv("IMPORT_MONGO_DB")
-client = motor.motor_asyncio.AsyncIOMotorClient(import_mongo_url)
+client = AsyncIOMotorClient(import_mongo_url)
 
 # sequence = LT000001
 # sequence = IMP00001
@@ -74,10 +73,10 @@ async def populate_collection_sla(collection, headers):
             }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json().get('message')}")
 
 
@@ -108,10 +107,10 @@ async def populate_collection_entities(collection, headers):
             }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json().get('message')}")
 
 
@@ -135,10 +134,10 @@ async def populate_collection_categories(collection, headers):
             }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json().get('message')}")
         for subcat in document.get('subCategory'):
             dataSubCat = {
@@ -157,10 +156,10 @@ async def populate_collection_categories(collection, headers):
                 }
             }
             try:
-                response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=dataSubCat)
+                response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=dataSubCat)
                 response.raise_for_status()
                 logger.info(f"{collection.get('name')} inserted")
-            except requests.exceptions.HTTPError as e:
+            except exceptions.HTTPError as e:
                 logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json()}")
 
 
@@ -183,10 +182,10 @@ async def populate_collection_source_requests(collection, headers):
             }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json().get('message')}")
 
 
@@ -279,10 +278,10 @@ async def populate_collection_source_ticket(collection, headers):
             }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", headers=headers, json=data)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e.response.json().get('message')}")
 
         pattern = r'\((.*?)\) <(.*?)>'
@@ -326,7 +325,7 @@ async def populate_collection_source_ticket(collection, headers):
                 if thread.get('from') is not None:
                     if isinstance(thread['from'], list) and len(thread['from']) == 0:
                         thread['from'] = ''
-                    matchFrom = re.match(pattern, thread['from'][0] if isinstance(thread['from'], list) and len(thread['from']) > 0 else thread['from'])
+                    matchFrom = match(pattern, thread['from'][0] if isinstance(thread['from'], list) and len(thread['from']) > 0 else thread['from'])
                     if matchFrom is not None:
                         fromMailInfo = {
                             "name": matchFrom.group(1),
@@ -336,7 +335,7 @@ async def populate_collection_source_ticket(collection, headers):
                 if thread.get('to') is not None:
                     if isinstance(thread['to'], list) and len(thread['to']) == 0:
                         thread['to'] = ''
-                    matchTo = re.match(pattern, thread['to'][0] if isinstance(thread['to'], list) and len(thread['to']) > 0 else thread['to'])
+                    matchTo = match(pattern, thread['to'][0] if isinstance(thread['to'], list) and len(thread['to']) > 0 else thread['to'])
                     if matchTo is not None:
                         toMailInfo = {
                             "name": matchTo.group(1),
@@ -346,7 +345,7 @@ async def populate_collection_source_ticket(collection, headers):
                 if thread.get('cc') is not None:
                     if isinstance(thread['cc'], list) and len(thread['cc']) == 0:
                         thread['cc'] = ''
-                    matchCc = re.match(pattern, thread['cc'][0] if isinstance(thread['cc'], list) and len(thread['cc']) > 0 else thread['cc'])
+                    matchCc = match(pattern, thread['cc'][0] if isinstance(thread['cc'], list) and len(thread['cc']) > 0 else thread['cc'])
                     if matchCc is not None:
                         ccMailInfo = {
                             "name": matchCc.group(1),
@@ -372,10 +371,10 @@ async def populate_collection_source_ticket(collection, headers):
                 }
             else:
                 try:
-                    response = requests.get(f"{api_endpoint}/{collection.get('endpointThread')}?filters%5BticketId%5D={str(document['_id'])}&filters%5B%3DcustomFields.importData.date%5D={thread['date']}&filters%5B%3DcustomFields.importData.text%5D={thread['text']}", headers=headers)
+                    response = get(f"{api_endpoint}/{collection.get('endpointThread')}?filters%5BticketId%5D={str(document['_id'])}&filters%5B%3DcustomFields.importData.date%5D={thread['date']}&filters%5B%3DcustomFields.importData.text%5D={thread['text']}", headers=headers)
                     response.raise_for_status()
                     verifyThread = False if len(response.json()['data']) > 0 else True
-                except requests.exceptions.HTTPError as e:
+                except exceptions.HTTPError as e:
                     logger.warning(f"Failed to search thread duplicate with text : <{thread['text']}>: {e.response.json()}")
                     verifyThread = False
                 if not verifyThread:
@@ -404,11 +403,11 @@ async def populate_collection_source_ticket(collection, headers):
                 }
             }
             try:
-                response = requests.post(f"{api_endpoint}/{collection.get('endpointThread')}",
+                response = post(f"{api_endpoint}/{collection.get('endpointThread')}",
                                          headers=headers, json=dataThread)
                 response.raise_for_status()
                 logger.info(f"{collection.get('name')} inserted")
-            except requests.exceptions.HTTPError as e:
+            except exceptions.HTTPError as e:
                 logger.warning(f"Failed to insert {collection.get('nameThread')}: {e.response.json()}")
 
 
@@ -439,7 +438,7 @@ async def populate_collection_filestorage(collection, headers):
             print(f"Ignore mail : {document['filename']}")
             continue
         remote_file = sftp.open(os.getenv("IMPORT_SSH_BASEPATH") + document['path'])
-        decoded_file = base64.b64decode(remote_file.read())
+        decoded_file = b64decode(remote_file.read())
         files = {'file': decoded_file}
         # noinspection PyUnresolvedReferences
         data = {
@@ -457,52 +456,52 @@ async def populate_collection_filestorage(collection, headers):
             # }
         }
         try:
-            response = requests.post(f"{api_endpoint}/{collection.get('endpoint')}", data=data, files=files)
+            response = post(f"{api_endpoint}/{collection.get('endpoint')}", data=data, files=files)
             response.raise_for_status()
             logger.info(f"{collection.get('name')} inserted")
-        except requests.exceptions.HTTPError as e:
+        except exceptions.HTTPError as e:
             logger.warning(f"Failed to insert {collection.get('name')}: {e} \n {e.response.text}")
 
 collections = [
-    # {
-    #     "name": "filestorage",
-    #     "import_db": "libertech-sys",
-    #     "import_db_ticket": "libertech-data",
-    #     "import_db_mail": "mails",
-    #     "import_collection": "userstorage",
-    #     "import_collection_ticket": "tickets",
-    #     "import_collection_mail": "mailsStore",
-    #     "endpoint": "core/filestorage",
-    #     "method": populate_collection_filestorage,
-    # },
-    # {
-    #     "name": "sla",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_sla",
-    #     "endpoint": "tickets/sla",
-    #     "method": populate_collection_sla
-    # },
-    # {
-    #     "name": "entities",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "peoples",
-    #     "endpoint": "core/entities",
-    #     "method": populate_collection_entities
-    # },
-    # {
-    #     "name": "categories",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_category",
-    #     "endpoint": "core/categories",
-    #     "method": populate_collection_categories
-    # },
-    # {
-    #     "name": "source-requests",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_sourcetype",
-    #     "endpoint": "tickets/source-request",
-    #     "method": populate_collection_source_requests
-    # },
+    {
+        "name": "filestorage",
+        "import_db": "libertech-sys",
+        "import_db_ticket": "libertech-data",
+        "import_db_mail": "mails",
+        "import_collection": "userstorage",
+        "import_collection_ticket": "tickets",
+        "import_collection_mail": "mailsStore",
+        "endpoint": "core/filestorage",
+        "method": populate_collection_filestorage,
+    },
+    {
+        "name": "sla",
+        "import_db": "libertech-data",
+        "import_collection": "tickets_sla",
+        "endpoint": "tickets/sla",
+        "method": populate_collection_sla
+    },
+    {
+        "name": "entities",
+        "import_db": "libertech-data",
+        "import_collection": "peoples",
+        "endpoint": "core/entities",
+        "method": populate_collection_entities
+    },
+    {
+        "name": "categories",
+        "import_db": "libertech-data",
+        "import_collection": "tickets_category",
+        "endpoint": "core/categories",
+        "method": populate_collection_categories
+    },
+    {
+        "name": "source-requests",
+        "import_db": "libertech-data",
+        "import_collection": "tickets_sourcetype",
+        "endpoint": "tickets/source-request",
+        "method": populate_collection_source_requests
+    },
     {
         "name": "ticket",
         "nameThread": "thread",

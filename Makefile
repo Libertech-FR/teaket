@@ -62,11 +62,14 @@ stop-dbs: ## Stop databases
 	@docker stop $(APPNAME)-mongodb || true
 	@docker stop $(APPNAME)-minio || true
 
-buildseeds: ## Build populate image
-	docker build -t seeding -f ./populate/Dockerfile ./populate
+build_from_data: ## Build populate image
+	docker build -t seeding_from_data -f ./populate/populate_data/Dockerfile ./populate
+
+build_from_gaiasys: ## Build populate image
+	docker build -t seeding_from_gaiasys -f ./populate/populate_from_gaiasys/Dockerfile ./populate
 
 populate-db: ## Populate database
-	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding
+	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding_from_data
 
 populate-from-gaiasys: ## Populate database
-	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding python populate_from_gaiasys.py
+	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding_from_gaiasys
