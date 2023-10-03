@@ -1,9 +1,14 @@
 import { useRouter, useRoute } from 'nuxt/app'
-export async function pushQuery(payload: { value: any; key: string; multiple?: boolean }) {
+export async function pushQuery(payload: { value: any; key: string; multiple?: boolean; pagination?: { skip: number; limit: number } }) {
   const route = useRoute()
   const router = useRouter()
-  const { value, key, multiple } = payload
+  const { value, key, multiple, pagination } = payload
   const query = { ...route.query }
+  if (pagination) {
+    query.skip = pagination.skip.toString()
+    query.limit = pagination.limit.toString()
+  }
+
   if (!multiple) {
     query[key] = value
   } else {

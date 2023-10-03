@@ -10,7 +10,7 @@ q-select(
 )
   template(v-slot:option="{ index, itemProps, opt, selected, toggleOption }")
     q-item-label(v-bind="itemProps" v-if="opt.header" header) {{ opt.label }}
-    q-item(v-bind="itemProps" v-else @click.capture='addFilter({index, value: opt})')
+    q-item(v-bind="itemProps" v-else @click.capture='addFilter(opt)')
       q-item-section(side)
         q-icon(:name="opt.icon" :color="opt.color" size="xs")
       q-item-section
@@ -50,33 +50,12 @@ onMounted(() => {
 })
 
 watch(() => route.query, () => {
-  filters.value = []
   getFilters()
 })
 
-// const getFilters = () => {
-//   const query = { ...route.query }
-//   for (const key in query) {
-//     if (key.startsWith('filters[@') && query[key] !== null) {
-//       const values = query[key]
-//       if (Array.isArray(values)) {
-//         for (const value of values) {
-//           const option = options.value.find(option => option.value === value)
-//           if (option) {
-//             filters.value.push(option)
-//           }
-//         }
-//       } else {
-//         const option = options.value.find(option => option.value === values)
-//         if (option) {
-//           filters.value.push(option)
-//         }
-//       }
-//     }
-//   }
-// }
-
 const getFilters = () => {
+  filters.value = []
+
   // Use destructuring assignment to clone the route.query object
   const query = { ...route.query };
 
@@ -86,10 +65,23 @@ const getFilters = () => {
     .filter(([key, value]) => key.startsWith('filters[@') && value !== null)
     .map(([key, value]) => {
       group = key.replace('filters[@', '').replace(']', '').replace('[]', '')
-      return Array.isArray(value) ? value : [value]
+      if (Array.isArray(value)) {
+        return value.map((val: string) => {
+          return {
+            value: val,
+            group
+          }
+        })
+      } else {
+        return {
+          value,
+          group
+        }
+      }
+
     })
     .flat()
-    .map(value => options.value.find(option => option.value?.toString() === value?.toString() && option.group === group))
+    .map(filter => options.value.find(option => option.value?.toString() === filter.value?.toString() && option.group === filter.group))
     .filter(option => option !== undefined);
   filters.value = filteredOptions;
 }
@@ -97,14 +89,6 @@ const getFilters = () => {
 
 const filters = ref<Option[]>([])
 const options = computed(() => {
-  // const categories: Option[] = categoriesData.value.data.map((category: Category) => {
-  //     return {
-  //         label: category.name,
-  //         value: category._id,
-  //         group: 'categories'
-  //     }
-  // }) ?? []
-  // categories.unshift({ label: 'Catégories', header: true })
   const ticketTypeOptions: Option[] = ticketType.map((type) => {
     return {
       label: type.label,
@@ -124,6 +108,14 @@ const options = computed(() => {
       color: state.color ?? ''
     }
   }) ?? []
+  const categories: Option[] = categoriesData.value.data.map((category: Category) => {
+    return {
+      label: category.name,
+      value: category._id,
+      group: 'categories'
+    }
+  }) ?? []
+  if (!categories.find(category => category.header)) categories.unshift({ label: 'Catégories', header: true })
   if (!states.find(state => state.header)) states.unshift({ label: 'États', header: true })
   if (!lifeSteps.find(lifestepstep => lifestepstep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
@@ -134,6 +126,7 @@ const options = computed(() => {
   ]
 })
 
+// Regroup the filters by key
 const regroupFilters = async () => {
   return filters.value.reduce((acc: any, filter: Option) => {
     const key = `filters[@${filter.group}]`
@@ -145,58 +138,33 @@ const regroupFilters = async () => {
   }, {})
 }
 
-// const pushQuery = async () => {
-//   const query = { ...route.query };
-//   const regroupedFilters = await regroupFilters();
-
-//   const keysToDelete = new Set<string>();
-
-//   for (const key in query) {
-//     if (key.startsWith('filters[@')) {
-//       keysToDelete.add(key);
-//     }
-//   }
-
-//   keysToDelete.forEach((keyToDelete) => {
-//     delete query[keyToDelete];
-//   });
-
-//   for (const key in regroupedFilters) {
-//     const values = regroupedFilters[key];
-//     const length = values.length;
-//     const keyWithBrackets = `${key}[]`;
-//     if (length === 1) {
-//       query[keyWithBrackets] = values;
-//     } else {
-//       if (query[keyWithBrackets]) {
-//         delete query[keyWithBrackets];
-//       }
-//       query[key] = values;
-//     }
-//   }
-
-//   router.push({
-//     query
-//   })
-// };
-
 const pushQueries = async () => {
+  // Regroup the filters by key
   const regroupedFilters = await regroupFilters();
+
+  // Push the filters to the url
   for (const key in regroupedFilters) {
     const values = regroupedFilters[key];
     for (const value of values) {
-      pushQuery({ value, key, multiple: true })
+      pushQuery({ value, key, multiple: true, pagination: { limit: 10, skip: 0 } })
     }
   }
 };
 
-const addFilter = (option: { index: number, value: Option }) => {
-  const index = filters.value.findIndex(filter => filter.value?.toString() === option.value.toString() && filter.group === option.value.group)
+const addFilter = (option: Option) => {
+  // Find the index of the option in the filters array
+  const index = filters.value.findIndex(filter => {
+    return filter.group === option.group && filter.value === option.value
+
+  })
+  console.log('index', index)
+  // If the option is not in the filters array, add it else remove it
   if (index === -1) {
-    filters.value.push(option.value)
+    filters.value.push(option)
   } else {
     filters.value.splice(index, 1)
   }
+  // Push the new filters to the url
   pushQueries()
 }
 

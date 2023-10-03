@@ -46,7 +46,7 @@ const removeFilter = (filter: Filter) => {
     ...route.query,
   }
   delete query[key]
-  router.push({
+  router.replace({
     query
   })
 }
