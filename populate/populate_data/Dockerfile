@@ -5,10 +5,9 @@ FROM python:3.8
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY ./ /app
+COPY ../. /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org requests python-dotenv motor
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run populate_data.py when the container launches
-CMD ["python", "populate_data.py"]
+CMD [ "python", "populate_data.py" ]
