@@ -55,7 +55,6 @@ watch(() => route.query, () => {
   getFilters()
 })
 
-const filters = ref<Option[]>([])
 const getFilters = () => {
   filters.value = []
 
