@@ -43,7 +43,7 @@ jobs:
           repository: ${{ github.repository }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.ACTION_TOKEN }}
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
           context: ./service/
