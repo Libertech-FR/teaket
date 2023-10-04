@@ -11,7 +11,7 @@ import { JwtPayload } from 'jsonwebtoken'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly auth: AuthService,
-    private readonly config: ConfigService,
+    config: ConfigService,
   ) {
     super({
       secretOrKey: config.get<string>('jwt.options.secret'),
