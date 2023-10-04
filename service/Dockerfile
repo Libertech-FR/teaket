@@ -19,7 +19,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-ADD Makefile .
+# ADD Makefile .
 ADD package.json .
 ADD *.lock .
 
