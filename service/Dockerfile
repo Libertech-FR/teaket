@@ -7,7 +7,7 @@ COPY ../package.json /tmp/root-package.json
 COPY ./package.json /tmp/service-package.json
 
 # Install jq
-RUN apk add --no-cache jq
+RUN apk update && apk --no-cache upgrade && apk add --no-cache jq
 
 # Merge package.json files
 RUN jq -s '.[0] * .[1]' /tmp/root-package.json /tmp/service-package.json > /tmp/merged-package.json
