@@ -42,7 +42,7 @@ jobs:
           latest: ${{ github.event.inputs.latest }}
           repository: ${{ github.repository }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.ACTION_TOKEN }}
           github_token: ${{ secrets.ACTION_TOKEN }}
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
@@ -64,8 +64,8 @@ jobs:
           latest: ${{ github.event.inputs.latest }}
           repository: ${{ github.repository }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.ACTION_TOKEN }}
+          github_token: ${{ secrets.ACTION_TOKEN }}
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
           context: ./app/
