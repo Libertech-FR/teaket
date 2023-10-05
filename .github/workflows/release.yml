@@ -26,6 +26,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      NEW_VERSION: ${{ steps.output_version.outputs.NEW_VERSION }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -70,31 +72,35 @@ jobs:
           makeLatest: ${{ inputs.latest }}
           tag: ${{ env.NEW_VERSION }}
 
+      - name: Output new version
+        id: output_version
+        run: |
+          echo NEW_VERSION=${{ env.NEW_VERSION }} >> $GITHUB_OUTPUT
   define_envs:
     runs-on: ubuntu-latest
+    outputs:
+      REPO_NAME: ${{ steps.get_repo_name.outputs.REPO_NAME }}
+      REPO_FULL_NAME: ${{ steps.get_repo_full_name.outputs.REPO_FULL_NAME }}
+      CURRENT_DATE_TIME: ${{ steps.get_current_date_time.outputs.CURRENT_DATE_TIME }}
     steps:
       - name: Get repo name
         shell: bash
         id: get_repo_name
         run: |
-          echo "REPO_NAME=$(basename "${{ github.repository }}")" >> $GITHUB_ENV
+          echo "REPO_NAME=$(basename "${{ github.repository }}")" >> $GITHUB_OUTPUT
 
       - name: Get repo full name
         shell: bash
         id: get_repo_full_name
         run: |
           FULL_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "REPO_FULL_NAME=$FULL_NAME" >> $GITHUB_ENV
+          echo "REPO_FULL_NAME=$FULL_NAME" >> $GITHUB_OUTPUT
 
       - name: Get current date and time
         shell: bash
         id: get_current_date_time
         run: |
-          echo "CURRENT_DATE_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-    outputs:
-      repo_name: ${{ steps.get_repo_name.outputs.stdout }}
-      repo_full_name: ${{ steps.get_repo_full_name.outputs.stdout }}
-      current_date_time: ${{ steps.get_current_date_time.outputs.stdout }}
+          echo "CURRENT_DATE_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
   build-service:
     runs-on: ubuntu-latest
@@ -102,7 +108,11 @@ jobs:
     steps:
       - name: Get output variables from define_envs job
         id: get_env_vars
-        run: echo "::set-output name=repo_name::${{ needs.define_envs.outputs.repo_name }}::set-output name=repo_full_name::${{ needs.define_envs.outputs.repo_full_name }}::set-output name=current_date_time::${{ needs.define_envs.outputs.current_date_time }}"
+        run: |
+          echo "REPO_NAME=${{ needs.define_envs.outputs.repo_name }} >> $GITHUB_ENV"
+          echo "REPO_FULL_NAME=${{ needs.define_envs.outputs.repo_full_name }} >> $GITHUB_ENV"
+          echo "CURRENT_DATE_TIME=${{ needs.define_envs.outputs.current_date_time }} >> $GITHUB_ENV"
+          echo "NEW_VERSION=${{ needs.release.outputs.NEW_VERSION }} >> $GITHUB_ENV"
 
       - name: Define service tags
         run: |
@@ -139,7 +149,11 @@ jobs:
     steps:
       - name: Get output variables from define_envs job
         id: get_env_vars
-        run: echo "::set-output name=repo_name::${{ needs.define_envs.outputs.repo_name }}::set-output name=repo_full_name::${{ needs.define_envs.outputs.repo_full_name }}::set-output name=current_date_time::${{ needs.define_envs.outputs.current_date_time }}"
+        run: |
+          echo "REPO_NAME=${{ needs.define_envs.outputs.repo_name }} >> $GITHUB_ENV"
+          echo "REPO_FULL_NAME=${{ needs.define_envs.outputs.repo_full_name }} >> $GITHUB_ENV"
+          echo "CURRENT_DATE_TIME=${{ needs.define_envs.outputs.current_date_time }} >> $GITHUB_ENV"
+          echo "NEW_VERSION=${{ needs.release.outputs.NEW_VERSION }} >> $GITHUB_ENV"
 
       - name: Define app tags
         run: |
