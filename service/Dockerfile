@@ -14,13 +14,13 @@ RUN jq -s '.[0] * .[1]' /tmp/root-package.json /tmp/service-package.json > /tmp/
 
 COPY /tmp/merged-package.json /usr/src/app/package.json
 
-RUN apk add git && yarn install \
+RUN apk add git && yarn workspace @libertech-fr/teaket_service install \
   --prefer-offline \
   --frozen-lockfile \
   --non-interactive \
   --production=false
 
-RUN yarn run build
+RUN yarn workspace @libertech-fr/teaket_service run build
 
 FROM node:18.14.0-alpine AS production
 
@@ -52,9 +52,9 @@ RUN yarn install \
 
 #COPY . .
 
-COPY --from=builder /usr/src/app/dist ./dist
-COPY views ./views
+COPY --from=builder /usr/src/app/service/dist ./dist
+COPY ./service/views ./views
 
 EXPOSE 2100
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "workspace", "@libertech-fr/teaket_service", "start:prod"]

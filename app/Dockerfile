@@ -31,7 +31,7 @@ RUN jq -s '.[0] * .[1]' /tmp/root-package.json /tmp/app-package.json > /tmp/merg
 
 COPY /tmp/merged-package.json /usr/src/app/package.json
 
-RUN yarn install \
+RUN yarn workspace @libertech-fr/teaket_app install \
   --prefer-offline \
   --frozen-lockfile \
   --non-interactive \
@@ -42,4 +42,4 @@ RUN yarn install \
 
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "workspace", "@libertech-fr/teaket_app", "start:prod"]
