@@ -73,3 +73,9 @@ populate-db: ## Populate database
 
 populate-from-gaiasys: ## Populate database
 	docker run --rm --network dev -v $(CURDIR)/populate:/app -v $(CURDIR)/service/.dev-token.json:/app/.dev-token.json seeding_from_gaiasys
+
+build-app:
+	docker build -t teaket-app -f ./app/Dockerfile .
+
+build-service:
+	docker build -t teaket-service -f ./service/Dockerfile .
