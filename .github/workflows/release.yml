@@ -9,9 +9,9 @@ on:
         default: 'patch'
         type: choice
         options:
-        - 'major'
-        - 'minor'
-        - 'patch'
+          - 'major'
+          - 'minor'
+          - 'patch'
       build_docker_image:
         description: "Construire l'image docker ?"
         required: true
@@ -24,49 +24,188 @@ on:
         type: boolean
 
 jobs:
+  pre-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        shell: bash
+        run: |
+          git config user.email "github@action.com"
+          git config user.name "Github Action"
+          echo ${{ secrets.GITHUB_TOKEN }} > token.txt
+          git config credential.helper "store --file=token.txt"
+
+      - name: Update version
+        shell: bash
+        run: |
+          echo NEW_VERSION=$(yarn version --${{ inputs.version_increment }} --json | jq -r '.data | select(contains("New version")) | split(":")[1] | gsub(" ";"")') >> $GITHUB_ENV
+        env:
+          REF: ${{ github.ref }}
+
+      - name: Push to protected branch
+        uses: CasperWA/push-protected@v2
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          branch: main
+          unprotect_reviews: true
+          tags: true
+
+      - name: Publish release
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ env.NEW_VERSION }}
+          commit: ${{ env.REF }}
+          draft: false
+          prerelease: false
+          generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          makeLatest: ${{ inputs.latest }}
+          tag: ${{ env.NEW_VERSION }}
+
+      - name: Get repo name
+        shell: bash
+        id: get_repo_name
+        run: |
+          echo "REPO_NAME=$(basename "${{ github.repository }}")" >> $GITHUB_ENV
+
+      - name: Get repo full name
+        shell: bash
+        id: get_repo_full_name
+        run: |
+          FULL_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "REPO_FULL_NAME=$FULL_NAME" >> $GITHUB_ENV
+
+      - name: Get current date and time
+        shell: bash
+        id: get_current_date_time
+        run: |
+          echo "CURRENT_DATE_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+
   build-service:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      actions: write
-      pull-requests: write
-      checks: write
-
+    needs: pre-build
+    if: ${{ inputs.build_docker_image == 'true' }}
     steps:
-      - name: Build docker
-        uses: Libertech-FR/lt-actions/release@main
+      - name: Define service tags
+        shell: bash
+        id: define_tags
+        run: |
+          if [ "${{ inputs.latest }}" = "true" ]; then
+            echo "SERVICE_TAGS=ghcr.io/${{ env.REPO_FULL_NAME }}/service:${{ env.NEW_VERSION }},ghcr.io/${{ env.REPO_FULL_NAME }}/service:latest" >> $GITHUB_ENV
+          else
+            echo "SERVICE_TAGS=ghcr.io/${{ env.REPO_FULL_NAME }}/service:${{ env.NEW_VERSION }}" >> $GITHUB_ENV
+          fi
+        env:
+          NEW_VERSION: ${{ env.NEW_VERSION }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+          REPO_FULL_NAME: ${{ env.REPO_FULL_NAME }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
-          version_increment: ${{ github.event.inputs.version_increment }}
-          build_docker_image: ${{ github.event.inputs.build_docker_image }}
-          latest: ${{ github.event.inputs.latest }}
-          repository: ${{ github.repository }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.ACTION_TOKEN }}
-          # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
-          context: ./service/
-          is_branch_protected: true
+          username: ${{ github.actor }}
+          password: ${{ secrets.ACTION_TOKEN }}
+        env:
+          REGISTRY: 'ghcr.io'
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: '.'
+          file: './service/Dockerfile'
+          push: true
+          tags: ${{ env.SERVICE_TAGS }}
+        env:
+          TAGS: ${{ env.SERVICE_TAGS }}
 
   build-app:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-
+    needs: pre-build
+    if: ${{ inputs.build_docker_image == 'true' }}
     steps:
-      - name: Build docker
-        uses: Libertech-FR/lt-actions/release@main
+      - name: Define app tags
+        shell: bash
+        id: define_tags
+        run: |
+          if [ "${{ inputs.latest }}" = "true" ]; then
+            echo "APP_TAGS=ghcr.io/${{ env.REPO_FULL_NAME }}/app:${{ env.NEW_VERSION }},ghcr.io/${{ env.REPO_FULL_NAME }}/app:latest" >> $GITHUB_ENV
+          else
+            echo "APP_TAGS=ghcr.io/${{ env.REPO_FULL_NAME }}/app:${{ env.NEW_VERSION }}" >> $GITHUB_ENV
+          fi
+        env:
+          NEW_VERSION: ${{ env.NEW_VERSION }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+          REPO_FULL_NAME: ${{ env.REPO_FULL_NAME }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
-          version_increment: ${{ github.event.inputs.version_increment }}
-          build_docker_image: ${{ github.event.inputs.build_docker_image }}
-          latest: ${{ github.event.inputs.latest }}
-          repository: ${{ github.repository }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.ACTION_TOKEN }}
-          # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
-          context: ./app/
-          is_branch_protected: true
+          username: ${{ github.actor }}
+          password: ${{ secrets.ACTION_TOKEN }}
+        env:
+          REGISTRY: 'ghcr.io'
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: '.'
+          file: './app/Dockerfile'
+          push: true
+          tags: ${{ env.APP_TAGS }}
+        env:
+          tags: ${{ env.APP_TAGS }}
+# runs-on: ubuntu-latest
+# permissions:
+#   contents: write
+#   packages: write
+#   actions: write
+#   pull-requests: write
+#   checks: write
+
+#   steps:
+#     - name: Build docker
+#       uses: Libertech-FR/lt-actions/release@main
+#       with:
+#         version_increment: ${{ github.event.inputs.version_increment }}
+#         build_docker_image: ${{ github.event.inputs.build_docker_image }}
+#         latest: ${{ github.event.inputs.latest }}
+#         repository: ${{ github.repository }}
+#         username: ${{ github.actor }}
+#         password: ${{ secrets.GITHUB_TOKEN }}
+#         github_token: ${{ secrets.ACTION_TOKEN }}
+#         # Optional parameters, thoses are default values :
+#         registry: 'ghcr.io'
+#         context: ./service/
+#         is_branch_protected: true
+
+# build-app:
+#   runs-on: ubuntu-latest
+#   permissions:
+#     contents: write
+#     packages: write
+
+#   steps:
+#     - name: Build docker
+#       uses: Libertech-FR/lt-actions/release@main
+#       with:
+#         version_increment: ${{ github.event.inputs.version_increment }}
+#         build_docker_image: ${{ github.event.inputs.build_docker_image }}
+#         latest: ${{ github.event.inputs.latest }}
+#         repository: ${{ github.repository }}
+#         username: ${{ github.actor }}
+#         password: ${{ secrets.GITHUB_TOKEN }}
+#         github_token: ${{ secrets.ACTION_TOKEN }}
+#         # Optional parameters, thoses are default values :
+#         registry: 'ghcr.io'
+#         context: ./app/
+#         is_branch_protected: true
