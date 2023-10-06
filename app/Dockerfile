@@ -23,13 +23,6 @@ RUN apk update && apk --no-cache upgrade && apk add --no-cache \
   tcpdump
 
 COPY . .
-COPY ../package.json /tmp/root-package.json
-COPY ./package.json /tmp/app-package.json
-
-# Merge package.json files
-RUN jq -s '.[0] * .[1]' /tmp/root-package.json /tmp/app-package.json > /tmp/merged-package.json
-
-COPY /tmp/merged-package.json /usr/src/app/package.json
 
 RUN yarn workspace @libertech-fr/teaket_app install \
   --prefer-offline \
