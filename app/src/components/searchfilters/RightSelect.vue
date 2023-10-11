@@ -30,6 +30,8 @@ import { useRoute, useRouter } from 'nuxt/app';
 import { ticketType, lifeSteps } from "#imports";
 type Category = components['schemas']['CategoriesDto']
 type State = components['schemas']['StatesDto']
+type CateforyFetch = components["schemas"]["PaginatedResponseDto"] & { data: Category[] }
+type StateFetch = components["schemas"]["PaginatedResponseDto"] & { data: State[] }
 
 type Option = {
   label: string
@@ -42,8 +44,8 @@ type Option = {
 const route = useRoute()
 const router = useRouter()
 
-const { data: statesData } = inject('stateFetch')
-const { data: categoriesData } = inject('categoriesFetch')
+const { data: statesData } = inject('stateFetch') as StateFetch
+const { data: categoriesData } = inject('categoriesFetch') as CateforyFetch
 
 onMounted(() => {
   getFilters()
@@ -54,28 +56,7 @@ watch(() => route.query, () => {
   getFilters()
 })
 
-// const getFilters = () => {
-//   const query = { ...route.query }
-//   for (const key in query) {
-//     if (key.startsWith('filters[@') && query[key] !== null) {
-//       const values = query[key]
-//       if (Array.isArray(values)) {
-//         for (const value of values) {
-//           const option = options.value.find(option => option.value === value)
-//           if (option) {
-//             filters.value.push(option)
-//           }
-//         }
-//       } else {
-//         const option = options.value.find(option => option.value === values)
-//         if (option) {
-//           filters.value.push(option)
-//         }
-//       }
-//     }
-//   }
-// }
-
+const filters = ref<Option[]>([])
 const getFilters = () => {
   // Use destructuring assignment to clone the route.query object
   const query = { ...route.query };
@@ -90,12 +71,11 @@ const getFilters = () => {
     })
     .flat()
     .map(value => options.value.find(option => option.value?.toString() === value?.toString() && option.group === group))
-    .filter(option => option !== undefined);
+    .filter(option => option !== undefined) as Option[]
   filters.value = filteredOptions;
 }
 
 
-const filters = ref<Option[]>([])
 const options = computed(() => {
   // const categories: Option[] = categoriesData.value.data.map((category: Category) => {
   //     return {
@@ -125,7 +105,7 @@ const options = computed(() => {
     }
   }) ?? []
   if (!states.find(state => state.header)) states.unshift({ label: 'États', header: true })
-  if (!lifeSteps.find(lifestepstep => lifestepstep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
+  if (!lifeSteps.find(lifestep => lifestep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
     ...lifeSteps,
     ...ticketTypeOptions,
@@ -144,41 +124,6 @@ const regroupFilters = async () => {
     return acc
   }, {})
 }
-
-// const pushQuery = async () => {
-//   const query = { ...route.query };
-//   const regroupedFilters = await regroupFilters();
-
-//   const keysToDelete = new Set<string>();
-
-//   for (const key in query) {
-//     if (key.startsWith('filters[@')) {
-//       keysToDelete.add(key);
-//     }
-//   }
-
-//   keysToDelete.forEach((keyToDelete) => {
-//     delete query[keyToDelete];
-//   });
-
-//   for (const key in regroupedFilters) {
-//     const values = regroupedFilters[key];
-//     const length = values.length;
-//     const keyWithBrackets = `${key}[]`;
-//     if (length === 1) {
-//       query[keyWithBrackets] = values;
-//     } else {
-//       if (query[keyWithBrackets]) {
-//         delete query[keyWithBrackets];
-//       }
-//       query[key] = values;
-//     }
-//   }
-
-//   router.push({
-//     query
-//   })
-// };
 
 const pushQueries = async () => {
   const regroupedFilters = await regroupFilters();

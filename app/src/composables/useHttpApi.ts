@@ -14,7 +14,7 @@ export type MaybeRefOrGetter2<T> = MaybeRef2<T> | (() => T)
 
 export type OkStatus = 200 | 201 | 202 | 203 | 204 | 206 | 207 | '2XX' | 'default'
 export type ErrorStatus =
-  500
+  | 500
   | '5XX'
   | 400
   | 401
@@ -57,6 +57,15 @@ export interface Paths extends paths {
   [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+export function resolvePath(path: MaybeRefOrGetter2<string>, params?: Record<string, MaybeRefOrGetter2<unknown>>) {
+  // To simplify typings, OpenAPI path parameters can be expanded here
+  if (params) {
+    return Object.entries(params).reduce((path, [name, value]) => `${path}`.replace(`{${name}}`, encodeURIComponent(String(toValue(value)))), path)
+  }
+
+  return path
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MediaTypes<T, Status extends keyof any> = {
   [S in Status]: T extends {
@@ -67,7 +76,9 @@ type MediaTypes<T, Status extends keyof any> = {
         }
       }
     }
-  } ? Model : never
+  }
+    ? Model
+    : never
 }[Status]
 export type OpenApiResponse<T> = MediaTypes<T, OkStatus>
 export type OpenApiError<T> = MediaTypes<T, ErrorStatus>
@@ -79,18 +90,21 @@ export function useHttpApi<
   ResT extends keyof Paths & string,
   ErrorT = FetchError,
   ReqT extends NitroFetchRequest = NitroFetchRequest,
-  Method extends AvailableRouterMethod<ReqT> = ResT extends void ? 'get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT> : AvailableRouterMethod<ReqT>,
-  _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT, DataT = _ResT,
-  PickKeys extends KeysOf<DataT> = KeysOf<DataT>, DefaultT = null
+  Method extends AvailableRouterMethod<ReqT> = ResT extends void ? ('get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT>) : AvailableRouterMethod<ReqT>,
+  _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT,
+  DataT = _ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = null,
 >(
   path: MaybeRefOrGetter2<ResT>,
   opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method> & {
-    method: Method,
-    body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json'],
+    method: Method
+    body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']
+    pathParams?: Record<string, string>
   },
 ): AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]> | undefined, FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>> {
-// ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
-  return useHttp(path, {
+  // ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
+  return useHttp(resolvePath(path, opts?.pathParams), {
     baseURL: 'http://localhost:7100',
     ...opts,
   })

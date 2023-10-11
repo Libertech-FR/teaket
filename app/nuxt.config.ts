@@ -3,7 +3,6 @@ import pugPlugin from 'vite-plugin-pug'
 import openapiTS from 'openapi-typescript'
 import { writeFileSync } from 'fs'
 import { resolve } from 'path'
-import timezone from 'dayjs/plugin/timezone'
 
 const TK_APP_API_URL = process.env.TK_APP_API_URL || 'http://localhost:7100'
 

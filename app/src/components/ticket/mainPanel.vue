@@ -9,7 +9,11 @@ q-card(style="height: 100%").column
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-
+import type { ComponentPublicInstance } from 'vue'
+import type { components } from '#build/types/service-api'
+import { TkThreadsList } from '#components';
+import { TkThreadsEditor } from '#components';
+type ThreadDto = components["schemas"]['ThreadDto']
 const props = defineProps({
   sequence: {
     type: String,
@@ -21,14 +25,19 @@ const props = defineProps({
   },
 })
 
-const threadsListRef = ref(null)
-const threadsEditorRef = ref(null)
+const threadsListRef = ref<InstanceType<typeof TkThreadsList> | null>(null)
+const threadsEditorRef = ref<InstanceType<typeof TkThreadsEditor> | null>(null)
 
 const refreshThreadsList = () => {
-  threadsListRef.value?.$.exposed.threadsRefresh()
+  if (!threadsListRef.value) return
+  threadsListRef.value?.threadsRefresh()
 }
-
-const emailReponse = (data: ThreadDto) => {
-  threadsEditorRef.value?.$.exposed.emailReponse(data)
+type MailinfoPartDto = components["schemas"]["MailinfoPartDto"]
+const emailReponse = (data: MailinfoPartDto) => {
+  console.log(data)
+  if (!threadsEditorRef.value) {
+    return
+  }
+  threadsEditorRef.value?.emailReponse(data)
 }
 </script>

@@ -18,15 +18,19 @@ import { useDraggable } from '@vueuse/core'
 import { LifeStep } from '~/utils';
 import { useQuasar } from 'quasar';
 import type { components } from '#build/types/service-api'
-type Ticket = components['schemas']['Ticket']
+import { assign } from 'radash'
+type Ticket = components['schemas']['TicketDto']
 
 const route = useRoute()
 const router = useRouter()
 const id = ref<string>('')
 const $q = useQuasar()
 
-const { data: ticketData, refresh, error } = await useHttpApi(`/tickets/ticket/${route.params.id}`, {
-    method: 'get'
+const { data: ticketData, refresh, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
+    method: 'get',
+    pathParams: {
+        _id: `${route.params.id}`
+    }
 })
 
 const refreshTicketData = () => {
@@ -34,16 +38,11 @@ const refreshTicketData = () => {
     // router.go(0)
 }
 
-const updateTicketData = (ticket: { field: string, value: any }) => {
-    ticketData.value.data[ticket.field] = ticket.value
-    // console.log(ticket, ticketData.value.data[ticket.field])
-}
-
 const isDisabledTicket = computed(() => {
-    return ticketData.value.data.lifestep === LifeStep.CLOSED
+    return ticketData.value?.data?.lifestep === LifeStep.CLOSED
 })
 
-provide('isDisabledTicket', isDisabledTicket)
+provide('isDisabledTicket', isDisabledTicket.value)
 
 </script>
 
