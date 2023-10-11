@@ -61,10 +61,6 @@
             .row
                 q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledTicket").col-6
                 q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledTicket").col-6
-                //- .col-1(ref="dropZoneRef").bg-grey-3.items-center.justify-center.q-pa-md
-                //-   q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'")
-                //-   span.q-ml-md(:class="isOverDropZone ? 'text-primary' : 'text-grey-5'") Déposer un fichier
-
 </template>
 
 <script lang="ts" setup>
@@ -80,11 +76,8 @@ import { FsType } from '~/utils'
 import { useQuasar } from 'quasar';
 import ObjectID from 'bson-objectid';
 
-type ThreadCreateDto = components['schemas']['ThreadCreateDto']
-type FsPart = components["schemas"]["IdfsPartDto"]
-type MailinfoPartDto = components["schemas"]["MailinfoPartDto"]
-
 const emit = defineEmits(['refreshThreadsList'])
+const isDisabledTicket = inject<boolean>('isDisabledTicket')
 
 const dayjs = useDayjs()
 const store = usePinia()
@@ -96,21 +89,7 @@ onMounted(() => {
     currentThreadId.value = generateMongoId()
 })
 
-const threadType = ref(threadTypes[0])
-const isFullscreen = ref(false)
-const message = ref('')
-const dropZoneRef = ref<HTMLDivElement>()
-const dropZoneDialogRef = ref<HTMLDivElement>()
-const editorDialog = ref()
-const currentThreadId = ref<ObjectID | null>(null)
-const attachements = ref<FsPart[]>([])
-const mailInfo = ref({
-    from: '',
-    to: '',
-    cc: '',
-    subject: ''
-})
-
+// Manage dropzone
 const onDrop = (files: File[] | null) => {
     if (isDisabledTicket) {
         $q.notify({
@@ -130,19 +109,25 @@ const onDrop = (files: File[] | null) => {
         uploadFile(file)
     }
 }
-
+const dropZoneRef = ref<HTMLDivElement>()
+const dropZoneDialogRef = ref<HTMLDivElement>()
 const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
 const { isOverDropZone: isOverDropZoneDialog } = useDropZone(dropZoneDialogRef, onDrop)
 
+// Manage attachements
+type FsPart = components["schemas"]["IdfsPartDto"]
+type FilestorageCreateDto = components["schemas"]["FilestorageCreateDto"]
+const attachements = ref<FsPart[]>([])
+const currentThreadId = ref<ObjectID | null>(null)
 const uploadFile = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('namespace', 's3')
-    formData.append('path', `/ticket/${route.params.id}/attachement/${currentThreadId}/${file.name}`)
+    formData.append('path', `/ticket/${route.params.id}/attachement/${currentThreadId.value}/${file.name}`)
     formData.append('type', FsType.FILE)
-    const { data, error } = await useHttpApi(`core/filestorage`, {
+    const { data, error } = await useHttpApi(`/core/filestorage`, {
         method: 'post',
-        body: formData
+        body: formData as unknown as FilestorageCreateDto
     })
     if (error.value) {
         $q.notify({
@@ -151,27 +136,24 @@ const uploadFile = async (file: File) => {
         })
         return
     }
+    const id = generateMongoId(data.value?.data?._id).toHexString()
     const fsPart: FsPart = {
-        id: data.value?.data._id,
+        id,
         name: file.name,
-        namespace: data.value?.data.namespace,
-        path: data.value?.data.path,
-        mime: data.value?.data.mime
+        namespace: data.value?.data?.namespace || '',
+        path: data.value?.data?.path || '',
+        mime: data.value?.data?.mime || '',
     }
     attachements.value.push(fsPart)
     $q.notify('Fichier envoyé')
 }
 
-const emailReponse = (data: MailinfoPartDto) => {
-    mailInfo.value.to = data.from.address
-    mailInfo.value.from = data.to[0].address
-    mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
-    isFullscreen.value = true
-}
-
 const removeAttachment = (id: string) => {
-    const { data, error } = useHttpApi(`core/filestorage/${id}`, {
-        method: 'delete'
+    const { data, error } = useHttpApi(`/core/filestorage/{_id}`, {
+        method: 'delete',
+        pathParams: {
+            _id: id
+        }
     })
     if (error.value) {
         $q.notify({
@@ -180,19 +162,38 @@ const removeAttachment = (id: string) => {
         })
         return
     }
-    attachements.value = attachements.value.filter(attachement => attachement.id !== id)
+    attachements.value = attachements.value.filter(attachement => `${attachement.id}` !== id)
     $q.notify('Fichier supprimé')
 }
 
-const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
-    const { data: thread, error } = useHttpApi(`tickets/thread`, {
+const editorDialog = ref()
+const isFullscreen = ref(false)
+const mailInfo = ref({
+    from: '',
+    to: '',
+    cc: '',
+    subject: ''
+})
+type MailinfoPartDto = components["schemas"]["MailinfoPartDto"]
+const emailReponse = (data: MailinfoPartDto) => {
+    mailInfo.value.to = data.from.address
+    mailInfo.value.from = data.to[0].address
+    mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
+    isFullscreen.value = true
+}
+
+// Manage editor
+const threadType = ref(threadTypes[0])
+const message = ref('')
+async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
+    const { data: thread, error } = await useHttpApi(`/tickets/thread`, {
         method: 'post',
         body: {
-            _id: currentThreadId.value,
+            _id: currentThreadId.value?.toHexString(),
             attachments: attachements.value,
-            ticketId: generateMongoId(route.params.id.toString()),
+            ticketId: generateStringMongoId(route.params.id.toString()),
             fragments: [{
-                id: generateMongoId(),
+                id: generateStringMongoId(),
                 disposition: 'raw',
                 message: message.value
             }],
@@ -206,7 +207,10 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
         }
     })
 
-    if (error && error.value) {
+    console.log('thread', thread.value)
+    console.log('error', error.value)
+
+    if (error.value) {
         $q.notify({
             message: 'Impossible d\'envoyer le message',
             type: 'negative'
@@ -224,7 +228,6 @@ const sendMessage = (type: ThreadType = ThreadType.OUTGOING) => {
     })
     emit('refreshThreadsList')
 }
-
 const editorDefinitions = computed(() => (
     {
         fullscreen: {
@@ -236,12 +239,9 @@ const editorDefinitions = computed(() => (
             }
         }
     }))
-
 const editorToolbar = computed(() => {
     return [['left', 'center', 'right', 'justify'], ['bold', 'italic', 'underline', 'strike'], ['undo', 'redo'], ['fullscreen']]
 })
-
-const isDisabledTicket = inject('isDisabledTicket')
 
 defineExpose({
     emailReponse
