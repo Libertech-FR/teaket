@@ -13,7 +13,6 @@ q-btn-group(rounded flat)
 
 <script lang="ts" setup>
 import type { PropType } from 'vue'
-import { defineProps } from 'vue'
 
 const props = defineProps({
     columns: {
