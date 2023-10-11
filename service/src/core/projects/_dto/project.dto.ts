@@ -31,7 +31,7 @@ export class ProjectCreateDto extends CustomFieldsDto {
 
 export class ProjectDto extends ProjectCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

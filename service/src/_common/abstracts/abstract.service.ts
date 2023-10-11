@@ -24,7 +24,6 @@ export abstract class AbstractService {
     this.logger = new Logger(this.serviceName)
     if (context?.eventEmitter) {
       if (!context?.request) throw new Error('Request is not defined in ' + this.serviceName)
-      Logger.debug('Now listening scrud for ' + this.moduleName + '.' + this.serviceName, 'EventEmitter2')
     }
   }
 

@@ -22,7 +22,7 @@ export class FilestorageCreateDto extends CustomFieldsDto {
 
   @IsOptional()
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public linkedTo?: string
 
   @IsOptional()
@@ -53,7 +53,7 @@ export class FilestorageCreateDto extends CustomFieldsDto {
 
 export class FilestorageDto extends FilestorageCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

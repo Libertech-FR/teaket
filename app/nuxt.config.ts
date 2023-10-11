@@ -82,6 +82,7 @@ export default defineNuxtConfig({
     iconSet: 'mdi-v5',
     plugins: ['Notify'],
     config: {
+      dark: 'auto',
       notify: {
         timeout: 2500,
         position: 'top-right',

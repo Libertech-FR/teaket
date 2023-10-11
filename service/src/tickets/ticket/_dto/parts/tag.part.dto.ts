@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger'
 export class TagPartDto {
   @IsMongoId({ message: 'ObjectId invalide'})
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public id: string
 
   @IsString()

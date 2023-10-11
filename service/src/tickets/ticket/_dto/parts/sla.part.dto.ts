@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger'
 export class SlaPartDto {
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public id: string
 
   @IsString()

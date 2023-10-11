@@ -15,7 +15,7 @@ export class CategoriesCreateDto extends CustomFieldsDto {
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public parentId?: string
 
   @IsNumber()
@@ -46,7 +46,7 @@ export class CategoriesCreateDto extends CustomFieldsDto {
 
 export class CategoriesDto extends CategoriesCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

@@ -37,7 +37,7 @@ export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public parentId?: string
 
   @IsOptional()
@@ -82,7 +82,7 @@ export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
 
 export class TicketDto extends TicketCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 
   @IsString()

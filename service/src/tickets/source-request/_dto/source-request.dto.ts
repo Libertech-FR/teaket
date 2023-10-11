@@ -41,7 +41,7 @@ export class SourceRequestCreateDto extends CustomFieldsDto {
 
 export class SourceRequestDto extends SourceRequestCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

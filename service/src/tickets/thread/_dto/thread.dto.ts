@@ -12,7 +12,7 @@ import { MailinfoPartDto } from '~/tickets/thread/_dto/parts/mailinfo.part.dto'
 
 export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public ticketId: Types.ObjectId
 
   @IsNumber()
@@ -22,7 +22,7 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public threadId?: Types.ObjectId
 
   @ValidateNested()
@@ -58,7 +58,7 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
 
 export class ThreadDto extends ThreadCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 
