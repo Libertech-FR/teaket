@@ -10,7 +10,7 @@ export class PreferencesCreateDto {
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public entityId?: string
 
   @IsObject()
@@ -22,7 +22,7 @@ export class PreferencesCreateDto {
 
 export class PreferencesDto extends PreferencesCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

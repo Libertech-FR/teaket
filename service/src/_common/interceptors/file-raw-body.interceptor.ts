@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Inject, mixin, NestInterceptor, Optional, Type } from '@nestjs/common'
 import { Observable } from 'rxjs'
-import * as multer from 'multer'
+import multer from 'multer'
 import { MULTER_MODULE_OPTIONS } from '@nestjs/platform-express/multer/files.constants'
 import { MulterModuleOptions } from '@nestjs/platform-express'
 import { transformException } from '@nestjs/platform-express/multer/multer/multer.utils'

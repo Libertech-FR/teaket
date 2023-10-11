@@ -18,7 +18,7 @@ export class TriggersCreateDto {
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public pluginId?: string
 
   @IsBoolean()
@@ -29,7 +29,7 @@ export class TriggersCreateDto {
 
 export class TriggersDto extends TriggersCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 
