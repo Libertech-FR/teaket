@@ -30,6 +30,8 @@ import { useRoute, useRouter } from 'nuxt/app';
 import { ticketType, lifeSteps } from "#imports";
 type Category = components['schemas']['CategoriesDto']
 type State = components['schemas']['StatesDto']
+type CateforyFetch = components["schemas"]["PaginatedResponseDto"] & { data: Category[] }
+type StateFetch = components["schemas"]["PaginatedResponseDto"] & { data: State[] }
 
 type Option = {
   label: string
@@ -42,8 +44,8 @@ type Option = {
 const route = useRoute()
 const router = useRouter()
 
-const { data: statesData } = inject('stateFetch')
-const { data: categoriesData } = inject('categoriesFetch')
+const { data: statesData } = inject('stateFetch') as StateFetch
+const { data: categoriesData } = inject('categoriesFetch') as CateforyFetch
 
 onMounted(() => {
   getFilters()
@@ -53,6 +55,7 @@ watch(() => route.query, () => {
   getFilters()
 })
 
+const filters = ref<Option[]>([])
 const getFilters = () => {
   filters.value = []
 
@@ -87,7 +90,6 @@ const getFilters = () => {
 }
 
 
-const filters = ref<Option[]>([])
 const options = computed(() => {
   const ticketTypeOptions: Option[] = ticketType.map((type) => {
     return {
@@ -117,7 +119,7 @@ const options = computed(() => {
   }) ?? []
   if (!categories.find(category => category.header)) categories.unshift({ label: 'Catégories', header: true })
   if (!states.find(state => state.header)) states.unshift({ label: 'États', header: true })
-  if (!lifeSteps.find(lifestepstep => lifestepstep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
+  if (!lifeSteps.find(lifestep => lifestep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
     ...lifeSteps,
     ...ticketTypeOptions,

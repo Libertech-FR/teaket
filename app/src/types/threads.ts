@@ -1,7 +1,8 @@
-import { addComponent } from '@nuxt/kit'
-import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
-import { Metadata } from './'
+import type { components } from '#build/types/service-api'
 
+import { Metadata } from './'
+type FragmentPartDto = components['schemas']['FragmentPartDto']
+type Attachments = components['schemas']['IdfsPartDto'][]
 export interface Threads {
   [date: string]: Thread[]
 }
@@ -9,7 +10,7 @@ export interface Threads {
 export interface Thread {
   _id: string
   metadata: Metadata
-  ticketId: string
+  ticketId: string | Record<string, never>
   fragments: Fragments
   attachments: Attachments
 }
@@ -38,12 +39,4 @@ export interface Raw {
   id: string
   disposition: string
   message: string
-}
-
-export interface Attachments {
-  id: string
-  name: string
-  namespace: string
-  path: string
-  mime: string
 }

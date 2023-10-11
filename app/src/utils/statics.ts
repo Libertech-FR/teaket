@@ -3,9 +3,18 @@ export const ticketType = [
   { label: 'Demande', value: 2, icon: 'mdi-account-question', color: 'primary' },
 ]
 
-export const lifeSteps = [
+export const lifeSteps: {
+  label: string
+  value?: number
+  group?: string
+  icon?: string
+  color?: string
+  header?: boolean
+}[] = [
   { label: 'Ouvert', value: 1, group: 'lifestep', icon: 'mdi-circle', color: 'green' },
   { label: 'Clos', value: 0, group: 'lifestep', icon: 'mdi-circle', color: 'red' },
+  { label: 'Archivé', value: -1, group: 'lifestep', icon: 'mdi-archive', color: 'grey' },
+  { label: 'Fusionné', value: -2, group: 'lifestep', icon: 'mdi-merge', color: 'primary' },
 ]
 
 export enum TicketType {
@@ -14,8 +23,10 @@ export enum TicketType {
 }
 
 export enum LifeStep {
-  OPEN = 1,
+  MERGED = -2,
+  ARCHIVED = -1,
   CLOSED = 0,
+  OPEN = 1,
 }
 
 export enum ThreadType {

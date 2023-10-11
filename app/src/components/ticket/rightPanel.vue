@@ -109,15 +109,7 @@ q-scroll-area(:style="{height: '100%'}")
                             .col-3 Status :
                             .col
                                 q-chip(:icon="stateOfTicket?.icon" :color="stateOfTicket?.color" outline).q-mx-auto {{ stateOfTicket?.name }}
-        q-dialog(v-model="closeTicketDialog")
-            q-card.q-pa-sm
-                q-card-section.row.items-center
-                    .col-12.text-h6.text-center
-                        | Voulez vous vraiment cloturer le ticket ?
-                q-card-actions
-                    q-btn(color="red" label="Annuler" flat @click="closeDialog = false")
-                    q-btn(color="green" label="Confirmer" flat @click="closeTicket")
-                    //- q-btn(color="primary" label="Réouvrir" flat @click="openTicket")
+        tk-tickets-close-dialog(v-model="closeTicketDialog" :selected="[props.ticketData]")
 </template>
 
 <script lang="ts" setup>
@@ -126,19 +118,22 @@ import { ticketType, lifeSteps, useDayjs, usePinia, useQuasar } from '#imports';
 import { useHttpApi } from '~/composables/useHttpApi';
 import { useRouter } from 'vue-router';
 import { impact, priority, LifeStep, EntityType } from '~/utils';
+import type { PropType } from 'vue';
 import type { components } from '#build/types/service-api'
+type Ticket = components['schemas']['TicketDto']
 type TicketUpdateDto = components['schemas']['TicketUpdateDto']
 type IdnamePartDto = components["schemas"]["IdnamePartDto"]
 type SlaPartDto = components["schemas"]["SlaPartDto"]
 type EntityPartDto = components["schemas"]["EntityPartDto"]
 type TicketType = components['schemas']['TicketDto']
-type Entity = components['schemas']['EntityDto']
-type State = components['schemas']['StateDto']
+type Entity = components['schemas']['EntitiesDto']
+type State = components['schemas']['StatesDto']
 type Project = components['schemas']['ProjectDto']
 type Sla = components['schemas']['SlaDto']
+
 const props = defineProps({
     ticketData: {
-        type: Object,
+        type: Object as PropType<Ticket>,
         required: true
     }
 })
@@ -224,7 +219,7 @@ const lifestepOfTicket = computed(() => {
 })
 
 const stateOfTicket = computed(() => {
-    return states.value?.data.find((state: State) => state._id === props.ticketData.state?.id)
+    return states.value?.data.find((state: State) => state._id === `${props.ticketData.state?.id}`)
 })
 
 const getProjectsData = computed(() => {
@@ -275,7 +270,7 @@ const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto |
     if (ticket.field === 'project') body.value.project = ticket.value as IdnamePartDto
     if (ticket.field === 'priority') body.value.priority = ticket.value as IdnamePartDto
     if (ticket.field === 'impact') body.value.impact = ticket.value as IdnamePartDto
-    if (ticket.field === 'sla') body.value.sla = { ...ticket.value, manual: true } as SlaPartDto
+    if (ticket.field === 'sla') body.value.sla = { ...ticket.value as SlaPartDto, manual: true } as SlaPartDto
     if (ticket.field === 'lifestep') body.value.lifestep = ticket.value as LifeStep
 
     countdown.value = 3
@@ -283,8 +278,11 @@ const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto |
         countdown.value--
     }, 1000)
     timeoutId = setTimeout(() => {
-        useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+        useHttpApi(`/tickets/ticket/{_id}`, {
             method: 'patch',
+            pathParams: {
+                _id: props.ticketData._id
+            },
             body: body.value
         })
         body.value = {}
@@ -312,50 +310,13 @@ const dueDate = computed(() => {
     return dayjs(props.ticketData.sla.dueAt).format('YYYY-MM-DD')
 })
 
-const showCloseTicketDialog = () => {
-    closeTicketDialog.value = true
-}
-
-const closeTicket = async () => {
-    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
-        method: 'patch',
-        body: {
-            lifestep: LifeStep.CLOSED,
-        }
-    })
-    if (error.value) {
-        $q.notify({
-            message: 'Erreur lors de la cloture du ticket',
-            color: 'negative'
-        })
-    }
-
-    emit('fetch:ticketData')
-    closeTicketDialog.value = false
-}
-
-const openTicket = async () => {
-    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
-        method: 'patch',
-        body: {
-            lifestep: LifeStep.OPEN,
-        }
-    })
-
-    if (error.value) {
-        $q.notify({
-            message: 'Erreur lors de la réouverture du ticket',
-            color: 'negative'
-        })
-    }
-    emit('fetch:ticketData')
-    closeTicketDialog.value = false
-}
-
 const assignTicket = async () => {
     const user = store.state.value.auth.user
-    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
         method: 'patch',
+        pathParams: {
+            _id: props.ticketData._id
+        },
         body: {
             envelope: {
                 ...props.ticketData.envelope,
@@ -381,13 +342,15 @@ const assignTicket = async () => {
 
 const unasignTicket = async () => {
     const user = store.state.value.auth.user
-    const { data, error } = await useHttpApi(`/tickets/ticket/${props.ticketData._id}`, {
+    const envelope = { ...props.ticketData.envelope }
+    envelope.assigned = envelope.assigned.filter((user) => user.id !== store.state.value.auth.user._id)
+    const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
         method: 'patch',
+        pathParams: {
+            _id: props.ticketData._id
+        },
         body: {
-            envelope: {
-                ...props.ticketData.envelope,
-                assigned: props.ticketData.envelope.assigned.filter((user: { id: string, name: string, type: number }) => user.id !== store.state.value.auth.user._id)
-            }
+            envelope
         }
     })
     if (error.value) {
@@ -399,6 +362,6 @@ const unasignTicket = async () => {
     emit('fetch:ticketData')
 }
 
-const isDisabledTicket = inject('isDisabledTicket')
+const isDisabledTicket = inject<boolean>('isDisabledTicket')
 
 </script>

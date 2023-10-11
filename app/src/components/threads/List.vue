@@ -27,10 +27,11 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app';
 import { useHttpApi } from '~/composables';
 import { useDayjs, usePinia } from "#imports";
-import type { Fragments, Threads } from '~/types';
+import type { Fragments, Threads, Thread } from '~/types';
 import type { components } from '#build/types/service-api'
 import { useQuasar } from 'quasar';
 import { ThreadType } from '../../utils';
+import { QScrollArea } from 'quasar';
 
 type ThreadDto = components['schemas']['ThreadDto']
 
@@ -40,23 +41,50 @@ const route = useRoute()
 const $q = useQuasar()
 const user = store.state.value.auth.user
 
+function getThreadHookName(type: ThreadType) {
+    const baseUrl = 'tk-threadsTypes'
+    switch (type) {
+        case ThreadType.EXTERNAL:
+        case ThreadType.INTERNAL:
+        case ThreadType.OUTGOING:
+            return `${baseUrl}Base`
+        case ThreadType.INCOMING:
+            return `${baseUrl}Mail`
+        case ThreadType.SYSTEM:
+            return `${baseUrl}System`
+        default:
+            return `${baseUrl}Base`
+    }
+}
+
+const emit = defineEmits(['email:response'])
+function emailReponse(data: ThreadDto) {
+    emit('email:response', data)
+}
+
+const chatScroll = ref<InstanceType<typeof QScrollArea> | null>(null)
+function scroll(): void {
+    const target = chatScroll.value?.getScrollTarget()
+    if (!target) return
+    chatScroll.value?.setScrollPosition('vertical', target.scrollHeight, 0)
+}
+
 onMounted(() => {
     scroll()
 })
 
-const emit = defineEmits(['email:response'])
-const emailReponse = (data: ThreadDto) => {
-    emit('email:response', data)
+async function threadsRefresh() {
+    await refresh()
+    scroll()
 }
 
-const chatScroll = ref(null)
 const baseQuery = ref({
     "filters[ticketId]": `${route.params.id}`,
     "sort[metadata.createdAt]": 'asc',
     "limit": 999,
 })
 
-const { data: threads, refresh, error } = await useHttpApi(`tickets/thread`, {
+const { data: threads, refresh, error } = await useHttpApi(`/tickets/thread`, {
     method: 'get',
     query: computed(() => {
         return {
@@ -73,32 +101,10 @@ if (error.value) {
     })
 }
 
-
-const threadsRefresh = async () => {
-    await refresh()
-    scroll()
-}
-
-const getThreadHookName = (type: ThreadType) => {
-    const baseUrl = 'tk-threadsTypes'
-    switch (type) {
-        case ThreadType.EXTERNAL:
-        case ThreadType.INTERNAL:
-        case ThreadType.OUTGOING:
-            return `${baseUrl}Base`
-        case ThreadType.INCOMING:
-            return `${baseUrl}Mail`
-        case ThreadType.SYSTEM:
-            return `${baseUrl}System`
-        default:
-            return `${baseUrl}Base`
-    }
-}
-
-const getMessageByDay = computed((): Threads => {
+const getMessageByDay = computed((): Threads | undefined => {
     return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {
         const day = dayjs(thread.metadata.createdAt).format('DD-MM-YYYY')
-        const newTread = {
+        const newTread: Thread = {
             ...thread,
             fragments: getThreadFragments(thread)
         }
@@ -108,19 +114,13 @@ const getMessageByDay = computed((): Threads => {
     }, {})
 })
 
-const getThreadFragments = (thread: ThreadDto): Fragments => {
+function getThreadFragments(thread: ThreadDto): Fragments {
     return thread.fragments.reduce((acc: Fragments, fragment) => {
         const disposition = fragment.disposition
         if (!acc[disposition]) acc[disposition] = []
         acc[disposition]?.push(fragment)
         return acc as Fragments
     }, {})
-}
-
-
-const scroll = () => {
-    const target = chatScroll.value?.getScrollTarget()
-    chatScroll.value?.setScrollPosition('vertical', target.scrollHeight, 0)
 }
 
 defineExpose({

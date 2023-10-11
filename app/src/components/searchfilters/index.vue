@@ -25,7 +25,7 @@ type MainData = {
 const dayjs = useDayjs()
 const router = useRouter()
 const route = useRoute()
-const fields = inject('fieldsList', ref<Field[]>([]))
+const fields = inject<Field[]>('fieldsList')
 const mainData = ref<MainData>()
 
 const parseSimpleFilter = (searchFilter: SearchFilter) => {
@@ -86,7 +86,7 @@ const optionsRegrouped = (): { name: string, label: { label: string, value: stri
 const getAllFields = () => {
   const rightSelectOptions = optionsRegrouped()
   return [
-    ...fields.value,
+    ...fields,
     ...rightSelectOptions
   ]
 }

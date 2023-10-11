@@ -1,55 +1,25 @@
 
 <template lang="pug">
-Suspense 
-  q-page
-    .q-pa-md
-      tk-searchfilters(:fields="fieldsList")
-    .q-pa-md
-      q-table(
-        :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
-        v-model:pagination="pagination" title="Tickets" @request="onRequest"
-        rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
-        :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-        selection="multiple" v-model:selected="selected" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
-      )
-        template(v-slot:top)
-          .col-12.col-sm
-            q-btn-group(rounded flat)
-              q-btn(icon="mdi-eye-check-outline" color="primary" rounded @click="markAsRead" size="md" :disable="selected.length === 0" primary)
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Marqué comme lu
-              q-btn(flat icon="mdi-merge" color="primary" rounded @click="mergeTickets" size="md" :disable="true ||selected.length === 0 || selected.length === 1")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les tickets sélectionnés
-              q-btn(flat icon="mdi-eye" color="primary" rounded @click="goToTicket(selected[0])" size="md" :disable="selected.length === 0 || selected.length !== 1")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher les tickets sélectionnés
-              q-btn(flat icon="mdi-delete" color="primary" rounded @click="closeTicketsDialog = true" size="md" :disable="selected.length === 0")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Cloturer les tickets sélectionnés
-              q-btn(flat icon="mdi-close" color="primary" rounded @click="selected = []" size="md")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la selection
-          .col-12.col-sm.flex.justify-end
-            q-btn-group(rounded flat)
-              q-btn(flat icon="mdi-table-headers-eye" color="primary")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher des colones
-                q-menu(max-width="350px" max-height="350px").q-pa-md
-                  .row
-                    .col-6(v-for="column in columns" :key="column.value")
-                      q-toggle(v-model="visibleColumns" :label="column.label" :val="column.name")
-              q-btn(flat icon="mdi-refresh" @click="refresh" color="primary")
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
-              q-btn(icon="mdi-plus" color="primary" @click="$router.push('/tickets/create')" disabled) Créer
+q-page
+  .q-pa-md
+    tk-searchfilters(:fields="fieldsList")
+  .q-pa-md
+    q-table(
+      :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
+      v-model:pagination="pagination" title="Tickets" @request="onRequest"
+      rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
+      :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
+      selection="multiple" v-model:selected="selected" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
+    )
+      template(v-slot:top-left)
+        tk-tickets-table-top-left(:selected="selected" @openDialog="closeTicketsDialog = true" @clear="selected = []")
+      template(v-slot:top-right)
+        tk-tickets-table-top-right(:columns="columns" v-model="visibleColumns" @refresh="refresh")
+      template(v-slot:body-cell-actions="props")
+        tk-tickets-table-actions(:ticket="props.row" @closeTicket="closeTicket($event)")
 
-        template(v-slot:body-cell-actions="props")
-          q-td(:props="props")
-            q-btn-group(flat rounded)
-              q-btn(icon="mdi-eye" color="primary" @click="goToTicket(props.row)" size="sm" flat)
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
-              q-btn(icon="mdi-delete" color="primary" @click="openCloseTicketsModale($event)" size="sm" flat)
-                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
-
-        template(v-slot:body-cell-states="props")
-          q-td(:props="props")
-            q-icon(:name="getLifeStep(props.row.lifestep).icon" :color="getLifeStep(props.row.lifestep).color" size="xs").q-mx-xs
-            q-icon(:name="getType(props.row.type).icon" :color="getType(props.row.type).color" size="xs").q-mx-xs
-            q-icon(v-if="props.row.state && props.row.state.icon" :name="getState(props.row.state).icon" :color="getState(props.row.state).color" size="xs").q-mx-xs
+      template(v-slot:body-cell-states="props")
+        tk-tickets-table-state-col(:ticket="props.row")
 
         template(v-slot:body-cell-envelope.senders.name="props")
           q-td(:props="props")
@@ -69,14 +39,7 @@ Suspense
             span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
               q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
 
-    q-dialog(v-model="closeTicketsDialog")
-      q-card.q-pa-sm
-        q-card-section.row.items-center
-          .col-12.text-h6.text-center
-            | Voulez vous vraiment cloturer les tickets sélectionnés ?
-        q-card-actions
-          q-btn(color="red" label="Annuler" flat @click="closeTicketsDialog = false")
-          q-btn(color="green" label="Confirmer" flat @click="closeTickets")
+  tk-tickets-closeDialog(v-model="closeTicketsDialog" :selected="selected" @refresh="refresh")
 </template>
 
 <script lang="ts" setup>
@@ -87,7 +50,6 @@ import { useRoute, useRouter } from "nuxt/app";
 import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
-import { ticketType, lifeSteps } from "#imports";
 type Ticket = components["schemas"]['TicketDto']
 type State = components["schemas"]['StatesDto']
 
@@ -97,6 +59,7 @@ const router = useRouter()
 const $q = useQuasar()
 
 const closeTicketsDialog = ref<boolean>(false)
+
 const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ticket', {
   method: 'get',
   query: computed(() => {
@@ -112,6 +75,7 @@ if (error.value) {
     type: 'negative'
   })
 }
+
 const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('/core/categories', {
   method: 'get',
   query: {
@@ -160,7 +124,55 @@ onMounted(async () => {
   paginationQuery()
 })
 
-const selected = ref<Ticket[]>([])
+const pagination = ref<QTableProps['pagination']>({
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+  sortBy: 'metadata.lastUpdatedAt',
+  descending: true
+})
+
+async function onRequest(props: QTableProps) {
+  if (!props.pagination) return
+  const { page, rowsPerPage, sortBy, descending } = props.pagination
+  pagination.value!.rowsNumber = tickets.value?.total
+  pagination.value!.page = page
+  pagination.value!.rowsPerPage = rowsPerPage
+  pagination.value!.sortBy = sortBy
+  pagination.value!.descending = descending
+  paginationQuery()
+}
+
+function paginationQuery() {
+  const query = removeSortKey()
+  const skip = `${(pagination.value?.page! - 1) * pagination.value?.rowsPerPage!}`
+  const limit = `${pagination.value?.rowsPerPage!}`
+  let sortBy = pagination.value?.sortBy!
+  if (sortBy === null) {
+    sortBy = 'metadata.lastUpdatedAt'
+  }
+
+  const sortKey = `sort[${sortBy}]`
+  const sortDirection = pagination.value?.descending! ? `desc` : `asc`
+
+  query[sortKey] = sortDirection
+  query['skip'] = skip
+  query['limit'] = limit
+  router.push({
+    query
+  })
+}
+
+function removeSortKey() {
+  const query = { ...route.query }
+  for (const key in query) {
+    if (key.startsWith('sort[')) {
+      delete query[key]
+    }
+  }
+  return query
+}
+
 const columns = ref<QTableProps['columns']>([
   {
     name: 'states',
@@ -240,70 +252,10 @@ const columnsType = ref([
   { name: 'actions', type: 'text' },
 ])
 
-const goToTicket = (ticket: Ticket) => {
-  router.push(`/ticket/${ticket._id}`)
-}
-
-const page = computed(() => {
-  return Number(route.query.skip) / Number(route.query.limit) + 1 | 1
-})
-
-const rowsPerPage = computed(() => {
-  return Number(route.query.limit) | 10
-})
-
-
-const pagination = ref<QTableProps['pagination']>({
-  page: page.value,
-  rowsPerPage: rowsPerPage.value,
-  rowsNumber: 10,
-  sortBy: 'metadata.lastUpdatedAt',
-  descending: true
-})
-
-watch(() => route.query, (newValue, oldValue) => {
-  if (!newValue) return
-  if (!pagination.value) return
-  pagination.value.page = Number(newValue.skip) / Number(newValue.limit) + 1 | 1
-  pagination.value.rowsPerPage = Number(newValue.limit) | 10
-  paginationQuery()
-}, { deep: true })
-
-const onRequest = async (props: QTableProps) => {
-  if (!props.pagination) return
-  const { page, rowsPerPage, sortBy, descending } = props.pagination
-  pagination.value = { page, rowsPerPage, sortBy, descending, rowsNumber: tickets.value?.total }
-  paginationQuery()
-}
-
-const paginationQuery = () => {
-  const query = removeSortKey()
-  const skip = `${(pagination.value?.page! - 1) * pagination.value?.rowsPerPage!}`
-  const limit = `${pagination.value?.rowsPerPage!}`
-  let sortBy = pagination.value?.sortBy!
-  if (sortBy === null) {
-    sortBy = 'metadata.lastUpdatedAt'
-  }
-
-  const sortKey = `sort[${sortBy}]`
-  const sortDirection = pagination.value?.descending! ? `desc` : `asc`
-
-  query[sortKey] = sortDirection
-  query['skip'] = skip
-  query['limit'] = limit
-  router.replace({
-    query
-  })
-}
-
-const removeSortKey = () => {
-  const query = { ...route.query }
-  for (const key in query) {
-    if (key.startsWith('sort[')) {
-      delete query[key]
-    }
-  }
-  return query
+const selected = ref<Ticket[]>([])
+function closeTicket(ticket: Ticket) {
+  selected.value = [ticket]
+  closeTicketsDialog.value = true
 }
 
 const fieldsList = computed(() => {
@@ -323,61 +275,7 @@ const fieldsList = computed(() => {
   )
 })
 
-const getState = (stateParam: { id: string, name: string }) => {
-  const findedState = states.value?.data.find((state: State) => {
-    return state._id === stateParam.id
-  })
-  return findedState
-}
-
-const getType = (type: number) => {
-  return ticketType.find(t => t.value === type)
-}
-
-const getLifeStep = (type: number) => {
-  const lifeStep = lifeSteps.find(l => l.value === type)
-  return lifeStep
-}
-
-const markAsRead = () => {
-  console.log('markAsRead')
-}
-
-const mergeTickets = () => {
-  console.log('mergeTickets')
-}
-
-const openCloseTicketsModale = (id: string | null = null) => {
-  if (id) {
-    selected.value = tickets.value?.data.filter(t => t._id === id)
-  }
-  closeTicketsDialog.value = true
-}
-
-const closeTickets = async () => {
-  const { data, error } = await useHttpApi('/tickets/ticket/close-many', {
-    method: 'post',
-    body: {
-      ids: selected.value.map(s => s._id)
-    }
-  })
-  if (error.value) {
-    closeTicketsDialog.value = false
-    $q.notify({
-      message: 'Impossible de cloturer les tickets',
-      type: 'negative'
-    })
-  } else {
-    refresh()
-    closeTicketsDialog.value = false
-    $q.notify({
-      message: 'Tickets cloturés',
-      type: 'positive'
-    })
-  }
-}
-
-provide('fieldsList', fieldsList)
+provide('fieldsList', fieldsList.value)
 provide('stateFetch', { data: states, pending: statesPending, refresh: statesRefresh, error: statesError })
 provide('categoriesFetch', { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError })
 

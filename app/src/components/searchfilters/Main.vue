@@ -37,7 +37,7 @@ import { pushQuery } from '~/composables'
 import type { Filter, Field, Comparator, SearchFilter } from '~/types'
 const dayjs = useDayjs()
 
-const fields = inject('fieldsList', ref<Field[]>([]))
+const fields = inject<Field[]>('fieldsList')
 
 const router = useRouter()
 const route = useRoute()
@@ -160,7 +160,7 @@ const searchInputType = computed(() => {
 
 const fieldsFilteredByType = computed(() => {
   if (fieldType.value === undefined || fieldType.value === null) return []
-  return fields.value.filter((field) => {
+  return fields?.filter((field) => {
     return field.type === fieldType.value
   })
 })

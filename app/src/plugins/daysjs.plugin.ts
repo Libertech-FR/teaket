@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from "#app/nuxt";
+import { defineNuxtPlugin } from '#app/nuxt'
 import timezone from 'dayjs/plugin/timezone'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
