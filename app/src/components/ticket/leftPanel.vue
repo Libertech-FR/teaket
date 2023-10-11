@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { useHttpApi } from '~/composables';
 
-const { data: projets } = await useHttpApi(`core/project`)
+const { data: projets } = await useHttpApi(`/core/project`)
 defineProps({
     sequence: {
         type: String,
