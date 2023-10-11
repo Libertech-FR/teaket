@@ -23,7 +23,8 @@
     "bson-objectid": "^2.0.4",
     "cookie": "^0.5.0",
     "pinia": "^2.1.6",
-    "quasar": "^2.12.6"
+    "quasar": "^2.12.6",
+    "sass": "^1.68.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

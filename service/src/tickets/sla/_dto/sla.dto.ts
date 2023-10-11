@@ -46,7 +46,7 @@ export class SlaCreateDto extends CustomFieldsDto {
 
 export class SlaDto extends SlaCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

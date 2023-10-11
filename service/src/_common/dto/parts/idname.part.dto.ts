@@ -4,7 +4,7 @@ import { Types } from 'mongoose'
 
 export class IdnamePartDto {
   @IsMongoId({ message: 'Id invalide' })
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public id: Types.ObjectId
 
   @IsString()

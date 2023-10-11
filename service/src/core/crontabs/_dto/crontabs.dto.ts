@@ -27,7 +27,7 @@ export class CrontabsCreateDto {
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public pluginId?: string
 
   @IsBoolean()
@@ -38,7 +38,7 @@ export class CrontabsCreateDto {
 
 export class CrontabsDto extends CrontabsCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 
