@@ -15,6 +15,6 @@ export class MailaddressPartDto {
 
   @IsMongoId({ message: 'Id invalide' })
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public entityId?: Types.ObjectId
 }

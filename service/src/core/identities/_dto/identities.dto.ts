@@ -8,7 +8,7 @@ import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 export class IdentitiesCreateDto extends CustomFieldsDto {
   @IsMongoId()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public entityId: string
 
   @IsString()
@@ -65,7 +65,7 @@ export class IdentitiesCreateDto extends CustomFieldsDto {
 
 export class IdentitiesDto extends IdentitiesCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

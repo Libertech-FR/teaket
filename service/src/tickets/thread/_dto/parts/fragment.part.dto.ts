@@ -7,7 +7,7 @@ import { Types } from 'mongoose'
 
 export class FragmentPartDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public id: Types.ObjectId
 
   @IsEnum(FragmentTypeList)

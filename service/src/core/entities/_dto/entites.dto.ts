@@ -32,7 +32,7 @@ export class EntitiesCreateDto extends CustomFieldsDto {
 
 export class EntitiesDto extends EntitiesCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

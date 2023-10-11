@@ -8,6 +8,7 @@ import * as process from 'process'
 import { StorageManagerConfig } from '@streamkits/nestjs_module_factorydrive'
 import { AmazonWebServicesS3StorageConfig } from '@streamkits/nestjs_module_factorydrive-s3'
 import { Settings } from '~/core/settings/settings.interface'
+import { MailsSettingsInterface } from '~/tickets/mails/_interfaces/mails-settings.interface'
 
 export interface MongoosePlugin {
   package: string
@@ -51,6 +52,9 @@ export interface ConfigInstance {
     }
   }
   settings: Settings
+  mailrest: {
+    options: MailsSettingsInterface
+  }
   i18n: {
     fallbackLanguage: string
   }
@@ -178,6 +182,13 @@ export default (): ConfigInstance => ({
           },
         }
       }
+    },
+  },
+  mailrest: {
+    options: {
+      url: process.env.TK_SERVICE_MAILREST_API_URL,
+      token: process.env.TK_SERVICE_MAILREST_API_TOKEN,
+      defaultHeaders: {},
     },
   },
   i18n: {

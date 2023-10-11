@@ -42,7 +42,7 @@ export class StatesCreateDto extends CustomFieldsDto {
 
 export class StatesDto extends StatesCreateDto {
   @IsMongoId()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   public _id: string
 }
 

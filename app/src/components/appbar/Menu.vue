@@ -79,6 +79,17 @@ const apps: {
             },
             to: `/tickets?filters[@lifestep][]=1&${baseFilter}`
         },
+        {
+            title: {
+                name: 'Mails',
+                color: 'secondary'
+            },
+            icon: {
+                name: 'mdi-mail',
+                color: 'primary'
+            },
+            to: `/mails`
+        },
         // {
         //     title: {
         //         name: 'Profil',
