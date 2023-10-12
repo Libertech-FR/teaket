@@ -1,9 +1,11 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: 'vue-eslint-parser',
   parserOptions: {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    extraFileExtensions: ['.vue'],
+    parser: '@typescript-eslint/parser',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
@@ -25,5 +27,6 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-var-requires': 'off',
+    "@typescript-eslint/no-unused-vars": "off"
   },
 }
