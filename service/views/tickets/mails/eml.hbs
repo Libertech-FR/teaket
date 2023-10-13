@@ -14,6 +14,11 @@
   {{/if}}
   <p style="margin-left: 5px;margin-top: 5px; margin-bottom: 5px;">Date : <b>{{ parsed.date }}</b></p>
   <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Sujet : <b>{{ parsed.subject }}</b></p>
+  {{#if attachments.length}}
+    <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Pièces jointes : {{#each attachments}}
+      <a download="{{fname}}" href='data:application/stream;base64,{{content}}'>{{fname}}</a>
+    {{/each}}</p>
+  {{/if}}
 </div>
 {{{ parsed.html }}}
 <!--suppress ES6ConvertVarToLetConst -->
