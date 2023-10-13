@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger, Scope } from '@nestjs/common'
+import { forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Ticket } from './_schemas/ticket.schema'
 import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
@@ -13,16 +13,18 @@ import { I18nService } from 'nestjs-i18n'
 import { isEqual, reduce } from 'radash'
 import { SettingsService } from '~/core/settings/settings.service'
 import { TicketLifestep } from './_enum/ticket-lifestep.enum'
+import { WrapperType } from '~/_common/types/wrapper.type'
+import { I18nTranslations } from '~/_generated/i18n.generated'
 
 @Injectable({ scope: Scope.REQUEST })
 export class TicketService extends AbstractServiceSchema {
   public constructor(
     protected readonly moduleRef: ModuleRef,
     @Inject(forwardRef(() => ThreadService))
-    protected readonly threadService: ThreadService,
+    protected readonly threadService: WrapperType<ThreadService>,
     protected readonly settings: SettingsService,
-    private readonly i18n: I18nService,
-    // private readonly i18n: I18nService<I18nTranslations>,
+    // private readonly i18n: I18nService,
+    private readonly i18n: I18nService<I18nTranslations>,
     @InjectModel(Ticket.name) protected _model: Model<Ticket>,
     @Inject(REQUEST) protected request?: Request & { user?: Express.User },
   ) {

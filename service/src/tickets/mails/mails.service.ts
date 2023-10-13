@@ -37,18 +37,18 @@ export class MailsService extends AbstractService implements OnModuleInit {
   }
 
   public async onModuleInit() {
-    const path = resolve('src/_generated/mailrest-api.generated.d.ts')
-    if (fileExistsSync(path)) return
-    this.logger.log(`OpenapiTS - Generating ${path}...`)
-    try {
-      const mailrestConfig = await this.getMailrestConfig()
-      const fileData = await openapiTS(`${mailrestConfig.url}/swagger/json`)
-      mkdirSync('src/_generated', { recursive: true })
-      writeFileSync(path, fileData)
-      this.logger.log(`OpenapiTS - Generated ${path} !`)
-    } catch (error) {
-      this.logger.error(`OpenapiTS - Error while generating ${path}`, error)
-    }
+    // const path = resolve('src/_generated/mailrest-api.generated.d.ts')
+    // if (fileExistsSync(path)) return
+    // this.logger.log(`OpenapiTS - Generating ${path}...`)
+    // try {
+    //   const mailrestConfig = await this.getMailrestConfig()
+    //   const fileData = await openapiTS(`${mailrestConfig.url}/swagger/json`)
+    //   mkdirSync('src/_generated', { recursive: true })
+    //   writeFileSync(path, fileData)
+    //   this.logger.log(`OpenapiTS - Generated ${path} !`)
+    // } catch (error) {
+    //   this.logger.error(`OpenapiTS - Error while generating ${path}`, error)
+    // }
   }
 
   protected async getAccounts(): Promise<MailRestAccountType[]> {

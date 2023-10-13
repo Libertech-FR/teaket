@@ -4,7 +4,7 @@ div
         q-chat-message(
             :sent="props.data.metadata.createdBy === user.username"
             :name="props.data.metadata.createdBy" size="12"
-        ).col-10
+        ).col-11
             template(v-slot:stamp)
                 q-separator.q-my-xs
                 .row.items-center
@@ -17,9 +17,9 @@ div
                     object(v-for='(file, key) in props.data.fragments.file' :key='key' :ref="el => { objectIframe[file.filestorage.id] = el }" :data='"http://localhost:7100" + file.filestorage.link' width='100%' height='400px' style="background: white;")
                     q-separator.q-my-xs(v-if="props.data.attachments.length > 0")
                     q-chip(v-for='(attachment, key) in props.data.attachments' :key='key' icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
-        .col.flex.justify-center.items-center.q-pa-sm.column.q-gutter-sm
-            q-btn(fab size="xs" icon="mdi-share" color="primary" @click="emailReponse(props.data.mailinfo)")
-            q-btn(fab size="xs" icon="mdi-dots-vertical" color="primary")
+        .col.flex.items-center.q-pa-sm.column.q-gutter-sm
+            q-btn(round size="md" icon="mdi-share" color="primary" @click="emailReponse(props.data.mailinfo)")
+            q-btn(round size="md" icon="mdi-dots-vertical" color="primary")
 </template>
 
 <script lang="ts" setup>

@@ -9,6 +9,9 @@
         "include": "_i18n/**/*",
         "watchAssets": true
       }
-    ]
+    ],
+    "builder": "swc",
+    "typeCheck": false,
+    "watchAssets": true
   }
 }

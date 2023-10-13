@@ -3,7 +3,7 @@ q-page
   .q-pa-md
     tk-searchfilters(:fields="fieldsList")
   .q-pa-md
-    q-table(
+    q-table.tk-sticky-last-column-table(
       :rows="tickets?.data"
       :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
       v-model:pagination="pagination" title="Tickets" @request="onRequest($event, tickets.total)"

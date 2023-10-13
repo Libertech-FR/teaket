@@ -53,17 +53,19 @@ export default async function(): Promise<DynamicModule[]> {
           continue
         }
         const extensionServiceTarget = `${extensionPath}/${extensionFile.settings.service.target}`
-        await import(extensionServiceTarget).then((module) => {
-          if (module[extensionFile.settings.service.mainModule]) {
-            serviceList.push(module[extensionFile.settings.service.mainModule])
-            Logger.log(`Extension ${extensionFile.information.name} is enabled`, 'ExtensionServiceSetup')
-            return
-          }
-          Logger.warn(`Extension ${extensionFile.information.name} has no main module`, 'ExtensionServiceSetup')
-        }).catch((err) => {
-          Logger.error(`Extension ${extensionFile.information.name} failed to load`, 'ExtensionServiceSetup')
-          console.error(err)
-        })
+        await import(extensionServiceTarget)
+          .then((module) => {
+            if (module[extensionFile.settings.service.mainModule]) {
+              serviceList.push(module[extensionFile.settings.service.mainModule])
+              Logger.log(`Extension ${extensionFile.information.name} is enabled`, 'ExtensionServiceSetup')
+              return
+            }
+            Logger.warn(`Extension ${extensionFile.information.name} has no main module`, 'ExtensionServiceSetup')
+          })
+          .catch((err) => {
+            Logger.error(`Extension ${extensionFile.information.name} failed to load`, 'ExtensionServiceSetup')
+            console.error(err)
+          })
       }
     }
     return serviceList

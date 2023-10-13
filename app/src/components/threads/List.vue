@@ -73,7 +73,7 @@ onMounted(() => {
     scroll()
 })
 
-async function threadsRefresh() {
+const threadsRefresh = async () => {
     await refresh()
     scroll()
 }

@@ -11,6 +11,7 @@ import { I18nService } from 'nestjs-i18n'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { WrapperType } from '~/_common/types/wrapper.type'
 
 @Injectable({ scope: Scope.REQUEST })
 export class ThreadService extends AbstractServiceSchema {
@@ -19,7 +20,7 @@ export class ThreadService extends AbstractServiceSchema {
     @Inject(REQUEST) protected readonly request: Request,
     @InjectModel(Thread.name) protected _model: Model<Thread>,
     @Inject(forwardRef(() => TicketService))
-    protected ticketService: TicketService,
+    protected ticketService: WrapperType<TicketService>,
     private readonly i18n: I18nService,
     // private readonly i18n: I18nService<I18nTranslations>,
     protected readonly eventEmitter: EventEmitter2,
