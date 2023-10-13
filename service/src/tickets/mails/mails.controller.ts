@@ -1,14 +1,14 @@
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Headers,
   HttpStatus, Param,
   ParseFilePipe,
   Post, Query,
   Req,
-  Res,
+  Res, UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -20,8 +20,9 @@ import { createHmac } from 'crypto'
 import { MailsWebhookDto } from '~/tickets/mails/_dto/mails.dto'
 import { WebhooksService } from '~/tickets/mails/_services/webhooks.service'
 import { pick } from 'radash'
+import { SearchMailsDto } from '~/tickets/mails/_dto/search-mails.dto'
+import { Readable } from 'stream'
 
-@Public()
 @Controller('mails')
 export class MailsController extends AbstractController {
 
@@ -35,47 +36,107 @@ export class MailsController extends AbstractController {
   @Get()
   public async search(
     @Res() res: Response,
-    @Query() queries: any,
+    @Query() queries: SearchMailsDto,
   ): Promise<Response> {
-    const data = await this._service.search(queries)
+    const [data, total] = await this._service.search(queries)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      ...data,
+      data,
+      total,
     })
   }
 
-  @Get(':uid([\\w-.]+)')
+  @Get(':account([\\w-.]+)/:seq([\\w-.]+)')
   public async get(
     @Res() res: Response,
-    @Param('uid') uid: string,
+    @Param('account') account: string,
+    @Param('seq') seq: string,
   ): Promise<Response> {
-    const parsed = await this._service.get(uid)
+    const [signature, parsed] = await this._service.get(account, seq)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: {
-        uid,
         ...pick(parsed, ['subject']),
         headers: parsed.headerLines.map((header) => ({
           key: header.key,
           value: header.line.split(':').slice(1).join(':').trim(),
         })),
+        signature,
       },
     })
   }
 
-  @Get(':uid([\\w-.]+)/source')
+  @Public()
+  @Get(':account([\\w-.]+)/:seq([\\w-.]+)/render')
+  public async getRender(
+    @Res() res: Response,
+    @Param('account') account: string,
+    @Param('seq') seq: string,
+    @Query('signature') signature?: string,
+  ): Promise<void> {
+    const [fingerprint, parsed] = await this._service.get(account, seq)
+    if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')
+    res.setHeader('Content-Type', 'text/html')
+    res.setHeader('Content-Disposition', `inline; filename="${seq}.html"`)
+    res.render('tickets/mails/eml', {
+      parsed,
+    })
+  }
+
+  @Public()
+  @Get(':account([\\w-.]+)/:seq([\\w-.]+)/source')
   public async getSource(
     @Res() res: Response,
-    @Param('uid') uid: string,
-  ): Promise<void> {
-    const parsed = await this._service.get(uid)
-    res.setHeader('Content-Type', 'text/html')
-    res.setHeader('Content-Disposition', `inline; filename="${uid}.html"`)
-    res.render('tickets/mails/eml', {
-      data: {
-        uid,
-      },
-      parsed,
+    @Param('account') account: string,
+    @Param('seq') seq: string,
+    @Query('signature') signature?: string,
+  ): Promise<Response> {
+    const parsed = await this._service.getSource(account, seq)
+    const fingerprint = await this._service.getSignature(parsed)
+    if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Content-Disposition', `inline; filename="${seq}.eml"`)
+    return res.send(parsed)
+  }
+
+  @Delete(':account([\\w-.]+)/:seq([\\w-.]+)')
+  public async delete(
+    @Res() res: Response,
+    @Param('account') account: string,
+    @Param('seq') seq: string,
+  ): Promise<Response> {
+    const data = await this._service.delete(account, seq)
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
+  }
+
+  @Post('import')
+  public async import(
+    @Res() res: Response,
+    @Body() body: MailsWebhookDto,
+  ) {
+    const source = await this._service.getSource(body.account, body.seq)
+    const buffer = Buffer.from(source)
+    const stream = Readable.from(buffer)
+    // noinspection JSDeprecatedSymbols
+    const data = await this.webhooks.webhook(body, {
+      fieldname: 'file',
+      originalname: `${body.seq}.eml`,
+      encoding: '7bit',
+      mimetype: 'message/rfc822',
+      size: buffer.length,
+      stream,
+      destination: '.',
+      filename: `${body.seq}.eml`,
+      path: `${body.seq}.eml`,
+      buffer,
+    })
+    await this._service.delete(body.account, body.seq)
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
     })
   }
 
