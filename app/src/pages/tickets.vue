@@ -6,7 +6,7 @@ q-page
     q-table(
       :rows="tickets?.data"
       :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
-      v-model:pagination="pagination" title="Tickets" @request="onRequest"
+      v-model:pagination="pagination" title="Tickets" @request="onRequest($event, tickets.total)"
       rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
       :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
       selection="multiple" v-model:selected="selected" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
@@ -21,28 +21,29 @@ q-page
       template(v-slot:body-cell-states="props")
         tk-tickets-table-state-col(:ticket="props.row")
 
-        template(v-slot:body-cell-envelope.senders.name="props")
-          q-td(:props="props")
-            span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
-            span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
-              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
+      template(v-slot:body-cell-envelope.senders.name="props")
+        q-td(:props="props")
+          span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
+          span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
 
-        template(v-slot:body-cell-envelope.observers.name="props")
-          q-td(:props="props")
-            span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
-            span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
-              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
+      template(v-slot:body-cell-envelope.observers.name="props")
+        q-td(:props="props")
+          span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
+          span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
 
-        template(v-slot:body-cell-envelope.assigned.name="props")
-          q-td(:props="props")
-            span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
-            span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
-              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
+      template(v-slot:body-cell-envelope.assigned.name="props")
+        q-td(:props="props")
+          span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
+          span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
 
   tk-tickets-closeDialog(v-model="closeTicketsDialog" :selected="selected" @refresh="refresh")
 </template>
 
 <script lang="ts" setup>
+import usePagination from "~/composables/usePagination";
 import { ref, provide, watch, computed } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
 import { useDayjs, onMounted } from "#imports";
@@ -59,6 +60,7 @@ const router = useRouter()
 const $q = useQuasar()
 
 const closeTicketsDialog = ref<boolean>(false)
+const { pagination, onRequest, initializePagination } = usePagination();
 
 const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ticket', {
   method: 'get',
@@ -68,6 +70,10 @@ const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ti
     }
   })
 })
+
+if (tickets.value) {
+  initializePagination(tickets.value.total)
+}
 
 if (error.value) {
   $q.notify({
@@ -103,75 +109,6 @@ if (statesError.value) {
   })
 }
 
-onMounted(async () => {
-  pagination.value!.rowsNumber = tickets.value?.total
-  const query = { ...route.query }
-  const limit = query.limit ?? 10
-  const skip = query.skip ?? 0
-  pagination.value!.rowsPerPage = parseInt(limit as string)
-  pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
-
-  let sortKey = 'metadata.lastUpdatedAt'
-  let sortDirection = 'desc'
-  for (const key in query) {
-    if (key.startsWith('sort')) {
-      sortKey = key.replace('sort[', '').replace(']', '')
-      sortDirection = query[key] === 'desc' ? 'desc' : 'asc'
-    }
-  }
-  pagination.value!.sortBy = sortKey
-  pagination.value!.descending = sortDirection === 'desc'
-  paginationQuery()
-})
-
-const pagination = ref<QTableProps['pagination']>({
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 10,
-  sortBy: 'metadata.lastUpdatedAt',
-  descending: true
-})
-
-async function onRequest(props: QTableProps) {
-  if (!props.pagination) return
-  const { page, rowsPerPage, sortBy, descending } = props.pagination
-  pagination.value!.rowsNumber = tickets.value?.total
-  pagination.value!.page = page
-  pagination.value!.rowsPerPage = rowsPerPage
-  pagination.value!.sortBy = sortBy
-  pagination.value!.descending = descending
-  paginationQuery()
-}
-
-function paginationQuery() {
-  const query = removeSortKey()
-  const skip = `${(pagination.value?.page! - 1) * pagination.value?.rowsPerPage!}`
-  const limit = `${pagination.value?.rowsPerPage!}`
-  let sortBy = pagination.value?.sortBy!
-  if (sortBy === null) {
-    sortBy = 'metadata.lastUpdatedAt'
-  }
-
-  const sortKey = `sort[${sortBy}]`
-  const sortDirection = pagination.value?.descending! ? `desc` : `asc`
-
-  query[sortKey] = sortDirection
-  query['skip'] = skip
-  query['limit'] = limit
-  router.push({
-    query
-  })
-}
-
-function removeSortKey() {
-  const query = { ...route.query }
-  for (const key in query) {
-    if (key.startsWith('sort[')) {
-      delete query[key]
-    }
-  }
-  return query
-}
 
 const columns = ref<QTableProps['columns']>([
   {
