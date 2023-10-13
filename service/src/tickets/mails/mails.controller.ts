@@ -80,6 +80,11 @@ export class MailsController extends AbstractController {
     res.setHeader('Content-Disposition', `inline; filename="${seq}.html"`)
     res.render('tickets/mails/eml', {
       parsed,
+      attachments: parsed.attachments.map((attachment) => ({
+        ...attachment,
+        content: attachment.content.toString('base64'),
+        fname: attachment.filename || attachment.checksum + '.bin',
+      })),
     })
   }
 

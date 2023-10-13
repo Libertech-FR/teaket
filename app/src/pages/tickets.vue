@@ -1,11 +1,11 @@
-
 <template lang="pug">
 q-page
   .q-pa-md
     tk-searchfilters(:fields="fieldsList")
   .q-pa-md
     q-table(
-      :rows="tickets.data" :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
+      :rows="tickets?.data"
+      :rows-per-page-options="[5, 10, 15]" :loading="pending" :columns="columns" row-key="_id" :visible-columns="visibleColumns"
       v-model:pagination="pagination" title="Tickets" @request="onRequest"
       rows-per-page-label="Lignes par page" no-data-label="Aucune donnée" loading-label="Chargement..." no-results-label="Aucun résultat"
       :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
