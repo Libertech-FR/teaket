@@ -36,7 +36,7 @@
     q-dialog(v-model="isFullscreen")
         q-card
             q-card-section.bg-grey-2
-                q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
+                //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
                 q-input(dense label="To" v-model="mailInfo.to" :disable="isDisabledTicket")
                 q-input(dense label="Copy" v-model="mailInfo.cc" :disable="isDisabledTicket")
                 q-input(dense label="Subject" v-model="mailInfo.subject" :disable="isDisabledTicket")
@@ -186,25 +186,26 @@ const emailReponse = (data: MailinfoPartDto) => {
 const threadType = ref(threadTypes[0])
 const message = ref('')
 async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
+    const body: components["schemas"]["ThreadCreateDto"] & { _id: string } = {
+        _id: currentThreadId.value?.toHexString() || '',
+        attachments: attachements.value,
+        ticketId: generateStringMongoId(route.params.id.toString()),
+        fragments: [{
+            id: generateStringMongoId(),
+            disposition: 'raw',
+            message: message.value
+        }] as components["schemas"]["FragmentPartDto"][],
+        metadata: {
+            createdBy: user.username,
+            createdAt: dayjs().toISOString(),
+            lastUpdatedAt: dayjs().toISOString(),
+            lastUpdatedBy: user.username
+        },
+        type
+    }
     const { data: thread, error } = await useHttpApi(`/tickets/thread`, {
         method: 'post',
-        body: {
-            _id: currentThreadId.value?.toHexString(),
-            attachments: attachements.value,
-            ticketId: generateStringMongoId(route.params.id.toString()),
-            fragments: [{
-                id: generateStringMongoId(),
-                disposition: 'raw',
-                message: message.value
-            }],
-            metadata: {
-                createdBy: user.username,
-                createdAt: dayjs().toISOString(),
-                lastUpdatedAt: dayjs().toISOString(),
-                lastUpdatedBy: user.username
-            },
-            type
-        }
+        body
     })
 
     console.log('thread', thread.value)

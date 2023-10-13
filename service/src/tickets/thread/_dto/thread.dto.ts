@@ -22,18 +22,18 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
 
   @IsMongoId()
   @IsOptional()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, required: false })
   public threadId?: Types.ObjectId
 
   @ValidateNested()
   @IsOptional()
   @Type(() => IdnamePartDto)
-  @ApiProperty({ type: IdnamePartDto })
+  @ApiProperty({ type: IdnamePartDto, required: false })
   public sourceRequest?: IdnamePartDto
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   public timeSpend?: number
 
   @IsArray()
@@ -46,13 +46,13 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => IdfsPartDto)
-  @ApiProperty({ type: [IdfsPartDto] })
+  @ApiProperty({ type: [IdfsPartDto], required: false })
   public attachments?: IdfsPartDto[]
 
   @IsOptional()
   @ValidateNested()
   @Type(() => MailinfoPartDto)
-  @ApiProperty({ type: MailinfoPartDto })
+  @ApiProperty({ type: MailinfoPartDto, required: false })
   public mailinfo?: MailinfoPartDto
 }
 

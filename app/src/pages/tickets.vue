@@ -21,31 +21,31 @@ q-page
       template(v-slot:body-cell-states="props")
         tk-tickets-table-state-col(:ticket="props.row")
 
-      template(v-slot:body-cell-envelope.senders.name="props")
-        q-td(:props="props")
-          span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
-          span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
+        template(v-slot:body-cell-envelope.senders.name="props")
+          q-td(:props="props")
+            span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
+            span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
+              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
 
-      template(v-slot:body-cell-envelope.observers.name="props")
-        q-td(:props="props")
-          span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
-          span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
+        template(v-slot:body-cell-envelope.observers.name="props")
+          q-td(:props="props")
+            span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
+            span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
+              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
 
-      template(v-slot:body-cell-envelope.assigned.name="props")
-        q-td(:props="props")
-          span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
-          span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
+        template(v-slot:body-cell-envelope.assigned.name="props")
+          q-td(:props="props")
+            span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
+            span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
+              q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.assigned].slice(1).map(s => s.name).join(', ') }}
 
   tk-tickets-closeDialog(v-model="closeTicketsDialog" :selected="selected" @refresh="refresh")
 </template>
 
 <script lang="ts" setup>
-import { ref, provide } from "vue";
+import { ref, provide, watch, computed } from "vue";
 import { useHttpApi } from "~/composables/useHttpApi";
-import { computed, useDayjs, onMounted } from "#imports";
+import { useDayjs, onMounted } from "#imports";
 import { useRoute, useRouter } from "nuxt/app";
 import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
@@ -77,7 +77,10 @@ if (error.value) {
 }
 
 const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('/core/categories', {
-  method: 'get'
+  method: 'get',
+  query: {
+    "limit": 999,
+  }
 })
 
 if (categoriesError.value) {
@@ -87,7 +90,10 @@ if (categoriesError.value) {
   })
 }
 const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
-  method: 'get'
+  method: 'get',
+  query: {
+    "limit": 999,
+  }
 })
 
 if (statesError.value) {
