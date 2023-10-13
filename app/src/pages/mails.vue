@@ -1,69 +1,69 @@
 <template lang="pug">
 div
-    q-card(flat)
-      q-card-section(horizontal)
-        q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
-          //v-model:selected="selected"
-          //  selection="multiple"
-          q-table.tk-sticky-last-column-table(
-            v-model:pagination="pagination"
-            title="Mails"
-            :rows="mails?.data"
-            row-key="uid"
-            @request="onRequest"
-            :rows-per-page-options="[5, 10, 15]"
-            :columns="columns"
-            :loading="pending"
-            rows-per-page-label="Lignes par page"
-            no-data-label="Aucune donnée"
-            loading-label="Chargement..."
-            no-results-label="Aucun résultat"
-            :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-            :selected-rows-label="(numberOfRows) => `${numberOfRows} Mails sélectionnées`"
-            flat
-          )
-            template(#body-cell-actions="props")
-              q-td(:props="props")
-                q-btn-group(flat rounded)
-                  q-btn(icon="mdi-eye" color="primary" @click="goToMail(props.row)" size="sm" flat)
-                    q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
-                  q-btn(icon="mdi-delete" color="primary" @click="deleteMail(props.row)" size="sm" flat)
-                    q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
-        q-separator(vertical)
-        q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
-          div.flex.items-center.full-height.justify-center(v-if='!target')
-            p Selectionnez un email pour afficher son contenu...
-          q-card(v-else)
-            q-card-actions
-              q-toolbar-title(v-text='target?.subject' style='flex: 100 1 0%')
-              q-space
-              q-btn(color="negative" icon='mdi-delete' @click="deleteMail(target)")
-              q-btn(color="primary" icon='mdi-content-save' @click="importMail(target)")
-            q-card-section.q-pa-xs
-              q-tabs(v-model="tab" dense)
-                q-tab(name="email" icon="mdi-mail" label="Email")
-                q-tab(name="headers" icon="mdi-format-list-text" label="headers")
-                q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
-              q-tab-panels(v-model="tab")
-                q-tab-panel.no-padding(name="email")
-                  object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' style='width: 100%; height: 75vh;')
-                    p Impossible de charger le contenu du mail
-                    a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' target='_blank') Lien direct
-                q-tab-panel.no-padding(name="headers")
-                  q-table(
-                    :rows="target.headers"
-                    :pagination='{rowsPerPage: 12}'
-                    :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-                    rows-per-page-label="Lignes par page"
-                    no-data-label="Aucune donnée"
-                    loading-label="Chargement..."
-                    no-results-label="Aucun résultat"
-                    flat
-                  )
-                q-tab-panel.no-padding(name="raw")
-                  object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' style='width: 100%; height: 75vh;')
-                    p Impossible de charger le contenu du mail
-                    a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
+  q-card(flat)
+    q-card-section(horizontal)
+      q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
+        //v-model:selected="selected"
+        //  selection="multiple"
+        q-table.tk-sticky-last-column-table(
+          v-model:pagination="pagination"
+          title="Mails"
+          :rows="mails?.data"
+          row-key="uid"
+          @request="onRequest"
+          :rows-per-page-options="[5, 10, 15]"
+          :columns="columns"
+          :loading="pending"
+          rows-per-page-label="Lignes par page"
+          no-data-label="Aucune donnée"
+          loading-label="Chargement..."
+          no-results-label="Aucun résultat"
+          :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
+          :selected-rows-label="(numberOfRows) => `${numberOfRows} Mails sélectionnées`"
+          flat
+        )
+          template(#body-cell-actions="props")
+            q-td(:props="props")
+              q-btn-group(flat rounded)
+                q-btn(icon="mdi-eye" color="primary" @click="goToMail(props.row)" size="sm" flat)
+                  q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
+                q-btn(icon="mdi-delete" color="primary" @click="deleteMail(props.row)" size="sm" flat)
+                  q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
+      q-separator(vertical)
+      q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
+        div.flex.items-center.full-height.justify-center(v-if='!target')
+          p Selectionnez un email pour afficher son contenu...
+        q-card(v-else)
+          q-card-actions
+            q-toolbar-title(v-text='target?.subject' style='flex: 100 1 0%')
+            q-space
+            q-btn(color="negative" icon='mdi-delete' @click="deleteMail(target)")
+            q-btn(color="primary" icon='mdi-content-save' @click="importMail(target)")
+          q-card-section.q-pa-xs
+            q-tabs(v-model="tab" dense)
+              q-tab(name="email" icon="mdi-mail" label="Email")
+              q-tab(name="headers" icon="mdi-format-list-text" label="headers")
+              q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
+            q-tab-panels(v-model="tab")
+              q-tab-panel.no-padding(name="email")
+                object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' style='width: 100%; height: 75vh;')
+                  p Impossible de charger le contenu du mail
+                  a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' target='_blank') Lien direct
+              q-tab-panel.no-padding(name="headers")
+                q-table(
+                  :rows="target.headers"
+                  :pagination='{rowsPerPage: 12}'
+                  :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
+                  rows-per-page-label="Lignes par page"
+                  no-data-label="Aucune donnée"
+                  loading-label="Chargement..."
+                  no-results-label="Aucun résultat"
+                  flat
+                )
+              q-tab-panel.no-padding(name="raw")
+                object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' style='width: 100%; height: 75vh;')
+                  p Impossible de charger le contenu du mail
+                  a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
 </template>
 
 <script lang="ts" setup>
@@ -78,13 +78,9 @@ type Mail = any
 // type Mail = components["schemas"]['TicketDto']
 const route = useRoute()
 const $q = useQuasar()
-
+const { pagination, onRequest, initializePagination } = usePagination();
 const selected = ref<Mail[]>([])
-const pagination = ref<QTableProps['pagination']>({
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 10,
-})
+
 const tab = ref('')
 const target = ref<Mail | null>(null)
 const { data: mails, refresh, pending, error } = await useHttpApi('/tickets/mails', {
@@ -95,6 +91,10 @@ const { data: mails, refresh, pending, error } = await useHttpApi('/tickets/mail
     }
   })
 })
+if (mails.value) {
+  initializePagination(mails.value?.total)
+}
+
 if (error.value) {
   console.error(error.value)
 }
@@ -223,56 +223,5 @@ const goToMail = async (mail: Mail) => {
   }
   tab.value = 'email'
 }
-const onRequest = async (props: QTableProps) => {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination!
-  pagination.value!.rowsNumber = mails.value?.total
-  pagination.value!.page = page
-  pagination.value!.rowsPerPage = rowsPerPage
-  pagination.value!.sortBy = sortBy
-  pagination.value!.descending = descending
-  paginationQuery()
-}
-const paginationQuery = () =>  {
-  const router = useRouter()
-  const query = removeSortKey()
-  const skip = `${(pagination.value?.page! - 1) * pagination.value?.rowsPerPage!}`
-  const limit = `${pagination.value?.rowsPerPage!}`
-  query['skip'] = skip
-  query['limit'] = limit
-  router.replace({
-    query
-  })
-}
-const removeSortKey = () =>  {
-  const route = useRoute()
-  const query = { ...route.query }
-  for (const key in query) {
-    if (key.startsWith('sort[')) {
-      delete query[key]
-    }
-  }
-  return query
-}
 
-onMounted(async () => {
-  const route = useRoute()
-  pagination.value!.rowsNumber = mails.value?.total
-  const query = { ...route.query }
-  const limit = query.limit ?? 10
-  const skip = query.skip ?? 0
-  pagination.value!.rowsPerPage = parseInt(limit as string)
-  pagination.value!.page = parseInt(skip as string) / parseInt(limit as string) + 1
-
-  let sortKey = 'metadata.lastUpdatedAt'
-  let sortDirection = 'desc'
-  for (const key in query) {
-    if (key.startsWith('sort')) {
-      sortKey = key.replace('sort[', '').replace(']', '')
-      sortDirection = query[key] === 'desc' ? 'desc' : 'asc'
-    }
-  }
-  pagination.value!.sortBy = sortKey
-  pagination.value!.descending = sortDirection === 'desc'
-  paginationQuery()
-})
 </script>
