@@ -8,6 +8,7 @@ import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
 import { IdentityType } from '~/_common/types/identity.type'
 import { set } from 'radash'
 import { MixedValue } from '~/_common/types/mixed-value.type'
+import { SettingsGetOptions } from '~/core/settings/settings.interface'
 
 @Injectable()
 export class SettingsService extends AbstractService {
@@ -46,26 +47,33 @@ export class SettingsService extends AbstractService {
     return settingsBase
   }
 
-  protected setting<T>(name: string): T | MixedValue {
-    return this.config.get<MixedValue>(`settings.${name}`)
+  protected setting<T = MixedValue>(name: string): T {
+    return this.config.get<T>(`settings.${name}`)
   }
 
-  public async get<T>(name: string): Promise<T | MixedValue> {
+  public async get<T = MixedValue>(name: string, options?: SettingsGetOptions<T>): Promise<T> {
+    const filter = { name }
+    if (options.scope) filter['scope'] = options.scope
+    if (options.for) {
+      if (Array.isArray(options.for)) filter['for'] = { $in: options.for }
+      else filter['for'] = options.for
+    }
     const setting = await this._model.findOne({ name })
-    if (setting) return setting.value
-    return this.setting<T>(name)
+    const value = <T>setting?.value ?? this.setting<T>(name)
+    if (options.callback) return new Promise((resolve) => resolve(options.callback(value)))
+    return value
   }
 
-  public async set<T>(
+  public async set<T = MixedValue>(
     key: string,
-    value: T | MixedValue,
+    value: T,
     options?: { for: SettingFor, scope: string },
-  ): Promise<T | MixedValue> {
+  ): Promise<T> {
     const updated = await this._model.findOneAndUpdate(
       { key },
       { $set: { value, ...options } },
       { upsert: true, new: true },
     )
-    return updated.value
+    return <T>updated.value
   }
 }

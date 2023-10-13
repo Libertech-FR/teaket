@@ -22,6 +22,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+  css: ['~/assets/sass/global.sass'],
   plugins: [{ src: '~/plugins/ofetch' }],
   components: {
     global: true,
@@ -79,7 +80,7 @@ export default defineNuxtConfig({
   },
   quasar: {
     iconSet: 'mdi-v5',
-    plugins: ['Notify'],
+    plugins: ['Notify', 'Dialog'],
     config: {
       dark: 'auto',
       notify: {

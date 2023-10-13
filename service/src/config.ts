@@ -52,9 +52,6 @@ export interface ConfigInstance {
     }
   }
   settings: Settings
-  mailrest: {
-    options: MailsSettingsInterface
-  }
   i18n: {
     fallbackLanguage: string
   }
@@ -173,6 +170,12 @@ export default (): ConfigInstance => ({
   },
   settings: {
     tickets: {
+      mails: {
+        mailrest: {
+          url: process.env.TK_SERVICE_MAILREST_API_URL || '',
+          token: process.env.TK_SERVICE_MAILREST_API_TOKEN || '',
+        },
+      },
       ticket: {
         schema: {
           sequence: {
@@ -182,13 +185,6 @@ export default (): ConfigInstance => ({
           },
         }
       }
-    },
-  },
-  mailrest: {
-    options: {
-      url: process.env.TK_SERVICE_MAILREST_API_URL,
-      token: process.env.TK_SERVICE_MAILREST_API_TOKEN,
-      defaultHeaders: {},
     },
   },
   i18n: {

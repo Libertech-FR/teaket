@@ -1,0 +1,18 @@
+@import "quasar/src/css/variables.sass"
+
+.tk-sticky-last-column-table
+  thead tr:last-child th:last-child
+    background-color: $tooltip-background
+  td:last-child
+    background-color: $tooltip-background
+  th:last-child,
+  td:last-child
+    position: sticky
+    right: -1px
+    z-index: 1
+body.body--dark
+  .tk-sticky-last-column-table
+    thead tr:last-child th:last-child
+      background-color: $dark
+    td:last-child
+      background-color: $dark

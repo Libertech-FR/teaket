@@ -2,7 +2,7 @@
 div
   //q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="button.icon" size="md").q-mx-sm
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
-  q-btn-dropdown(icon="mdi-account-circle-outline" round flat size="md")
+  q-btn-dropdown(icon="mdi-account-circle-outline" :label='auth.user.displayName' round flat size="md")
     q-list
       q-item.q-pa-none(v-for="button in buttons" :key="button.name")
         q-btn.full-width.items-baseline.q-pa-sm(
@@ -17,6 +17,7 @@ div
 </template>
 
 <script lang='ts' setup>
+const auth = useAuth()
 const buttons = [
   // {
   //   icon: 'mdi-cog',
