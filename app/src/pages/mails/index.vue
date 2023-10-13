@@ -3,11 +3,11 @@ div
     q-card(flat)
       q-card-section(horizontal)
         q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
-          q-table.my-sticky-last-column-table(
+          q-table.tk-sticky-last-column-table(
             v-model:selected="selected"
             v-model:pagination="pagination"
             title="Mails"
-            :rows="tickets.data"
+            :rows="mails?.data"
             row-key="uid"
             @request="onRequest"
             :rows-per-page-options="[5, 10, 15]"
@@ -19,7 +19,7 @@ div
             no-results-label="Aucun résultat"
             selection="multiple"
             :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-            :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
+            :selected-rows-label="(numberOfRows) => `${numberOfRows} Mails sélectionnées`"
             flat
           )
             template(#body-cell-actions="props")
@@ -27,25 +27,29 @@ div
                 q-btn-group(flat rounded)
                   q-btn(icon="mdi-eye" color="primary" @click="goToMail(props.row)" size="sm" flat)
                     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
-                  q-btn(icon="mdi-delete" color="primary" @click="" size="sm" flat)
+                  q-btn(icon="mdi-delete" color="primary" @click="deleteMail(props.row)" size="sm" flat)
                     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer le ticket
         q-separator(vertical)
         q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
-          q-card
+          div.flex.items-center.full-height.justify-center(v-if='!target')
+            p Selectionnez un email pour afficher son contenu...
+          q-card(v-else)
             q-card-actions
               q-toolbar-title(v-text='target?.subject' style='flex: 100 1 0%')
               q-space
-              q-btn(color="negative" icon='mdi-delete' @click="")
-              q-btn(color="info" icon='mdi-email-arrow-right-outline' @click="")
-              q-btn(color="primary" icon='mdi-content-save' @click="")
+              q-btn(color="negative" icon='mdi-delete' @click="deleteMail(target)")
+              q-btn(color="primary" icon='mdi-content-save' @click="importMail(target)")
             q-card-section.q-pa-xs
               q-tabs(v-model="tab" dense)
-                q-tab(name="mails" icon="mdi-mail" label="Mails")
-                q-tab(name="raw" icon="mdi-square" label="raw")
+                q-tab(name="email" icon="mdi-mail" label="Email")
+                q-tab(name="headers" icon="mdi-format-list-text" label="headers")
+                q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
               q-tab-panels(v-model="tab")
-                q-tab-panel.no-padding(name="mails")
-                  object(:data='"http://localhost:7100/tickets/mails/" + target?.uid + "/source"' style='width: 100%; height: 75vh;')
-                q-tab-panel.no-padding(name="raw")
+                q-tab-panel.no-padding(name="email")
+                  object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' style='width: 100%; height: 75vh;')
+                    p Impossible de charger le contenu du mail
+                    a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' target='_blank') Lien direct
+                q-tab-panel.no-padding(name="headers")
                   q-table(
                     :rows="target.headers"
                     :pagination='{rowsPerPage: 12}'
@@ -56,6 +60,10 @@ div
                     no-results-label="Aucun résultat"
                     flat
                   )
+                q-tab-panel.no-padding(name="raw")
+                  object.bg-white(:data='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' style='width: 100%; height: 75vh;')
+                    p Impossible de charger le contenu du mail
+                    a(:href='"http://localhost:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
 </template>
 
 <script lang="ts">
@@ -64,14 +72,14 @@ import { useRoute, useRouter } from 'nuxt/app'
 import { ref } from 'vue'
 import type { QTableProps } from 'quasar'
 import type { components } from '#build/types/service-api'
+import { omit } from 'radash'
 
 type Ticket = components["schemas"]['TicketDto']
+const route = useRoute()
 
 export default defineNuxtComponent({
   data: () => ({
-    tab: ref(''),
     selected: ref<Ticket[]>([]),
-    target: ref<Ticket | null>(null),
     pagination: ref<QTableProps['pagination']>({
       page: 1,
       rowsPerPage: 10,
@@ -80,20 +88,42 @@ export default defineNuxtComponent({
   }),
   async setup() {
     const route = useRoute()
-    const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/mails', {
+    let tab = ref('')
+    let target = ref<Ticket | null>(null)
+    const { data: mails, pending, refresh, error } = await useHttpApi('/tickets/mails', {
       method: 'get',
       query: computed(() => {
         return {
-          ...route.query,
+          ...omit(route.query, ['accountId', 'seq']),
         }
       })
     })
+    if (error.value) {
+      console.error(error.value)
+    }
+    if (route.query.accountId && route.query.seq) {
+      const { data } = await useHttpApi(`/tickets/mails/${route.query.accountId}/${route.query.seq}`, {
+        method: 'get',
+      })
+      const mail = mails.value.data.filter((mail: any) => mail.accountId === route.query.accountId && mail.seq === parseInt(`${route.query.seq}`, 10))[0]
+      target.value = {
+        ...data.value?.data,
+        ...mail,
+      }
+      tab.value = 'email'
+    }
     const daysjs = useDayjs()
     const columns = ref<QTableProps['columns']>([
       {
         name: 'uid',
         label: 'ID',
         field: 'uid',
+        align: 'left',
+      },
+      {
+        name: 'accountName',
+        label: 'Compte',
+        field: 'accountName',
         align: 'left',
       },
       {
@@ -128,37 +158,88 @@ export default defineNuxtComponent({
       },
     ])
     return {
+      tab,
+      target,
       columns,
-      tickets,
+      mails,
       pending,
       refresh,
       error,
     }
   },
   methods: {
-    async goToMail(ticket: Ticket) {
-      const route = useRoute()
+    async deleteMail(mail: any) {
+      this.$q.dialog({
+        title: 'Suppression',
+        message: 'Vous êtes sur le point de supprimer un email, êtes-vous sûr ?',
+        cancel: true,
+        persistent: true,
+        color: 'negative',
+      }).onOk(async () => {
+        const { error } = await useHttpApi(`/tickets/mails/${mail.accountId}/${mail.seq}`, {
+          method: 'delete',
+        })
+        if (error.value) {
+          this.$q.notify({
+            color: 'negative',
+            message: `Impossible de supprimer l'email: ${mail.uid}`,
+          })
+          return
+        }
+        this.$q.notify({
+          color: 'positive',
+          message: 'Email supprimé avec succès',
+        })
+        this.target = null
+        await this.refresh()
+      }).onCancel(() => this.target = null)
+    },
+    async importMail(mail: any) {
+      const { data, error } = await useHttpApi(`/tickets/mails/import`, {
+        method: 'post',
+        body: {
+          account: mail.accountId,
+          seq: mail.seq,
+          uid: mail.uid,
+          id: mail.id,
+        },
+      })
+      console.log(data.value)
+      if (error.value) {
+        console.log()
+        this.$q.notify({
+          color: 'negative',
+          message: `Impossible d\'importer l'email <${mail.uid}> ${error.value?.data?.message || error.value?.message}`,
+        })
+        return
+      }
+      this.$q.notify({
+        color: 'positive',
+        message: 'Email importé avec succès',
+      })
+      await this.refresh()
+    },
+    async goToMail(mail: any) {
       const router = useRouter()
       router.replace({
         query: {
           ...route.query,
-          uid: ticket.uid,
+          accountId: mail.accountId,
+          seq: mail.seq,
         }
       })
-      const { data: mail, pending, refresh, error } = await useHttpApi(`/tickets/mails/${ticket.uid}`, {
+      const { data } = await useHttpApi(`/tickets/mails/${mail.accountId}/${mail.seq}`, {
         method: 'get',
-        query: computed(() => {
-          return {
-            ...route.query,
-          }
-        })
       })
-      this.target = mail.value?.data
-      this.tab = 'mails'
+      this.target = {
+        ...mail,
+        ...data.value?.data,
+      }
+      this.tab = 'email'
     },
     async onRequest(props: QTableProps) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
-      this.pagination!.rowsNumber = this.tickets?.total
+      this.pagination!.rowsNumber = this.mails?.total
       this.pagination!.page = page
       this.pagination!.rowsPerPage = rowsPerPage
       this.pagination!.sortBy = sortBy
@@ -189,7 +270,7 @@ export default defineNuxtComponent({
   },
   async mounted() {
     const route = useRoute()
-    this.pagination!.rowsNumber = this.tickets?.total
+    this.pagination!.rowsNumber = this.mails?.total
     const query = { ...route.query }
     const limit = query.limit ?? 10
     const skip = query.skip ?? 0
@@ -210,16 +291,3 @@ export default defineNuxtComponent({
   },
 })
 </script>
-<style lang="sass">
-@import "quasar/src/css/variables.sass"
-.my-sticky-last-column-table
-  thead tr:last-child th:last-child
-    background-color: $menu-background
-  td:last-child
-    background-color: $menu-background
-  th:last-child,
-  td:last-child
-    position: sticky
-    right: -1px
-    z-index: 1
-</style>

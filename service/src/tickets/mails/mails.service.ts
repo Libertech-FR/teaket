@@ -2,81 +2,153 @@ import { AbstractService } from '~/_common/abstracts/abstract.service'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ParsedMail } from 'mailparser'
-import { ConfigService } from '@nestjs/config'
-import { MailsSettingsInterface } from '~/tickets/mails/_interfaces/mails-settings.interface'
 import { mkdirSync, writeFileSync } from 'fs'
 import openapiTS from 'openapi-typescript'
+import { resolve } from 'path'
+import { MailRestAccountType, MailRestMessageType } from '~/tickets/mails/_types/mailrest-generated.type'
+import { fileExistsSync } from 'tsconfig-paths/lib/filesystem'
+import { SettingsService } from '~/core/settings/settings.service'
+import { MailsSettingsInterface } from '~/tickets/mails/_interfaces/mails-settings.interface'
+import { omit } from 'radash'
+import { ServiceUnavailableException } from '@nestjs/common/exceptions/service-unavailable.exception'
+import { SearchMailsDto } from '~/tickets/mails/_dto/search-mails.dto'
+import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
+import { createHash } from 'crypto'
 
 @Injectable()
 export class MailsService extends AbstractService implements OnModuleInit {
-  private readonly mailrestConfig: MailsSettingsInterface = this.configService.get<MailsSettingsInterface>('mailrest.options')
-
   public constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly settings: SettingsService,
   ) {
     super()
   }
 
+  protected async getMailrestConfig(): Promise<MailsSettingsInterface> {
+    return await this.settings.get<MailsSettingsInterface>('tickets.mails.mailrest', {
+      for: SettingFor.ALL,
+      callback: (value) => {
+        return {
+          ...value,
+          url: value.url.replace(/\/$/, ''),
+        }
+      },
+    })
+  }
+
   public async onModuleInit() {
-    console.log('[OpenapiTS] Generating src/_generated/service-api.generated.d.ts...')
+    const path = resolve('src/_generated/mailrest-api.generated.d.ts')
+    if (fileExistsSync(path)) return
+    this.logger.log(`OpenapiTS - Generating ${path}...`)
     try {
-      const fileData = await openapiTS(`${this.mailrestConfig.url}/swagger/json`)
+      const mailrestConfig = await this.getMailrestConfig()
+      const fileData = await openapiTS(`${mailrestConfig.url}/swagger/json`)
       mkdirSync('src/_generated', { recursive: true })
-      writeFileSync('src/_generated/service-api.generated.d.ts', fileData)
-      console.log('[OpenapiTS] Generated src/_generated/service-api.generated.d.ts !')
+      writeFileSync(path, fileData)
+      this.logger.log(`OpenapiTS - Generated ${path} !`)
     } catch (error) {
-      console.debug('[OpenapiTS] Error while generating src/_generated/service-api.generated.d.ts', error)
+      this.logger.error(`OpenapiTS - Error while generating ${path}`, error)
     }
   }
 
-  protected async getAccounts(): Promise<any> {
+  protected async getAccounts(): Promise<MailRestAccountType[]> {
+    this.logger.debug(`Update list of mailrest accounts`)
     try {
-      const url = `${this.mailrestConfig.url}/accounts`
-      const res = await this.httpService.axiosRef.get(url, {
+      const mailrestConfig = await this.getMailrestConfig()
+      const url = `${mailrestConfig.url}/accounts`
+      const res = await this.httpService.axiosRef.get<{ data: MailRestAccountType[] }>(url, {
         headers: {
-          ...this.mailrestConfig.defaultHeaders || {},
+          ...mailrestConfig.defaultHeaders || {},
+          'Authorization': `Bearer ${mailrestConfig.token}`,
         },
       })
+      return res.data.data
     } catch (e) {
-      console.log('e', e.response)
-      throw e
+      const msg = `Error while getting accounts: ${JSON.stringify(e.response?.data || e)}`
+      this.logger.error(msg)
+      throw new ServiceUnavailableException(e, msg)
     }
   }
 
-  public async search(queries: any): Promise<any> {
+  public async search(queries: SearchMailsDto): Promise<[MailRestMessageType[], number]> {
+    let data = []
+    let total = 0
+    this.logger.debug(`Searching mails with queries <${JSON.stringify(queries)}>`)
     try {
-      const res = await this.httpService.axiosRef.get('http://localhost:7200/accounts/clement.mail_mail.libertech.fr/messages', {
-        params: {
-          ...queries,
-          'mailbox': 'INBOX',
-        },
+      const mailrestConfig = await this.getMailrestConfig()
+      const accounts = await this.getAccounts()
+      for (const account of accounts) {
+        if (queries.accounts?.length && !queries.accounts?.includes(account.id)) continue
+        const url = `${mailrestConfig.url}/accounts/${account.id}/messages`
+        const res = await this.httpService.axiosRef.get<{ data: MailRestMessageType[], total: number }>(url, {
+          params: omit(queries, ['accounts']),
+          headers: {
+            ...mailrestConfig.defaultHeaders || {},
+            'Authorization': `Bearer ${mailrestConfig.token}`,
+          },
+        })
+        data = data.concat(res.data.data.map((message) => ({
+          ...message,
+          accountId: account.id,
+          accountName: account.name,
+        })))
+        total += res.data.total
+      }
+    } catch (e) {
+      const msg = `Error while searching mails: ${JSON.stringify(e.response?.data || e.stack)}`
+      this.logger.error(msg)
+      throw new ServiceUnavailableException(e, msg)
+    }
+    return [data, total]
+  }
+
+  public async getSignature(source: string): Promise<string> {
+    return createHash('sha256').update(source).digest('hex')
+  }
+
+  public async get(account: string, seq: string): Promise<[string, ParsedMail]> {
+    const { simpleParser } = await import('mailparser')
+    const source = await this.getSource(account, seq)
+    const fingerprint = await this.getSignature(source)
+    const parser = await simpleParser(source)
+    return [fingerprint, parser]
+  }
+
+  public async getSource(account: string, seq: string): Promise<string> {
+    this.logger.debug(`Getting source for account <${account}> and seq <${seq}>`)
+    try {
+      const mailrestConfig = await this.getMailrestConfig()
+      const url = `${mailrestConfig.url}/accounts/${account}/messages/${seq}/source`
+      const res = await this.httpService.axiosRef.get<string>(url, {
         headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJ0ZXN0In0.-Zk1LgAEvZq2YNfkBY8XiMFFXVEeyeRRN0iN6T202D4`,
+          ...mailrestConfig.defaultHeaders || {},
+          'Authorization': `Bearer ${mailrestConfig.token}`,
         },
       })
       return res.data
     } catch (e) {
-      console.log('e', e.response)
-      throw e
+      const msg = `Error to parse message with seq <${seq}>: ${JSON.stringify(e.response?.data || e)}`
+      this.logger.error(msg)
+      throw new ServiceUnavailableException(e, msg)
     }
   }
 
-  public async get(uid: string): Promise<ParsedMail> {
+  public async delete(account: string, seq: string): Promise<boolean> {
+    this.logger.debug(`Attempt to delete message with seq <${seq}>`)
     try {
-      const res = await this.httpService.axiosRef.get(`http://localhost:7200/accounts/clement.mail_mail.libertech.fr/messages/${uid}/source`, {
-        params: {
-          'mailbox': 'INBOX',
-        },
+      const mailrestConfig = await this.getMailrestConfig()
+      const url = `${mailrestConfig.url}/accounts/${account}/messages/${seq}`
+      const res = await this.httpService.axiosRef.delete<{ deleted?: boolean }>(url, {
         headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJ0ZXN0In0.-Zk1LgAEvZq2YNfkBY8XiMFFXVEeyeRRN0iN6T202D4`,
+          ...mailrestConfig.defaultHeaders || {},
+          'Authorization': `Bearer ${mailrestConfig.token}`,
         },
       })
-      const { simpleParser } = await import('mailparser')
-      return await simpleParser(res.data)
+      return res.data.deleted
     } catch (e) {
-      console.log('e', e.response)
-      throw e
+      const msg = `Error to delete message with seq <${seq}>: ${JSON.stringify(e.response?.data || e)}`
+      this.logger.error(msg)
+      throw new ServiceUnavailableException(e, msg)
     }
   }
 }
