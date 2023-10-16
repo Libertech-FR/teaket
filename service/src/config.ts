@@ -8,7 +8,6 @@ import * as process from 'process'
 import { StorageManagerConfig } from '@streamkits/nestjs_module_factorydrive'
 import { AmazonWebServicesS3StorageConfig } from '@streamkits/nestjs_module_factorydrive-s3'
 import { Settings } from '~/core/settings/settings.interface'
-import { MailsSettingsInterface } from '~/tickets/mails/_interfaces/mails-settings.interface'
 
 export interface MongoosePlugin {
   package: string

@@ -84,11 +84,11 @@ describe('SourceRequestService', () => {
 
   describe('update', () => {
     it('should update a SourceRequest record by ID with metadata', async () => {
-      const source-requestDto = { info: { key: 'updated value' } }
+      const sourcerequestDto = { info: { key: 'updated value' } }
       const newObject = { ...mockSourceRequest }
-      const expected = newObject.info.push(source-requestDto.info)
+      const expected = newObject.info.push(sourcerequestDto.info)
       jest.spyOn(model, 'findByIdAndUpdate').mockResolvedValueOnce(expected)
-      const result = await service.update(_id.toString(), source-requestDto)
+      const result = await service.update(_id.toString(), sourcerequestDto)
       expect(result).toEqual(expected)
     })
   })

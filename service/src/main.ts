@@ -1,4 +1,4 @@
-// noinspection JSUnresolvedReference
+// noinspection JSUnresolvedReference,JSIgnoredPromiseFromCall
 
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
@@ -12,16 +12,19 @@ import { ShutdownService } from '~/shutdown.service'
 import process from 'process'
 import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware'
 import config from '~/config'
+import { AppClusterService } from '~/app.cluster.service'
 
 // eslint-disable-next-line
 declare const module: any
-;(async (): Promise<void> => {
+;AppClusterService.clusterize(async (): Promise<void> => {
   const cfg = config()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    // logger: false,
     bodyParser: false,
     rawBody: true,
   })
+  // app.useLogger(['error', 'warn', 'log', 'debug', 'verbose'])
   app.get(ShutdownService).subscribeToShutdown(async () => {
     await app.close()
     process.exit(0)
@@ -47,4 +50,4 @@ declare const module: any
     module.hot.accept()
     module.hot.dispose((): Promise<void> => app.close())
   }
-})()
+})
