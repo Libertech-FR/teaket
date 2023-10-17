@@ -1,4 +1,4 @@
-FROM node:18.14.0-alpine AS builder
+FROM node:18.18.2-alpine AS builder
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ RUN apk add git && yarn workspace @libertech-fr/teaket_service install \
 
 RUN yarn workspace @libertech-fr/teaket_service run build
 
-FROM node:18.14.0-alpine AS production
+FROM node:18.18.2-alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
