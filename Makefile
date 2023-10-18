@@ -1,5 +1,7 @@
-IMGNAME?=ghcr.io/libertech-fr/teaket:latest
+IMGNAME?=ghcr.io/libertech-fr/teaket
 APPNAME?=teaket
+APP_PORT?=3000
+SERVICE_PORT?=7000
 MINIO_ACCESS_KEY?=AKIAIOSFODNN7EXAMPLE
 MINIO_SECRET_KEY?=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
@@ -12,8 +14,51 @@ help:
 run-app:
 	cd ./app && yarn dev
 
+run-app-docker:
+	docker run --rm -it \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--name $(APPNAME)-app \
+		--network dev \
+		-p $(APP_PORT):3000 \
+		-p 24678:24678 \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/app yarn workspace @libertech-fr/teaket_app dev
+
+install-app-docker:
+	docker run -it --rm \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/app yarn workspace @libertech-fr/teaket_app install
+
+exec-app:
+	docker run -it --rm \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/app sh
+
 run-service:
 	cd ./service && yarn start:dev
+
+run-service-docker:
+	docker run --rm -it \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--name $(APPNAME)-service \
+		--network dev \
+		-p $(SERVICE_PORT):4000 \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/service yarn workspace @libertech-fr/teaket_service start:dev
+
+install-service-docker:
+	docker run -it --rm \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/service yarn workspace @libertech-fr/teaket_service install
+
+exec-service:
+	docker run -it --rm \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/service sh
 
 run: ## Run app and service
 	@make dbs &
