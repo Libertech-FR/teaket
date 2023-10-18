@@ -82,7 +82,9 @@ export default (): ConfigInstance => ({
   },
   mongoose: {
     uri: process.env.TK_SERVICE_MONGOOSE_URI,
-    options: {},
+    options: {
+      directConnection: true,
+    },
     plugins: [
       {
         package: 'mongoose-unique-validator',

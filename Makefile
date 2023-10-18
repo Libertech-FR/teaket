@@ -1,7 +1,7 @@
 IMGNAME?=ghcr.io/libertech-fr/teaket
 APPNAME?=teaket
-APP_PORT?=3000
-SERVICE_PORT?=7000
+APP_PORT?=7000
+SERVICE_PORT?=7100
 MINIO_ACCESS_KEY?=AKIAIOSFODNN7EXAMPLE
 MINIO_SECRET_KEY?=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
@@ -14,49 +14,56 @@ help:
 run-app:
 	cd ./app && yarn dev
 
-run-app-docker:
+run-app-d:
 	docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		--add-host host.docker.internal:host-gateway \
 		--name $(APPNAME)-app \
 		--network dev \
-		-p $(APP_PORT):3000 \
+		-p $(APP_PORT):7000 \
 		-p 24678:24678 \
 		-v $(CURDIR):/usr/src/app \
-		$(IMGNAME)/app yarn workspace @libertech-fr/teaket_app dev
+		$(IMGNAME)/app sh -c "cd ./app && yarn dev"
 
-install-app-docker:
+install-app:
 	docker run -it --rm \
+		-e NODE_ENV=development \
 		-v $(CURDIR):/usr/src/app \
 		$(IMGNAME)/app yarn workspace @libertech-fr/teaket_app install
 
+install-service:
+	docker run -it --rm \
+		-e NODE_ENV=development \
+		-v $(CURDIR):/usr/src/app \
+		$(IMGNAME)/service yarn workspace @libertech-fr/teaket_service install
+
 exec-app:
 	docker run -it --rm \
+		-e NODE_ENV=development \
 		-v $(CURDIR):/usr/src/app \
-		$(IMGNAME)/app sh
+		$(IMGNAME)/service sh
 
 run-service:
 	cd ./service && yarn start:dev
 
-run-service-docker:
+run-service-d:
 	docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		--add-host host.docker.internal:host-gateway \
-		--name $(APPNAME)-service \
 		--network dev \
-		-p $(SERVICE_PORT):4000 \
+		--name $(APPNAME)-service \
+		-p $(SERVICE_PORT):7100 \
 		-v $(CURDIR):/usr/src/app \
-		$(IMGNAME)/service yarn workspace @libertech-fr/teaket_service start:dev
-
-install-service-docker:
-	docker run -it --rm \
-		-v $(CURDIR):/usr/src/app \
-		$(IMGNAME)/service yarn workspace @libertech-fr/teaket_service install
+		$(IMGNAME)/service sh -c "cd ./service && yarn start:dev"
 
 exec-service:
 	docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--network dev \
 		-v $(CURDIR):/usr/src/app \
 		$(IMGNAME)/service sh
 
@@ -75,13 +82,23 @@ dbs: ## Start databases
 		-e MONGODB_REPLICA_SET_NAME=rs0 \
 		-e ALLOW_EMPTY_PASSWORD=yes \
 		--network dev \
-		mongo:5.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 --quiet || true
+		--health-interval=5s \
+		--health-timeout=3s \
+		--health-start-period=5s \
+		--health-retries=3 \
+		--health-cmd="mongo --eval \"db.stats().ok\" || exit 1" \
+		mongo:5.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 || true
 	@docker volume create $(APPNAME)-redis
 	@docker run -d --rm \
 		--name $(APPNAME)-redis \
 		-v $(APPNAME)-redis:/data \
 		--network dev \
 		-p 6379:6379 \
+		--health-interval=5s \
+		--health-timeout=3s \
+		--health-start-period=5s \
+		--health-retries=3 \
+		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
 	@docker volume create $(APPNAME)-minio
 	@docker run -d --rm \

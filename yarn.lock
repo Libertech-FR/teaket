@@ -2195,19 +2195,19 @@
   resolved "https://registry.yarnpkg.com/@nuxt/devalue/-/devalue-2.0.2.tgz#5749f04df13bda4c863338d8dabaf370f45ef7c7"
   integrity sha512-GBzP8zOc7CGWyFQS6dv1lQz8VVpz5C2yRszbXufwG/9zhStTIH50EtD87NmWbTMwXDvZLNg8GIpb1UFdH93JCA==
 
-"@nuxt/devtools-kit@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@nuxt/devtools-kit/-/devtools-kit-1.0.0-beta.2.tgz#64c73823b3b3c9e262b2a4fc11996b6990b73de8"
-  integrity sha512-CLOrUAlerqS2jZw8zFbWM+R5PIfwzFKbmAJDQklqvGcCfi4MtSbOoO7f5O6F6jKzTFkOi1/pW/FSpvpsyMV/gw==
+"@nuxt/devtools-kit@1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nuxt/devtools-kit/-/devtools-kit-1.0.0-beta.3.tgz#240c4f04e1ec7a757c854d52c20d72332066a468"
+  integrity sha512-jRIlOZ1mGED6S0knH2mjRPeFr3WA/LHJvAhLHLBhE943e5JTmurR9stin86DRZKjLwn5d1AtUHyM9rxaCO0qLw==
   dependencies:
     "@nuxt/kit" "^3.7.4"
     "@nuxt/schema" "^3.7.4"
     execa "^7.2.0"
 
-"@nuxt/devtools-wizard@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@nuxt/devtools-wizard/-/devtools-wizard-1.0.0-beta.2.tgz#4c3140ba95843dd0b83a31a6edaad56f2e6c6c4f"
-  integrity sha512-kHiLfHuRla+kAQO7xHL+jmPk0OINis3ilakbBm6DtTdqg4citHfP5Qm0IyvOXW9PfI0Gr7mOh50ZtvzA3dMNkw==
+"@nuxt/devtools-wizard@1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nuxt/devtools-wizard/-/devtools-wizard-1.0.0-beta.3.tgz#d1adcd959d19a77612266453c28c3e1def1323cf"
+  integrity sha512-PBcTqzy0Go4sZvSLsbj/LyK+BMmmGyhswI0Wq5hM3Ydy0rJC6MdfOt/1FIG6S/rQIOcYH0Y9k7miRQ77wh5KaQ==
   dependencies:
     consola "^3.2.3"
     diff "^5.1.0"
@@ -2221,13 +2221,13 @@
     semver "^7.5.4"
 
 "@nuxt/devtools@latest":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@nuxt/devtools/-/devtools-1.0.0-beta.2.tgz#cd25d888bfc482e3bb26d847e07040551e6a457e"
-  integrity sha512-GEPnPEsTCFDA+r7IAnUKnVJtk6tJLo0pK2DXBEaCXhnFcrneXLzyNFEtKffTzISGTgVISMAo5ps0Twtq0vNspQ==
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nuxt/devtools/-/devtools-1.0.0-beta.3.tgz#6284426840f068d8c6fca7c0cdadd84582ad1bcf"
+  integrity sha512-Ah/ho+Y5uv3ky+qDUX+lZMbLSaKt+rmCPuPmRlVWbmQtjlhzCyGAiqJSHhojerG9mp4uu5if99ejxKOj2w4rYQ==
   dependencies:
     "@antfu/utils" "^0.7.6"
-    "@nuxt/devtools-kit" "1.0.0-beta.2"
-    "@nuxt/devtools-wizard" "1.0.0-beta.2"
+    "@nuxt/devtools-kit" "1.0.0-beta.3"
+    "@nuxt/devtools-wizard" "1.0.0-beta.3"
     "@nuxt/kit" "^3.7.4"
     birpc "^0.2.14"
     consola "^3.2.3"
@@ -9526,9 +9526,9 @@ mongoose-unique-validator@^4.0.0:
     lodash.merge "^4.6.2"
 
 mongoose@^7.5.0:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-7.6.2.tgz#c55c8c41352a6e5223bd7b60aa2715331e1d2b65"
-  integrity sha512-OVx6RWbfNOzBbfTvXoOkgZmaizdXDU/B/KbBjietXQoInSg/OSULjOavXJzL51XWFkbefqkOvbeE07DfvW6FkQ==
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-7.6.3.tgz#b06507dd164ad4426013eeb266d54aa1e5178092"
+  integrity sha512-moYP2qWCOdWRDeBxqB/zYwQmQnTBsF5DoolX5uPyI218BkiA1ujGY27P0NTd4oWIX+LLkZPw0LDzlc/7oh1plg==
   dependencies:
     bson "^5.5.0"
     kareem "2.5.1"
