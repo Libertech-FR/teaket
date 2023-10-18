@@ -35,7 +35,7 @@ function hasFileExtension(path: string): boolean {
 export class FilestorageService extends AbstractServiceSchema {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#']
 
-  constructor(
+  public constructor(
     protected readonly moduleRef: ModuleRef,
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage>,
     protected readonly storage: FactorydriveService,
