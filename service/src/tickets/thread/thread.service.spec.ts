@@ -5,7 +5,6 @@ import { getModelToken } from '@nestjs/mongoose'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
 import { Model, Types } from 'mongoose'
 
-
 describe('ThreadService', () => {
   it('should be defined', () => {
     expect(true).toBeDefined()

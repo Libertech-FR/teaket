@@ -15,36 +15,35 @@ q-btn-group(rounded flat)
 <script lang="ts" setup>
 import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
-import { useRouter } from "nuxt/app";
+import { useRouter } from 'nuxt/app'
 type Ticket = components['schemas']['TicketDto']
 
 const props = defineProps({
-    selected: {
-        type: Array as PropType<Ticket[]>,
-        default: () => []
-    }
+  selected: {
+    type: Array as PropType<Ticket[]>,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits(['openDialog', 'clear'])
 
 function openDialog() {
-    emit('openDialog')
+  emit('openDialog')
 }
 
 function clearSelection() {
-    emit('clear')
+  emit('clear')
 }
 
 function markAsRead() {
-    console.log('markAsRead')
+  console.log('markAsRead')
 }
 
 function mergeTickets() {
-    console.log('mergeTickets')
+  console.log('mergeTickets')
 }
 
 function goToTicket(ticket: Ticket) {
-    useRouter().push(`/ticket/${ticket._id}`)
+  useRouter().push(`/ticket/${ticket._id}`)
 }
-
 </script>

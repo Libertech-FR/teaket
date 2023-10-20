@@ -16,7 +16,7 @@ import { AppClusterService } from '~/app.cluster.service'
 
 // eslint-disable-next-line
 declare const module: any
-;AppClusterService.clusterize(async (): Promise<void> => {
+AppClusterService.clusterize(async (): Promise<void> => {
   const cfg = config()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,

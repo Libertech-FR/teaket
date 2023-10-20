@@ -36,7 +36,7 @@ export async function extensionParseFile(path: string): Promise<ExtensionFileV1>
   return plainToInstance(ExtensionFileV1, yml)
 }
 
-export default async function(): Promise<DynamicModule[]> {
+export default async function (): Promise<DynamicModule[]> {
   try {
     if (existsSync(EXTENSIONS_FILE_PATH)) {
       Logger.log('Extensions file found, validating...', 'parsingAppExtensions')

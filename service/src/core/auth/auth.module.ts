@@ -28,15 +28,8 @@ import { EntitiesModule } from '~/core/entities/entities.module'
     IdentitiesModule,
     EntitiesModule,
   ],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    LocalStrategy,
-  ],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
   controllers: [AuthController],
-  exports: [
-    PassportModule,
-    JwtModule,
-  ],
+  exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}

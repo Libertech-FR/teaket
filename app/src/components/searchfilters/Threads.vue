@@ -5,30 +5,30 @@ q-toolbar(dense).flex.justify-evenly
 </template>
 
 <script lang="ts" setup>
-import { ThreadType, threadTypes } from '~/utils';
-import { useRoute, useRouter } from 'nuxt/app';
+import { ThreadType, threadTypes } from '~/utils'
+import { useRoute, useRouter } from 'nuxt/app'
 import { ref, onMounted, computed } from 'vue'
-import { pushQuery } from '~/composables';
+import { pushQuery } from '~/composables'
 
 const route = useRoute()
 const router = useRouter()
 const filters = computed(() => {
-    return threadTypes.reduce((acc: any, threadType: any) => {
-        const stringValue = threadType.value.toString()
-        const isFiltred = route.query["filters[@type]"]?.includes(stringValue) || route.query["filters[@type][]"]?.includes(stringValue)
-        acc[threadType.value] = isFiltred || false
-        return acc
-    }, {})
+  return threadTypes.reduce((acc: any, threadType: any) => {
+    const stringValue = threadType.value.toString()
+    const isFiltred = route.query['filters[@type]']?.includes(stringValue) || route.query['filters[@type][]']?.includes(stringValue)
+    acc[threadType.value] = isFiltred || false
+    return acc
+  }, {})
 })
 
 const resetFilters = async () => {
-    const query = {
-        ...route.query,
-    }
-    delete query["filters[@type]"]
-    delete query["filters[@type][]"]
-    router.push({
-        query
-    })
+  const query = {
+    ...route.query,
+  }
+  delete query['filters[@type]']
+  delete query['filters[@type][]']
+  router.push({
+    query,
+  })
 }
 </script>

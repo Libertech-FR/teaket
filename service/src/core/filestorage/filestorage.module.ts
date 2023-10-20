@@ -18,5 +18,4 @@ import { TransformersFilestorageService } from '~/core/filestorage/_services/tra
   controllers: [FilestorageController],
   exports: [FilestorageService],
 })
-export class FilestorageModule {
-}
+export class FilestorageModule {}

@@ -13,5 +13,4 @@ q-header
         tk-AppbarRightButtons
 </template>
 
-<script lang="ts" setup>
-</script>
+<script lang="ts" setup></script>

@@ -20,8 +20,8 @@ export const ApiDeletedResponseDecorator = <TModel extends Type<any>>(
           },
           data: {
             $ref: getSchemaPath(model),
-          }
-        }
+          },
+        },
       },
       ...responseOptions,
     }),
@@ -31,6 +31,6 @@ export const ApiDeletedResponseDecorator = <TModel extends Type<any>>(
         $ref: getSchemaPath(NotFoundDto),
       },
       ...notFoundOptions,
-    })
+    }),
   )
 }

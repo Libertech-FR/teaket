@@ -24,14 +24,14 @@ q-scroll-area(ref="chatScroll")
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'nuxt/app';
-import { useHttpApi } from '~/composables';
-import { useDayjs, usePinia } from "#imports";
-import type { Fragments, Threads, Thread } from '~/types';
+import { useRoute, useRouter } from 'nuxt/app'
+import { useHttpApi } from '~/composables'
+import { useDayjs, usePinia } from '#imports'
+import type { Fragments, Threads, Thread } from '~/types'
 import type { components } from '#build/types/service-api'
-import { useQuasar } from 'quasar';
-import { ThreadType } from '../../utils';
-import { QScrollArea } from 'quasar';
+import { useQuasar } from 'quasar'
+import { ThreadType } from '../../utils'
+import { QScrollArea } from 'quasar'
 
 type ThreadDto = components['schemas']['ThreadDto']
 
@@ -42,90 +42,93 @@ const $q = useQuasar()
 const user = store.state.value.auth.user
 
 function getThreadHookName(type: ThreadType) {
-    const baseUrl = 'tk-threadsTypes'
-    switch (type) {
-        case ThreadType.EXTERNAL:
-        case ThreadType.INTERNAL:
-        case ThreadType.OUTGOING:
-            return `${baseUrl}Base`
-        case ThreadType.INCOMING:
-            return `${baseUrl}Mail`
-        case ThreadType.SYSTEM:
-            return `${baseUrl}System`
-        default:
-            return `${baseUrl}Base`
-    }
+  const baseUrl = 'tk-threadsTypes'
+  switch (type) {
+    case ThreadType.EXTERNAL:
+    case ThreadType.INTERNAL:
+    case ThreadType.OUTGOING:
+      return `${baseUrl}Base`
+    case ThreadType.INCOMING:
+      return `${baseUrl}Mail`
+    case ThreadType.SYSTEM:
+      return `${baseUrl}System`
+    default:
+      return `${baseUrl}Base`
+  }
 }
 
 const emit = defineEmits(['email:response'])
 function emailReponse(data: ThreadDto) {
-    emit('email:response', data)
+  emit('email:response', data)
 }
 
 const chatScroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 function scroll(): void {
-    const target = chatScroll.value?.getScrollTarget()
-    if (!target) return
-    chatScroll.value?.setScrollPosition('vertical', target.scrollHeight, 0)
+  const target = chatScroll.value?.getScrollTarget()
+  if (!target) return
+  chatScroll.value?.setScrollPosition('vertical', target.scrollHeight, 0)
 }
 
 onMounted(() => {
-    scroll()
+  scroll()
 })
 
 async function threadsRefresh(): Promise<void> {
-    await refresh()
-    scroll()
+  await refresh()
+  scroll()
 }
 
 const baseQuery = ref({
-    "filters[ticketId]": `${route.params.id}`,
-    "sort[metadata.createdAt]": 'asc',
-    "limit": 999,
+  'filters[ticketId]': `${route.params.id}`,
+  'sort[metadata.createdAt]': 'asc',
+  limit: 999,
 })
 
-const { data: threads, refresh, error } = await useHttpApi(`/tickets/thread`, {
-    method: 'get',
-    query: computed(() => {
-        return {
-            ...baseQuery.value,
-            ...route.query
-        }
-    })
+const {
+  data: threads,
+  refresh,
+  error,
+} = await useHttpApi(`/tickets/thread`, {
+  method: 'get',
+  query: computed(() => {
+    return {
+      ...baseQuery.value,
+      ...route.query,
+    }
+  }),
 })
 
 if (error.value) {
-    $q.notify({
-        message: 'Impossible de charger les messages',
-        type: 'negative'
-    })
+  $q.notify({
+    message: 'Impossible de charger les messages',
+    type: 'negative',
+  })
 }
 
 const getMessageByDay = computed((): Threads | undefined => {
-    return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {
-        const day = dayjs(thread.metadata.createdAt).format('DD-MM-YYYY')
-        const newTread: Thread = {
-            ...thread,
-            fragments: getThreadFragments(thread)
-        }
-        if (!acc[day]) acc[day] = []
-        acc[day].push(newTread)
-        return acc
-    }, {})
+  return threads.value?.data.reduce((acc: Threads, thread: ThreadDto) => {
+    const day = dayjs(thread.metadata.createdAt).format('DD-MM-YYYY')
+    const newTread: Thread = {
+      ...thread,
+      fragments: getThreadFragments(thread),
+    }
+    if (!acc[day]) acc[day] = []
+    acc[day].push(newTread)
+    return acc
+  }, {})
 })
 
 function getThreadFragments(thread: ThreadDto): Fragments {
-    return thread.fragments.reduce((acc: Fragments, fragment) => {
-        const disposition = fragment.disposition
-        if (!acc[disposition]) acc[disposition] = []
-        acc[disposition]?.push(fragment)
-        return acc as Fragments
-    }, {})
+  return thread.fragments.reduce((acc: Fragments, fragment) => {
+    const disposition = fragment.disposition
+    if (!acc[disposition]) acc[disposition] = []
+    acc[disposition]?.push(fragment)
+    return acc as Fragments
+  }, {})
 }
 
 defineExpose({
-    scroll,
+  scroll,
   threadsRefresh,
 })
-
 </script>

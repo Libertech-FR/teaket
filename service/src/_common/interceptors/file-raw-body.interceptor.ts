@@ -12,7 +12,8 @@ export function FileRawBodyInterceptor(fieldName: string, localOptions?: any): T
 
     public constructor(
       @Optional()
-      @Inject(MULTER_MODULE_OPTIONS) options: MulterModuleOptions = {},
+      @Inject(MULTER_MODULE_OPTIONS)
+      options: MulterModuleOptions = {},
     ) {
       this.multer = (multer as any)({
         ...options,
@@ -23,22 +24,17 @@ export function FileRawBodyInterceptor(fieldName: string, localOptions?: any): T
     public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
       const ctx = context.switchToHttp()
       await new Promise<void>((resolve, reject) => {
-          const request = ctx.getRequest<Request & { rawBody: string }>()
-          request.rawBody = ''
-          request.prependListener('data', (chunk) => request.rawBody += chunk.toString())
-          this.multer.single(fieldName)(
-            request,
-            ctx.getResponse(),
-            (err: any) => {
-              if (err) {
-                const error = transformException(err)
-                return reject(error)
-              }
-              resolve()
-            },
-          )
-        },
-      )
+        const request = ctx.getRequest<Request & { rawBody: string }>()
+        request.rawBody = ''
+        request.prependListener('data', (chunk) => (request.rawBody += chunk.toString()))
+        this.multer.single(fieldName)(request, ctx.getResponse(), (err: any) => {
+          if (err) {
+            const error = transformException(err)
+            return reject(error)
+          }
+          resolve()
+        })
+      })
       return next.handle()
     }
   }

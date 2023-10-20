@@ -3,13 +3,7 @@ import { CategoriesCreateDto, CategoriesDto, CategoriesUpdateDto } from './_dto/
 import { CategoriesService } from './categories.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ApiParam, ApiTags } from '@nestjs/swagger'
-import {
-  FilterOptions,
-  FilterSchema,
-  ObjectIdValidationPipe,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@streamkits/nestjs_module_scrud'
+import { FilterOptions, FilterSchema, ObjectIdValidationPipe, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { Response } from 'express'
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
@@ -23,7 +17,6 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 @ApiTags('core')
 @Controller('categories')
 export class CategoriesController extends AbstractController {
-
   protected static readonly projection: PartialProjectionType<CategoriesDto> = {
     name: 1,
     parentId: 1,

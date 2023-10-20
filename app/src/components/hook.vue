@@ -1,5 +1,5 @@
 <!--suppress JSUnusedLocalSymbols -->
-<template lang='pug'>
+<template lang="pug">
 div(:id='"tk-hook:" + name')
   template(v-for="(customSlot, key) in customSlots")
     pre.bg-red.text-white(v-if='debug' v-html="JSON.stringify({name, customSlot, data}, null, 2)")
@@ -11,7 +11,7 @@ div(:id='"tk-hook:" + name')
     )
 </template>
 
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { useAppConfig } from '#imports'
 import { sort } from 'radash'
 

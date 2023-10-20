@@ -26,5 +26,4 @@ export class PreferencesDto extends PreferencesCreateDto {
   public _id: string
 }
 
-export class PreferencesUpdateDto extends PartialType(PreferencesCreateDto) {
-}
+export class PreferencesUpdateDto extends PartialType(PreferencesCreateDto) {}

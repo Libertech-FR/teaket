@@ -25,5 +25,4 @@ export class Preferences extends AbstractSchema {
   public data: { [key: string]: MixedValue }
 }
 
-export const PreferencesSchema = SchemaFactory.createForClass(Preferences)
-  .index({ name: 1, entityId: 1 }, { unique: true })
+export const PreferencesSchema = SchemaFactory.createForClass(Preferences).index({ name: 1, entityId: 1 }, { unique: true })

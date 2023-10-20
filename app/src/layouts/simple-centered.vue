@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 q-layout(view="lHh Lpr fff")
   q-page-container
     q-page.window-height.window-width.row.justify-center.items-center(

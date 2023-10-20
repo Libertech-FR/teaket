@@ -43,17 +43,17 @@ q-page
 </template>
 
 <script lang="ts" setup>
-import usePagination from "~/composables/usePagination";
-import { ref, provide, watch, computed } from "vue";
-import { useHttpApi } from "~/composables/useHttpApi";
-import { useDayjs, onMounted } from "#imports";
-import { useRoute, useRouter } from "nuxt/app";
-import { useQuasar } from "quasar";
-import type { QTableProps } from "quasar";
+import usePagination from '~/composables/usePagination'
+import { ref, provide, watch, computed } from 'vue'
+import { useHttpApi } from '~/composables/useHttpApi'
+import { useDayjs, onMounted } from '#imports'
+import { useRoute, useRouter } from 'nuxt/app'
+import { useQuasar } from 'quasar'
+import type { QTableProps } from 'quasar'
 import type { components } from '#build/types/service-api'
 import useCloseTicket from '~/composables/useCloseTicket'
-type Ticket = components["schemas"]['TicketDto']
-type State = components["schemas"]['StatesDto']
+type Ticket = components['schemas']['TicketDto']
+type State = components['schemas']['StatesDto']
 
 const daysjs = useDayjs()
 const route = useRoute()
@@ -61,15 +61,20 @@ const router = useRouter()
 const $q = useQuasar()
 
 const closeTicketsDialog = ref<boolean>(false)
-const { pagination, onRequest, initializePagination } = usePagination();
+const { pagination, onRequest, initializePagination } = usePagination()
 
-const { data: tickets, pending, refresh, error } = await useHttpApi('/tickets/ticket', {
+const {
+  data: tickets,
+  pending,
+  refresh,
+  error,
+} = await useHttpApi('/tickets/ticket', {
   method: 'get',
   query: computed(() => {
     return {
       ...route.query,
     }
-  })
+  }),
 })
 
 if (tickets.value) {
@@ -79,37 +84,46 @@ if (tickets.value) {
 if (error.value) {
   $q.notify({
     message: 'Impossible de récupérer les tickets',
-    type: 'negative'
+    type: 'negative',
   })
 }
 
-const { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError } = await useHttpApi('/core/categories', {
+const {
+  data: categories,
+  pending: categoriesPending,
+  refresh: categoriesRefresh,
+  error: categoriesError,
+} = await useHttpApi('/core/categories', {
   method: 'get',
   query: {
-    "limit": 999,
-  }
+    limit: 999,
+  },
 })
 
 if (categoriesError.value) {
   $q.notify({
     message: 'Impossible de récupérer les catégories',
-    type: 'negative'
+    type: 'negative',
   })
 }
-const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
+const {
+  data: states,
+  pending: statesPending,
+  refresh: statesRefresh,
+  error: statesError,
+} = await useHttpApi('/tickets/state', {
   method: 'get',
   query: {
-    "limit": 999,
-  }
+    limit: 999,
+  },
 })
 
 if (statesError.value) {
   $q.notify({
     message: 'Impossible de récupérer les états',
-    type: 'negative'
+    type: 'negative',
   })
 }
-
 
 const columns = ref<QTableProps['columns']>([
   {
@@ -130,28 +144,28 @@ const columns = ref<QTableProps['columns']>([
     label: 'Appelant',
     field: (row: Ticket) => row.envelope.senders,
     align: 'left',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'envelope.observers.name',
     label: 'Concerné',
     field: (row: Ticket) => row.envelope.observers,
     align: 'left',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'envelope.assigned.name',
     label: 'Assigné',
     field: (row: Ticket) => row.envelope.assigned,
     align: 'left',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'subject',
     label: 'Sujet',
     field: 'subject',
     align: 'left',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'metadata.lastUpdatedAt',
@@ -167,7 +181,7 @@ const columns = ref<QTableProps['columns']>([
     field: (row: Ticket) => row?.metadata?.createdAt,
     format: (val: string) => daysjs(val).format('DD/MM/YYYY HH:mm'),
     align: 'left',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'actions',
@@ -176,7 +190,17 @@ const columns = ref<QTableProps['columns']>([
     align: 'left',
   },
 ])
-const visibleColumns = ref<QTableProps['visibleColumns']>(['sequence', 'envelope.senders.name', 'envelope.observers.name', 'envelope.assigned.name', 'subject', 'metadata.lastUpdatedAt', 'metadata.createdAt', 'actions', 'states'])
+const visibleColumns = ref<QTableProps['visibleColumns']>([
+  'sequence',
+  'envelope.senders.name',
+  'envelope.observers.name',
+  'envelope.assigned.name',
+  'subject',
+  'metadata.lastUpdatedAt',
+  'metadata.createdAt',
+  'actions',
+  'states',
+])
 const columnsType = ref([
   { name: 'sequence', type: 'text' },
   { name: 'envelope.senders.name', type: 'text' },
@@ -194,28 +218,24 @@ const selected = ref<Ticket[]>([])
 const { openDialog } = useCloseTicket()
 function closeTicket(ticket: Ticket) {
   selected.value = [ticket]
-  openDialog({ticket: selected.value, refreshEvent: refresh})
+  openDialog({ ticket: selected.value, refreshEvent: refresh })
 }
 
 const fieldsList = computed(() => {
-  return columns.value!.reduce(
-    (acc: { name: string, label: string, type?: string }[], column) => {
-      if (visibleColumns.value!.includes(column.name) && column.name !== 'actions' && column.name !== 'states') {
-        const type = columnsType.value.find(type => type.name === column.name)?.type
-        acc.push({
-          name: column.name,
-          label: column.label,
-          type
-        })
-      }
-      return acc
-    },
-    []
-  )
+  return columns.value!.reduce((acc: { name: string; label: string; type?: string }[], column) => {
+    if (visibleColumns.value!.includes(column.name) && column.name !== 'actions' && column.name !== 'states') {
+      const type = columnsType.value.find((type) => type.name === column.name)?.type
+      acc.push({
+        name: column.name,
+        label: column.label,
+        type,
+      })
+    }
+    return acc
+  }, [])
 })
 
 provide('fieldsList', fieldsList.value)
 provide('stateFetch', { data: states, pending: statesPending, refresh: statesRefresh, error: statesError })
 provide('categoriesFetch', { data: categories, pending: categoriesPending, refresh: categoriesRefresh, error: categoriesError })
-
 </script>

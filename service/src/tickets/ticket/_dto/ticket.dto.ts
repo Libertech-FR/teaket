@@ -99,5 +99,4 @@ export class TicketDto extends TicketCreateDto {
   public totalTime: number
 }
 
-export class TicketUpdateDto extends PartialType(TicketCreateDto) {
-}
+export class TicketUpdateDto extends PartialType(TicketCreateDto) {}

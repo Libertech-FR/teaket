@@ -35,10 +35,7 @@ import { SettingsModule } from '~/core/settings/settings.module'
       useFactory: async (config: ConfigService) => {
         for (const plugin of config.get<MongoosePlugin[]>('mongoose.plugins')) {
           import(plugin.package).then((plugin) => {
-            mongoose.plugin(
-              plugin.default ? plugin.default : plugin,
-              plugin.options,
-            )
+            mongoose.plugin(plugin.default ? plugin.default : plugin, plugin.options)
           })
         }
         return {
@@ -84,12 +81,7 @@ import { SettingsModule } from '~/core/settings/settings.module'
           watch: true,
         },
       }),
-      resolvers: [
-        { use: QueryResolver, options: ['lang'] },
-        new CookieResolver(['lang']),
-        new HeaderResolver(['x-lang']),
-        AcceptLanguageResolver,
-      ],
+      resolvers: [{ use: QueryResolver, options: ['lang'] }, new CookieResolver(['lang']), new HeaderResolver(['x-lang']), AcceptLanguageResolver],
       logging: true,
     }),
     CoreModule.register(),

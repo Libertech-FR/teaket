@@ -14,24 +14,23 @@ q-btn-group(rounded flat)
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 const props = defineProps({
-    columns: {
-        type: Array as PropType<{ name: string, label: string, value: string }[]>,
-        default: () => []
-    },
-    modelValue: {
-        type: Array as PropType<string[]>,
-        default: () => []
-    }
+  columns: {
+    type: Array as PropType<{ name: string; label: string; value: string }[]>,
+    default: () => [],
+  },
+  modelValue: {
+    type: Array as PropType<string[]>,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
 
 function update(value: string[]) {
-    emit('update:modelValue', value)
+  emit('update:modelValue', value)
 }
 
 function refresh() {
-    emit('refresh')
+  emit('refresh')
 }
-
 </script>

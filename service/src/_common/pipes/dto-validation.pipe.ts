@@ -1,12 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  ValidationPipe,
-  ValidationError,
-  Logger,
-  Injectable,
-  Scope, Inject,
-} from '@nestjs/common'
+import { BadRequestException, HttpStatus, ValidationPipe, ValidationError, Logger, Injectable, Scope, Inject } from '@nestjs/common'
 import { REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 
@@ -25,7 +17,7 @@ export class DtoValidationPipe extends ValidationPipe {
       exceptionFactory: (errors: ValidationError[]) => {
         let validations: ValidationRecursive = {}
         for (const error of errors) {
-          validations = { ...validations, ...this.validationRecursive(error)}
+          validations = { ...validations, ...this.validationRecursive(error) }
         }
         const debug = {}
         const message = `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim()

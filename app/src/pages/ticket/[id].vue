@@ -12,11 +12,11 @@ q-page.row.items-stretch
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, provide } from 'vue'
-import { useRoute, useRouter } from 'nuxt/app';
-import { useHttpApi } from '~/composables/useHttpApi';
+import { useRoute, useRouter } from 'nuxt/app'
+import { useHttpApi } from '~/composables/useHttpApi'
 import { useDraggable } from '@vueuse/core'
-import { LifeStep } from '~/utils';
-import { useQuasar } from 'quasar';
+import { LifeStep } from '~/utils'
+import { useQuasar } from 'quasar'
 import type { components } from '#build/types/service-api'
 import { assign } from 'radash'
 type Ticket = components['schemas']['TicketDto']
@@ -26,27 +26,30 @@ const router = useRouter()
 const id = ref<string>('')
 const $q = useQuasar()
 
-const { data: ticketData, refresh, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
-    method: 'get',
-    pathParams: {
-        _id: `${route.params.id}`
-    }
+const {
+  data: ticketData,
+  refresh,
+  error,
+} = await useHttpApi(`/tickets/ticket/{_id}`, {
+  method: 'get',
+  pathParams: {
+    _id: `${route.params.id}`,
+  },
 })
 
 const refreshTicketData = () => {
-    refresh()
+  refresh()
 }
 
 const isDisabledTicket = computed(() => {
-    return ticketData.value?.data?.lifestep === LifeStep.CLOSED
+  return ticketData.value?.data?.lifestep === LifeStep.CLOSED
 })
 
 provide('isDisabledTicket', isDisabledTicket.value)
-
 </script>
 
 <style lang="css" scoped>
 .mainContent {
-    height: calc(100% - 50px);
+  height: calc(100% - 50px);
 }
 </style>

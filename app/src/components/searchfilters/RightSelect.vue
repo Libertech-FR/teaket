@@ -23,15 +23,15 @@ q-select(
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch, inject } from 'vue'
 import type { Ref } from 'vue'
-import { useHttpApi, pushQuery } from "~/composables";
+import { useHttpApi, pushQuery } from '~/composables'
 
 import type { components } from '#build/types/service-api'
-import { useRoute, useRouter } from 'nuxt/app';
-import { ticketType, lifeSteps } from "#imports";
+import { useRoute, useRouter } from 'nuxt/app'
+import { ticketType, lifeSteps } from '#imports'
 type Category = components['schemas']['CategoriesDto']
 type State = components['schemas']['StatesDto']
-type CateforyFetch = components["schemas"]["PaginatedResponseDto"] & { data: Category[] }
-type StateFetch = components["schemas"]["PaginatedResponseDto"] & { data: State[] }
+type CateforyFetch = components['schemas']['PaginatedResponseDto'] & { data: Category[] }
+type StateFetch = components['schemas']['PaginatedResponseDto'] & { data: State[] }
 
 type Option = {
   label: string
@@ -51,16 +51,19 @@ onMounted(() => {
   getFilters()
 })
 
-watch(() => route.query, () => {
-  getFilters()
-})
+watch(
+  () => route.query,
+  () => {
+    getFilters()
+  },
+)
 
 const filters = ref<Option[]>([])
 const getFilters = () => {
   filters.value = []
 
   // Use destructuring assignment to clone the route.query object
-  const query = { ...route.query };
+  const query = { ...route.query }
 
   // Use a functional approach with filter and map for better readability
   let group: string
@@ -72,23 +75,21 @@ const getFilters = () => {
         return value.map((val: string) => {
           return {
             value: val,
-            group
+            group,
           }
         })
       } else {
         return {
           value,
-          group
+          group,
         }
       }
-
     })
     .flat()
-    .map(filter => options.value.find(option => option.value?.toString() === filter.value?.toString() && option.group === filter.group))
-    .filter(option => option !== undefined);
-  filters.value = filteredOptions;
+    .map((filter) => options.value.find((option) => option.value?.toString() === filter.value?.toString() && option.group === filter.group))
+    .filter((option) => option !== undefined)
+  filters.value = filteredOptions
 }
-
 
 const options = computed(() => {
   const ticketTypeOptions: Option[] = ticketType.map((type) => {
@@ -97,34 +98,36 @@ const options = computed(() => {
       value: type.value.toString(),
       group: 'type',
       icon: type.icon,
-      color: type.color
+      color: type.color,
     }
   })
   ticketTypeOptions.unshift({ label: 'Types', header: true })
-  const states: Option[] = statesData.value.data.map((state: State) => {
-    return {
-      label: state.name,
-      value: state._id,
-      group: 'state.id',
-      icon: state.icon ?? '',
-      color: state.color ?? ''
-    }
-  }) ?? []
-  const categories: Option[] = categoriesData.value.data.map((category: Category) => {
-    return {
-      label: category.name,
-      value: category._id,
-      group: 'categories'
-    }
-  }) ?? []
-  if (!categories.find(category => category.header)) categories.unshift({ label: 'Catégories', header: true })
-  if (!states.find(state => state.header)) states.unshift({ label: 'États', header: true })
-  if (!lifeSteps.find(lifestep => lifestep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
+  const states: Option[] =
+    statesData.value.data.map((state: State) => {
+      return {
+        label: state.name,
+        value: state._id,
+        group: 'state.id',
+        icon: state.icon ?? '',
+        color: state.color ?? '',
+      }
+    }) ?? []
+  const categories: Option[] =
+    categoriesData.value.data.map((category: Category) => {
+      return {
+        label: category.name,
+        value: category._id,
+        group: 'categories',
+      }
+    }) ?? []
+  if (!categories.find((category) => category.header)) categories.unshift({ label: 'Catégories', header: true })
+  if (!states.find((state) => state.header)) states.unshift({ label: 'États', header: true })
+  if (!lifeSteps.find((lifestep) => lifestep.header)) lifeSteps.unshift({ label: 'Étapes de vie', header: true })
   return [
     ...lifeSteps,
     ...ticketTypeOptions,
     // ...categories,
-    ...states
+    ...states,
   ]
 })
 
@@ -142,22 +145,21 @@ const regroupFilters = async () => {
 
 const pushQueries = async () => {
   // Regroup the filters by key
-  const regroupedFilters = await regroupFilters();
+  const regroupedFilters = await regroupFilters()
 
   // Push the filters to the url
   for (const key in regroupedFilters) {
-    const values = regroupedFilters[key];
+    const values = regroupedFilters[key]
     for (const value of values) {
       pushQuery({ value, key, multiple: true, pagination: { limit: 10, skip: 0 } })
     }
   }
-};
+}
 
 const addFilter = (option: Option) => {
   // Find the index of the option in the filters array
-  const index = filters.value.findIndex(filter => {
+  const index = filters.value.findIndex((filter) => {
     return filter.group === option.group && filter.value === option.value
-
   })
   // If the option is not in the filters array, add it else remove it
   if (index === -1) {

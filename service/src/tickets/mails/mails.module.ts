@@ -9,15 +9,8 @@ import { WebhooksService } from '~/tickets/mails/_services/webhooks.service'
 import { HttpModule } from '@nestjs/axios'
 
 @Module({
-  imports: [
-    HttpModule,
-    FilestorageModule,
-    forwardRef(() => TicketModule),
-    ThreadModule,
-    EntitiesModule,
-  ],
+  imports: [HttpModule, FilestorageModule, forwardRef(() => TicketModule), ThreadModule, EntitiesModule],
   providers: [MailsService, WebhooksService],
   controllers: [MailsController],
 })
-export class MailsModule {
-}
+export class MailsModule {}

@@ -24,4 +24,3 @@ export const StatePartSchema = SchemaFactory.createForClass(StatePart)
 StatePartSchema.virtual('isActive').get(function (this: StatePart): boolean {
   return this.current > EntityState.INACTIVE
 })
-

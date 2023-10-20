@@ -5,18 +5,18 @@ export interface AutoIncrementPluginOptions {
    * How much to increment the field by
    * @default 1
    */
-  incrementBy?: number;
+  incrementBy?: number
   /**
    * Set the field to increment
    * -> Only use this if it is not "_id"
    * @default _id
    */
-  field?: string;
+  field?: string
   /**
    * The Tracker Collection to use to keep track of an counter for the ID
    * @default identitycounters
    */
-  trackerCollection?: string;
+  trackerCollection?: string
   /**
    * Set the tracker model name
    * @default identitycounter
@@ -26,13 +26,13 @@ export interface AutoIncrementPluginOptions {
    * the count should start at
    * @default 0
    */
-  startAt?: number;
+  startAt?: number
   /**
    * Overwrite what to use for the `modelName` property in the tracker document
    * This can be overwritten when wanting to use a single tracker for multiple models
    * Defaults to `document.constructor.modelName`
    */
-  overwriteModelName?: string | OverwriteModelNameFunction;
+  overwriteModelName?: string | OverwriteModelNameFunction
 }
 
 /**
@@ -43,9 +43,9 @@ export type OverwriteModelNameFunction = (modelName: string, model: Model<any>) 
 
 export interface AutoIncrementPluginTrackerSpec {
   /** The ModelName from the current model */
-  modelName: string;
+  modelName: string
   /** The field in the schema */
-  field: string;
+  field: string
   /** Current Tracker count */
-  count: number;
+  count: number
 }
