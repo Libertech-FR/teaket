@@ -1,9 +1,9 @@
 <template lang="pug">
 q-td
-    q-btn-group(flat rounded)
-        q-btn(:icon="isDisabledTicket ? 'mdi-eye' : 'mdi-pencil'" color="primary" @click="goToTicket" size="sm" flat)
+    q-btn-group(flat rounded dark)
+        q-btn(:icon="isDisabledTicket ? 'mdi-eye' : 'mdi-pencil'" color="white" @click="goToTicket" size="sm" flat)
             q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
-        q-btn(icon="mdi-delete" color="primary" @click="closeTicket" size="sm" flat :disable="isDisabledTicket")
+        q-btn(icon="mdi-delete" color="white" @click="closeTicket" size="sm" flat :disable="isDisabledTicket")
             q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Clore le ticket
 </template>
 
