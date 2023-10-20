@@ -38,7 +38,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Array<T> & Query<Array<T>, T, any, T>[], number]> {
+  ): Promise<[Query<Array<T>, T, any, T>[], number]> {
     this.logger.debug(['findAndCount', JSON.stringify(Object.values(arguments))].join(' '))
     if (this.eventEmitter) {
       const beforeEvents = await this.eventEmitter?.emitAsync(

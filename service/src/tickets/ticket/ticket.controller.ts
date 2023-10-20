@@ -54,11 +54,7 @@ export class TicketController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(TicketDto, TicketController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, TicketController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

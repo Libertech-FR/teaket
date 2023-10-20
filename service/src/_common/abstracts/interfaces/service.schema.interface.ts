@@ -15,9 +15,13 @@ export interface ServiceSchemaInterface {
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Query<Array<T>, T, any, T>[], number]>
+  ): Promise<[Array<Query<Array<T>, T, any, T>>, number]>
 
-  findById<T extends AbstractSchema | Document>(id: Types.ObjectId | any, projection?: ProjectionType<T> | null | undefined, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>>
+  findById<T extends AbstractSchema | Document>(
+    id: Types.ObjectId | any,
+    projection?: ProjectionType<T> | null | undefined,
+    options?: QueryOptions<T> | null | undefined,
+  ): Promise<Query<T, T, any, T>>
 
   findOne<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,

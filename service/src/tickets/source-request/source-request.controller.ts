@@ -40,11 +40,7 @@ export class SourceRequestController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(SourceRequestDto, SourceRequestController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, SourceRequestController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -67,11 +63,7 @@ export class SourceRequestController extends AbstractController {
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(SourceRequestUpdateDto, SourceRequestDto)
-  public async update(
-    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Body() body: SourceRequestUpdateDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: SourceRequestUpdateDto, @Res() res: Response): Promise<Response> {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

@@ -41,11 +41,7 @@ export class IdentitiesController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
     //TODO: search tree by parentId
     const [data, total] = await this._service.findAndCount(searchFilterSchema, IdentitiesController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
@@ -69,11 +65,7 @@ export class IdentitiesController extends AbstractController {
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
-  public async update(
-    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Body() body: IdentitiesUpdateDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: IdentitiesUpdateDto, @Res() res: Response): Promise<Response> {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

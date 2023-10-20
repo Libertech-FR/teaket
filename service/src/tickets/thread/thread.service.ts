@@ -33,7 +33,7 @@ export class ThreadService extends AbstractServiceSchema {
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Array<T> & Query<Array<T>, T, any, T>[], number]> {
+  ): Promise<[Array<Array<T> & Query<Array<T>, T, any, T>>, number]> {
     if (!filter.ticketId) throw new ConflictException('Search must be contain filter by ticketId')
     //TODO: check acl
     return await super.findAndCount(
