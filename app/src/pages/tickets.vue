@@ -51,6 +51,7 @@ import { useRoute, useRouter } from "nuxt/app";
 import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import type { components } from '#build/types/service-api'
+import useCloseTicket from '~/composables/useCloseTicket'
 type Ticket = components["schemas"]['TicketDto']
 type State = components["schemas"]['StatesDto']
 
@@ -190,9 +191,10 @@ const columnsType = ref([
 ])
 
 const selected = ref<Ticket[]>([])
+const { openDialog } = useCloseTicket()
 function closeTicket(ticket: Ticket) {
   selected.value = [ticket]
-  closeTicketsDialog.value = true
+  openDialog({ticket: selected.value, refreshEvent: refresh})
 }
 
 const fieldsList = computed(() => {
