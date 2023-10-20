@@ -205,19 +205,14 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
     }
     const { data: thread, error } = await useHttpApi(`/tickets/thread`, {
         method: 'post',
-        body
+        body,
+    },
+    {
+      message: 'Impossible d\'envoyer le message',
+      color: 'negative'
     })
 
-    console.log('thread', thread.value)
-    console.log('error', error.value)
-
-    if (error.value) {
-        $q.notify({
-            message: 'Impossible d\'envoyer le message',
-            type: 'negative'
-        })
-        return
-    }
+    if(error) return
 
     message.value = ''
     attachements.value = []
