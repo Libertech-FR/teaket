@@ -78,18 +78,23 @@ type Mail = any
 // type Mail = components["schemas"]['TicketDto']
 const route = useRoute()
 const $q = useQuasar()
-const { pagination, onRequest, initializePagination } = usePagination();
+const { pagination, onRequest, initializePagination } = usePagination()
 const selected = ref<Mail[]>([])
 
 const tab = ref('')
 const target = ref<Mail | null>(null)
-const { data: mails, refresh, pending, error } = await useHttpApi('/tickets/mails', {
+const {
+  data: mails,
+  refresh,
+  pending,
+  error,
+} = await useHttpApi('/tickets/mails', {
   method: 'get',
   query: computed(() => {
     return {
       ...omit(route.query, ['accountId', 'seq']),
     }
-  })
+  }),
 })
 if (mails.value) {
   initializePagination(mails.value?.total)
@@ -128,7 +133,7 @@ const columns = ref<QTableProps['columns']>([
     label: 'Sujet',
     field: (row: Mail) => {
       const $q = useQuasar()
-      const maxLength = ($q.screen.width / 2 / 10) - 30
+      const maxLength = $q.screen.width / 2 / 10 - 30
       if (row.envelope.subject.length <= maxLength) {
         return row.envelope.subject
       }
@@ -162,24 +167,26 @@ const deleteMail = async (mail: Mail) => {
     cancel: true,
     persistent: true,
     color: 'negative',
-  }).onOk(async () => {
-    const { error } = await useHttpApi(`/tickets/mails/${mail.accountId}/${mail.seq}`, {
-      method: 'delete',
-    })
-    if (error.value) {
-      $q.notify({
-        color: 'negative',
-        message: `Impossible de supprimer l'email: ${mail.uid}`,
+  })
+    .onOk(async () => {
+      const { error } = await useHttpApi(`/tickets/mails/${mail.accountId}/${mail.seq}`, {
+        method: 'delete',
       })
-      return
-    }
-    $q.notify({
-      color: 'positive',
-      message: 'Email supprimé avec succès',
+      if (error.value) {
+        $q.notify({
+          color: 'negative',
+          message: `Impossible de supprimer l'email: ${mail.uid}`,
+        })
+        return
+      }
+      $q.notify({
+        color: 'positive',
+        message: 'Email supprimé avec succès',
+      })
+      target.value = null
+      await refresh()
     })
-    target.value = null
-    await refresh()
-  }).onCancel(() => target.value = null)
+    .onCancel(() => (target.value = null))
 }
 const importMail = async (mail: any) => {
   const { data, error } = await useHttpApi(`/tickets/mails/import`, {
@@ -211,7 +218,7 @@ const goToMail = async (mail: Mail) => {
       ...route.query,
       accountId: mail.accountId,
       seq: mail.seq,
-    }
+    },
   })
   const { data } = await useHttpApi(`/tickets/mails/${mail.accountId}/${mail.seq}`, {
     method: 'get',
@@ -222,5 +229,4 @@ const goToMail = async (mail: Mail) => {
   }
   tab.value = 'email'
 }
-
 </script>

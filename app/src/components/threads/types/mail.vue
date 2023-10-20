@@ -25,32 +25,29 @@ div
 <script lang="ts" setup>
 import type { components } from '#build/types/service-api'
 import { onMounted, onBeforeUpdate, ref } from 'vue'
-import { useRoute } from 'nuxt/app';
-import { useDayjs, usePinia } from "#imports";
-import { useQuasar } from 'quasar';
+import { useRoute } from 'nuxt/app'
+import { useDayjs, usePinia } from '#imports'
+import { useQuasar } from 'quasar'
 type ThreadDto = components['schemas']['ThreadDto']
 
 const objectIframe = ref<HTMLObjectElement[]>([])
 
 onBeforeUpdate(() => {
-    objectIframe.value = []
+  objectIframe.value = []
 })
 
-
 onMounted(() => {
-    scroll()
-    window.addEventListener('message', function (e) {
-        if (e.data.type === 'iframeInfo') {
-            objectIframe.value[e.data.id].style.height = e.data.scrollHeight + 'px'
-        }
-    })
+  scroll()
+  window.addEventListener('message', function (e) {
+    if (e.data.type === 'iframeInfo') {
+      objectIframe.value[e.data.id].style.height = e.data.scrollHeight + 'px'
+    }
+  })
 })
 
 const props = defineProps<{
-    data: ThreadDto
+  data: ThreadDto
 }>()
-
-
 
 const dayjs = useDayjs()
 const store = usePinia()
@@ -60,15 +57,14 @@ const user = store.state.value.auth.user
 
 const emit = defineEmits(['email:response'])
 const emailReponse = (data: ThreadDto) => {
-    emit('email:response', data)
+  emit('email:response', data)
 }
 
 const getTimeFrom = (time: string) => {
-    return dayjs().to(dayjs(time))
+  return dayjs().to(dayjs(time))
 }
 
 const getHour = (time: string) => {
-    return dayjs(time).format('DD-MM-YYYY HH:mm')
+  return dayjs(time).format('DD-MM-YYYY HH:mm')
 }
-
 </script>

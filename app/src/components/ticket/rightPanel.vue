@@ -114,20 +114,19 @@ q-scroll-area(:style="{height: '100%'}")
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, inject, watch } from 'vue'
-import { ticketType, lifeSteps, useDayjs, usePinia, useQuasar } from '#imports';
-import { useHttpApi } from '~/composables/useHttpApi';
-import useCloseTicket from '~/composables/useCloseTicket';
-import { useRouter } from 'vue-router';
-import { impact, priority, LifeStep, EntityType } from '~/utils';
-import type { PropType } from 'vue';
+import { ticketType, lifeSteps, useDayjs, usePinia, useQuasar } from '#imports'
+import { useHttpApi } from '~/composables/useHttpApi'
+import useCloseTicket from '~/composables/useCloseTicket'
+import { useRouter } from 'vue-router'
+import { impact, priority, LifeStep, EntityType } from '~/utils'
+import type { PropType } from 'vue'
 import type { components } from '#build/types/service-api'
-
 
 type Ticket = components['schemas']['TicketDto']
 type TicketUpdateDto = components['schemas']['TicketUpdateDto']
-type IdnamePartDto = components["schemas"]["IdnamePartDto"]
-type SlaPartDto = components["schemas"]["SlaPartDto"]
-type EntityPartDto = components["schemas"]["EntityPartDto"]
+type IdnamePartDto = components['schemas']['IdnamePartDto']
+type SlaPartDto = components['schemas']['SlaPartDto']
+type EntityPartDto = components['schemas']['EntityPartDto']
 type TicketType = components['schemas']['TicketDto']
 type Entity = components['schemas']['EntitiesDto']
 type State = components['schemas']['StatesDto']
@@ -135,10 +134,10 @@ type Project = components['schemas']['ProjectDto']
 type Sla = components['schemas']['SlaDto']
 
 const props = defineProps({
-    ticketData: {
-        type: Object as PropType<Ticket>,
-        required: true
-    }
+  ticketData: {
+    type: Object as PropType<Ticket>,
+    required: true,
+  },
 })
 const emit = defineEmits(['fetch:ticketData', 'update:ticketData'])
 const dayjs = useDayjs()
@@ -147,100 +146,120 @@ const store = usePinia()
 const $q = useQuasar()
 const ticketDataRef = ref(props.ticketData)
 const closeTicketDialog = ref<boolean>(false)
-const { data: states, pending: statesPending, refresh: statesRefresh, error: statesError } = await useHttpApi('/tickets/state', {
-    method: 'get'
+const {
+  data: states,
+  pending: statesPending,
+  refresh: statesRefresh,
+  error: statesError,
+} = await useHttpApi('/tickets/state', {
+  method: 'get',
 })
 if (statesError.value) {
-    $q.notify({
-        message: 'Erreur lors de la recupération des états',
-        color: 'negative'
-    })
+  $q.notify({
+    message: 'Erreur lors de la recupération des états',
+    color: 'negative',
+  })
 }
 
-const { data: projects, pending: projectsPending, refresh: projectsRefresh, error: projectsError } = await useHttpApi('/core/project', {
-    method: 'get'
+const {
+  data: projects,
+  pending: projectsPending,
+  refresh: projectsRefresh,
+  error: projectsError,
+} = await useHttpApi('/core/project', {
+  method: 'get',
 })
 if (projectsError.value) {
-    $q.notify({
-        message: 'Erreur lors de la recupération des projets',
-        color: 'negative'
-    })
+  $q.notify({
+    message: 'Erreur lors de la recupération des projets',
+    color: 'negative',
+  })
 }
 
-const { data: sla, pending: slaPending, refresh: slaRefresh, error: slaError } = await useHttpApi('/tickets/sla', {
-    method: 'get'
+const {
+  data: sla,
+  pending: slaPending,
+  refresh: slaRefresh,
+  error: slaError,
+} = await useHttpApi('/tickets/sla', {
+  method: 'get',
 })
 if (slaError.value) {
-    $q.notify({
-        message: 'Erreur lors de la recupération des sla',
-        color: 'negative'
-    })
+  $q.notify({
+    message: 'Erreur lors de la recupération des sla',
+    color: 'negative',
+  })
 }
 
-const { data: entities, pending: entitiesPending, refresh: entitiesRefresh, error: entitiesError } = await useHttpApi('/core/entities', {
-    method: 'get'
+const {
+  data: entities,
+  pending: entitiesPending,
+  refresh: entitiesRefresh,
+  error: entitiesError,
+} = await useHttpApi('/core/entities', {
+  method: 'get',
 })
 if (entitiesError.value) {
-    $q.notify({
-        message: 'Erreur lors de la recupération des entités',
-        color: 'negative'
-    })
+  $q.notify({
+    message: 'Erreur lors de la recupération des entités',
+    color: 'negative',
+  })
 }
 
 const observers = computed(() => {
-    return entities.value?.data.reduce((acc: { id: string, name: string, type: number }[], entity: Entity) => {
-        if (entity.type <= EntityType.OTHER) {
-            acc.push({
-                id: entity._id,
-                name: entity.profile.commonName,
-                type: entity.type
-            })
-        }
-        return acc
-    }, [])
+  return entities.value?.data.reduce((acc: { id: string; name: string; type: number }[], entity: Entity) => {
+    if (entity.type <= EntityType.OTHER) {
+      acc.push({
+        id: entity._id,
+        name: entity.profile.commonName,
+        type: entity.type,
+      })
+    }
+    return acc
+  }, [])
 })
 
 const assigned = computed(() => {
-    return entities.value?.data.reduce((acc: { id: string, name: string, type: number }[], entity: Entity) => {
-        if (entity.type <= EntityType.AGENT) {
-            acc.push({
-                id: entity._id,
-                name: entity.profile.commonName,
-                type: entity.type
-            })
-        }
-        return acc
-    }, [])
+  return entities.value?.data.reduce((acc: { id: string; name: string; type: number }[], entity: Entity) => {
+    if (entity.type <= EntityType.AGENT) {
+      acc.push({
+        id: entity._id,
+        name: entity.profile.commonName,
+        type: entity.type,
+      })
+    }
+    return acc
+  }, [])
 })
 
 const typeOfTicket = computed(() => {
-    return ticketType.find((type) => type.value === props.ticketData.type)
+  return ticketType.find((type) => type.value === props.ticketData.type)
 })
 
 const lifestepOfTicket = computed(() => {
-    return lifeSteps.find((step) => step.value === props.ticketData.lifestep)
+  return lifeSteps.find((step) => step.value === props.ticketData.lifestep)
 })
 
 const stateOfTicket = computed(() => {
-    return states.value?.data.find((state: State) => state._id === `${props.ticketData.state?.id}`)
+  return states.value?.data.find((state: State) => state._id === `${props.ticketData.state?.id}`)
 })
 
 const getProjectsData = computed(() => {
-    return projects.value?.data.map((project: Project) => {
-        return {
-            id: project._id,
-            name: project.name,
-        }
-    })
+  return projects.value?.data.map((project: Project) => {
+    return {
+      id: project._id,
+      name: project.name,
+    }
+  })
 })
 
 const getSlaData = computed(() => {
-    return sla.value?.data.map((sla: Sla) => {
-        return {
-            id: sla._id,
-            name: sla.name,
-        }
-    })
+  return sla.value?.data.map((sla: Sla) => {
+    return {
+      id: sla._id,
+      name: sla.name,
+    }
+  })
 })
 
 const body = ref<TicketUpdateDto>({})
@@ -248,45 +267,45 @@ const countdown = ref(0)
 let timeoutId: NodeJS.Timeout
 let intervalId: NodeJS.Timeout
 
-const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto | EntityPartDto[] | LifeStep }) => {
-    clearTimeout(timeoutId)
-    clearInterval(intervalId)
+const updateData = (ticket: { field: string; value: IdnamePartDto | SlaPartDto | EntityPartDto[] | LifeStep }) => {
+  clearTimeout(timeoutId)
+  clearInterval(intervalId)
   switch (ticket.field) {
     case 'envelope.senders':
       body.value.envelope = {
         ...props.ticketData.envelope,
-        senders: ticket.value as EntityPartDto[]
-      };
-      break;
+        senders: ticket.value as EntityPartDto[],
+      }
+      break
     case 'envelope.observers':
       body.value.envelope = {
         ...props.ticketData.envelope,
-        observers: ticket.value as EntityPartDto[]
-      };
-      break;
+        observers: ticket.value as EntityPartDto[],
+      }
+      break
     case 'envelope.assigned':
       body.value.envelope = {
         ...props.ticketData.envelope,
-        assigned: ticket.value as EntityPartDto[]
-      };
-      break;
+        assigned: ticket.value as EntityPartDto[],
+      }
+      break
     case 'project':
-      body.value.project = ticket.value as IdnamePartDto;
-      break;
+      body.value.project = ticket.value as IdnamePartDto
+      break
     case 'priority':
-      body.value.priority = ticket.value as IdnamePartDto;
-      break;
+      body.value.priority = ticket.value as IdnamePartDto
+      break
     case 'impact':
-      body.value.impact = ticket.value as IdnamePartDto;
-      break;
+      body.value.impact = ticket.value as IdnamePartDto
+      break
     case 'sla':
-      body.value.sla = { ...ticket.value as SlaPartDto, manual: true } as SlaPartDto;
-      break;
+      body.value.sla = { ...(ticket.value as SlaPartDto), manual: true } as SlaPartDto
+      break
     case 'lifestep':
-      body.value.lifestep = ticket.value as LifeStep;
-      break;
+      body.value.lifestep = ticket.value as LifeStep
+      break
     default:
-      return;
+      return
   }
   saveCountdown()
 }
@@ -300,9 +319,9 @@ function saveCountdown() {
     useHttpApi(`/tickets/ticket/{_id}`, {
       method: 'patch',
       pathParams: {
-        _id: props.ticketData._id
+        _id: props.ticketData._id,
       },
-      body: body.value
+      body: body.value,
     })
     body.value = {}
     emit('fetch:ticketData')
@@ -310,84 +329,83 @@ function saveCountdown() {
 }
 
 const ticketCountdown = computed(() => {
-    const dueAt = dayjs(props.ticketData.sla.dueAt)
-    const now = dayjs()
-    const diff = dueAt.diff(now, 'second')
-    countdown.value = diff
-    return diff
+  const dueAt = dayjs(props.ticketData.sla.dueAt)
+  const now = dayjs()
+  const diff = dueAt.diff(now, 'second')
+  countdown.value = diff
+  return diff
 })
 
 const totalTime = computed(() => {
-    const min = props.ticketData.totalTime % 60
-    const hour = Math.floor(props.ticketData.totalTime / 60)
-    const minString = min < 10 ? `0${min}` : `${min}`
-    const hourString = hour < 10 ? `0${hour}` : `${hour}`
-    return `${hourString}:${minString}`
+  const min = props.ticketData.totalTime % 60
+  const hour = Math.floor(props.ticketData.totalTime / 60)
+  const minString = min < 10 ? `0${min}` : `${min}`
+  const hourString = hour < 10 ? `0${hour}` : `${hour}`
+  return `${hourString}:${minString}`
 })
 
 const dueDate = computed(() => {
-    return dayjs(props.ticketData.sla.dueAt).format('YYYY-MM-DD')
+  return dayjs(props.ticketData.sla.dueAt).format('YYYY-MM-DD')
 })
 
 const assignTicket = async () => {
-    const user = store.state.value.auth.user
-    const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
-        method: 'patch',
-        pathParams: {
-            _id: props.ticketData._id
-        },
-        body: {
-            envelope: {
-                ...props.ticketData.envelope,
-                assigned: [
-                    ...props.ticketData.envelope.assigned,
-                    {
-                        id: user._id,
-                        name: user.displayName,
-                        type: user.entity.type
-                    }
-                ]
-            }
-        }
+  const user = store.state.value.auth.user
+  const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
+    method: 'patch',
+    pathParams: {
+      _id: props.ticketData._id,
+    },
+    body: {
+      envelope: {
+        ...props.ticketData.envelope,
+        assigned: [
+          ...props.ticketData.envelope.assigned,
+          {
+            id: user._id,
+            name: user.displayName,
+            type: user.entity.type,
+          },
+        ],
+      },
+    },
+  })
+  if (error.value) {
+    $q.notify({
+      message: "Erreur lors de l'assignation du ticket",
+      color: 'negative',
     })
-    if (error.value) {
-        $q.notify({
-            message: 'Erreur lors de l\'assignation du ticket',
-            color: 'negative'
-        })
-    }
-    emit('fetch:ticketData')
+  }
+  emit('fetch:ticketData')
 }
 
 const unasignTicket = async () => {
-    const user = store.state.value.auth.user
-    const envelope = { ...props.ticketData.envelope }
-    envelope.assigned = envelope.assigned.filter((user) => user.id !== store.state.value.auth.user._id)
-    const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
-        method: 'patch',
-        pathParams: {
-            _id: props.ticketData._id
-        },
-        body: {
-            envelope
-        }
+  const user = store.state.value.auth.user
+  const envelope = { ...props.ticketData.envelope }
+  envelope.assigned = envelope.assigned.filter((user) => user.id !== store.state.value.auth.user._id)
+  const { data, error } = await useHttpApi(`/tickets/ticket/{_id}`, {
+    method: 'patch',
+    pathParams: {
+      _id: props.ticketData._id,
+    },
+    body: {
+      envelope,
+    },
+  })
+  if (error.value) {
+    $q.notify({
+      message: 'Erreur lors de la désassignation du ticket',
+      color: 'negative',
     })
-    if (error.value) {
-        $q.notify({
-            message: 'Erreur lors de la désassignation du ticket',
-            color: 'negative'
-        })
-    }
-    emit('fetch:ticketData')
+  }
+  emit('fetch:ticketData')
 }
 const { openDialog } = useCloseTicket()
 function refreshEvent() {
-    emit('update:ticketData')
+  emit('update:ticketData')
 }
 function showCloseTicketDialog() {
-    openDialog({ticket: props.ticketData, refreshEvent})
+  openDialog({ ticket: props.ticketData, refreshEvent })
 }
 
 const isDisabledTicket = inject<boolean>('isDisabledTicket')
-
 </script>

@@ -6,7 +6,7 @@ import { paths } from '@/../.nuxt/types/service-api'
 import { Ref } from 'vue'
 import { FetchError } from 'ofetch/dist/node'
 import { AvailableRouterMethod, NitroFetchRequest } from 'nitropack'
-import {AsyncData, FetchResult, NuxtError, UseFetchOptions} from 'nuxt/app'
+import { AsyncData, FetchResult, NuxtError, UseFetchOptions } from 'nuxt/app'
 import { KeysOf } from 'nuxt/dist/app/composables/asyncData'
 import { Notify } from 'quasar'
 
@@ -89,43 +89,42 @@ type ResponseType<ResT extends keyof Paths & string, Method extends HttpMethod> 
 const $q = useQuasar()
 
 export async function useHttpApi<
-    ResT extends keyof Paths & string,
-    ErrorT = FetchError,
-    ReqT extends NitroFetchRequest = NitroFetchRequest,
-    Method extends AvailableRouterMethod<ReqT> = ResT extends void ? ('get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT>) : AvailableRouterMethod<ReqT>,
-    _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT,
-    DataT = _ResT,
-    PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
-    DefaultT = null,
-  >(
-    path: MaybeRefOrGetter2<ResT>,
-    opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method> & {
-      method: Method
-      body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']
-      pathParams?: Record<string, string>
-    },
-    errorParams?: {
-      redirect?: boolean
-      message?: string
-      color?: string
+  ResT extends keyof Paths & string,
+  ErrorT = FetchError,
+  ReqT extends NitroFetchRequest = NitroFetchRequest,
+  Method extends AvailableRouterMethod<ReqT> = ResT extends void ? ('get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT>) : AvailableRouterMethod<ReqT>,
+  _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT,
+  DataT = _ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = null,
+>(
+  path: MaybeRefOrGetter2<ResT>,
+  opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method> & {
+    method: Method
+    body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']
+    pathParams?: Record<string, string>
+  },
+  errorParams?: {
+    redirect?: boolean
+    message?: string
+    color?: string
+  },
+): Promise<AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]> | undefined, FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>> | NuxtError> {
+  // ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
+  const response = await useHttp(resolvePath(path, opts?.pathParams), {
+    baseURL: 'http://localhost:7100',
+    ...opts,
+  })
+  if (response.error.value) {
+    console.log(response.error.value)
+    if (errorParams?.redirect) {
+      return showError({ statusCode: response.error.value.statusCode, statusMessage: response.error.value.statusMessage })
     }
-  ): Promise<AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]> | undefined, FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>> | NuxtError> {
-    // ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
-    const response = await useHttp(resolvePath(path, opts?.pathParams), {
-      baseURL: 'http://localhost:7100',
-      ...opts,
+    Notify.create({
+      message: errorParams?.message ?? 'Une erreur est survenue',
+      type: errorParams?.color ?? 'negative',
     })
-    if(response.error.value) {
-        console.log(response.error.value)
-      if(errorParams?.redirect) {
-        return showError({ statusCode: response.error.value.statusCode, statusMessage: response.error.value.statusMessage })
-      }
-      Notify.create({
-        message: errorParams?.message ?? 'Une erreur est survenue',
-        type: errorParams?.color ?? 'negative'
-      })
-    }
+  }
 
-    return response
+  return response
 }
-

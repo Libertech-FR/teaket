@@ -17,14 +17,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useHttpApi } from '~/composables';
+import { useHttpApi } from '~/composables'
 
 const { data: projets } = await useHttpApi(`/core/project`)
 defineProps({
-    sequence: {
-        type: String,
-        required: true
-    }
+  sequence: {
+    type: String,
+    required: true,
+  },
 })
-
 </script>

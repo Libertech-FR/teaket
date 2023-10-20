@@ -32,7 +32,7 @@
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue'
 import { useRouter, useRoute } from 'nuxt/app'
-import { useDayjs } from '#imports';
+import { useDayjs } from '#imports'
 import { pushQuery } from '~/composables'
 import type { Filter, Field, Comparator, SearchFilter } from '~/types'
 const dayjs = useDayjs()
@@ -51,13 +51,14 @@ const search = ref('')
 const searchMin = ref('')
 const searchMax = ref('')
 
-
 const filters = ref<Filter[]>([])
 
-const fieldTypes = ref<{
-  label: string
-  value: string
-}[]>([
+const fieldTypes = ref<
+  {
+    label: string
+    value: string
+  }[]
+>([
   { label: 'Texte', value: 'text' },
   { label: 'Nombre', value: 'number' },
   { label: 'Date', value: 'date' },
@@ -75,11 +76,10 @@ const comparatorTypes = ref<Comparator[]>([
   { label: 'Commence par', querySign: '^', value: '/^', icon: 'mdi-apple-keyboard-control', type: ['text'], multiplefields: false, prefix: '/^', suffix: '/' },
   { label: 'Fini par', querySign: '^', value: '$/', icon: 'mdi-apple-keyboard-control', type: ['text'], multiplefields: false, prefix: '/', suffix: '$/' },
   { label: 'Egal à', querySign: '@', value: '@', icon: 'mdi-apple-keyboard-control', type: [], multiplefields: true, prefix: '', suffix: '' },
-
 ])
 
 const onFieldChange = (value: Field) => {
-  value === null ? fieldType.value = '' : fieldType.value = value.type
+  value === null ? (fieldType.value = '') : (fieldType.value = value.type)
   clearFields(['comparator'])
 }
 
@@ -111,7 +111,7 @@ const parseSimpleFilter = (searchFilter: SearchFilter) => {
   }
   return {
     key: `filters[${searchFilter.comparator.querySign}${searchFilter.field.name}]`,
-    value: `${searchFilter.comparator.prefix}${searchFilter.search}${searchFilter.comparator.suffix}`
+    value: `${searchFilter.comparator.prefix}${searchFilter.search}${searchFilter.comparator.suffix}`,
   }
 }
 
@@ -122,11 +122,11 @@ const parseMultipleFilter = (searchFilter: SearchFilter) => {
   }
   const min = {
     key: `filters[>=${searchFilter.field.name}]`,
-    value: `${searchFilter.comparator.prefix}${searchFilter.searchMin}${searchFilter.comparator.suffix}`
+    value: `${searchFilter.comparator.prefix}${searchFilter.searchMin}${searchFilter.comparator.suffix}`,
   }
   const max = {
     key: `filters[<=${searchFilter.field.name}]`,
-    value: `${searchFilter.comparator.prefix}${searchFilter.searchMax}${searchFilter.comparator.suffix}`
+    value: `${searchFilter.comparator.prefix}${searchFilter.searchMax}${searchFilter.comparator.suffix}`,
   }
   return [min, max]
 }
@@ -149,7 +149,7 @@ const getSearchFilter = computed(() => {
     comparator: comparator!.value,
     search: search.value,
     searchMin: searchMin.value,
-    searchMax: searchMax.value
+    searchMax: searchMax.value,
   }
 })
 

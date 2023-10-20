@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 div
   //q-btn(v-for="button in buttons" :key="button.icon" round flat :icon="button.icon" size="md").q-mx-sm
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
@@ -16,7 +16,7 @@ div
         )
 </template>
 
-<script lang='ts' setup>
+<script lang="ts" setup>
 const auth = useAuth()
 const buttons = [
   // {

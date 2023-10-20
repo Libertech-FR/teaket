@@ -8,43 +8,42 @@ q-td
 <script lang="ts" setup>
 import { inject, computed } from 'vue'
 import { ref } from 'vue'
-import { ticketType, lifeSteps } from "#imports";
+import { ticketType, lifeSteps } from '#imports'
 import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
-type State = components["schemas"]['StatesDto']
+type State = components['schemas']['StatesDto']
 const states = inject<ref<State[]>>('stateFetch')
 
 const props = defineProps({
-    ticket: {
-        type: Object as PropType<components["schemas"]['TicketDto']>,
-        default: () => ({})
-    }
+  ticket: {
+    type: Object as PropType<components['schemas']['TicketDto']>,
+    default: () => ({}),
+  },
 })
 
 const state = computed(() => {
-    const findedState = states.value?.data.find((state: State) => {
-        return state._id === props.ticket.state.id
-    })
-    if (!findedState) {
-        return false
-    }
-    return findedState
+  const findedState = states.value?.data.find((state: State) => {
+    return state._id === props.ticket.state.id
+  })
+  if (!findedState) {
+    return false
+  }
+  return findedState
 })
 
 const type = computed(() => {
-    const findedType = ticketType.find(t => t.value === props.ticket.type)
-    if (!findedType) {
-        return false
-    }
-    return findedType
+  const findedType = ticketType.find((t) => t.value === props.ticket.type)
+  if (!findedType) {
+    return false
+  }
+  return findedType
 })
 
 const lifestep = computed(() => {
-    const lifeStep = lifeSteps.find(l => l.value === props.ticket.lifestep)
-    if (!lifeStep) {
-        return false
-    }
-    return lifeStep
+  const lifeStep = lifeSteps.find((l) => l.value === props.ticket.lifestep)
+  if (!lifeStep) {
+    return false
+  }
+  return lifeStep
 })
-
 </script>

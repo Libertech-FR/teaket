@@ -10,17 +10,17 @@ q-card(style="height: 100%").column
 <script lang="ts" setup>
 import { ref } from 'vue'
 import type { components } from '#build/types/service-api'
-import { TkThreadsList } from '#components';
-import { TkThreadsEditor } from '#components';
-type ThreadDto = components["schemas"]['ThreadDto']
+import { TkThreadsList } from '#components'
+import { TkThreadsEditor } from '#components'
+type ThreadDto = components['schemas']['ThreadDto']
 const props = defineProps({
   sequence: {
     type: String,
-    required: true
+    required: true,
   },
   subject: {
     type: String,
-    required: true
+    required: true,
   },
 })
 
@@ -31,7 +31,7 @@ const refreshThreadsList = () => {
   if (!threadsListRef.value) return
   threadsListRef.value.$.exposed.threadsRefresh()
 }
-type MailinfoPartDto = components["schemas"]["MailinfoPartDto"]
+type MailinfoPartDto = components['schemas']['MailinfoPartDto']
 const emailReponse = (data: MailinfoPartDto) => {
   if (!threadsEditorRef.value) {
     return

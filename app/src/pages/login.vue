@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 q-card.column.shadow-24(:style='{width: "250px"}')
   q-toolbar.bg-primary.text-white
     q-toolbar-title Connexion
@@ -22,8 +22,8 @@ definePageMeta({
   layout: 'simple-centered',
   auth: {
     unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/'
-  }
+    navigateAuthenticatedTo: '/',
+  },
 })
 
 const pending = ref(false)

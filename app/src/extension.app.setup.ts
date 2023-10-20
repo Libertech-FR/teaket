@@ -19,7 +19,7 @@ export function extensionParseFile(path: string): any {
 }
 
 // noinspection JSUnusedGlobalSymbols
-export default function(): string[] {
+export default function (): string[] {
   try {
     if (existsSync(EXTENSIONS_FILE_PATH)) {
       const list = parseExtensionsList()

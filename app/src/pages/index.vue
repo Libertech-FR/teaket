@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 q-page
   tk-hook(name="accueil" :data='{exemple: 1}' debug)
   span Accueil
@@ -6,7 +6,7 @@ q-page
   q-btn(@click="call") Call
 </template>
 
-<script lang='ts' setup>
+<script lang="ts" setup>
 const call = () => {
   const { data } = useHttpApi('/tickets/ticket')
 }

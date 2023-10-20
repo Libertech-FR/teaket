@@ -19,13 +19,13 @@ div
 
 <script lang="ts" setup>
 import type { components } from '#build/types/service-api'
-import { useRoute } from 'nuxt/app';
-import { useDayjs, usePinia } from "#imports";
-import { useQuasar } from 'quasar';
+import { useRoute } from 'nuxt/app'
+import { useDayjs, usePinia } from '#imports'
+import { useQuasar } from 'quasar'
 type ThreadDto = components['schemas']['ThreadDto']
 
 const props = defineProps<{
-    data: ThreadDto
+  data: ThreadDto
 }>()
 
 const dayjs = useDayjs()
@@ -34,13 +34,11 @@ const route = useRoute()
 const $q = useQuasar()
 const user = store.state.value.auth.user
 
-
 const getTimeFrom = (time: string) => {
-    return dayjs().to(dayjs(time))
+  return dayjs().to(dayjs(time))
 }
 
 const getHour = (time: string) => {
-    return dayjs(time).format('DD-MM-YYYY HH:mm')
+  return dayjs(time).format('DD-MM-YYYY HH:mm')
 }
-
 </script>
