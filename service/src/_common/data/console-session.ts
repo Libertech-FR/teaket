@@ -6,6 +6,5 @@ export class ConsoleSession {
   public readonly username: string = 'console'
   public readonly entityId: Types.ObjectId = new Types.ObjectId('000000000000000000000000')
   public readonly displayName: string = 'Console'
-  public constructor() {
-  }
+  public constructor() {}
 }

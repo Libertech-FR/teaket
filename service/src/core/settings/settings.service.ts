@@ -35,11 +35,7 @@ export class SettingsService extends AbstractService {
         }
       }
     })
-    const settings = await this._model.find(
-      { $or: filters },
-      { key: 1, value: 1, _id: 0 },
-      { sort: { for: 1, scope: 1 } },
-    )
+    const settings = await this._model.find({ $or: filters }, { key: 1, value: 1, _id: 0 }, { sort: { for: 1, scope: 1 } })
 
     for (const setting of settings) {
       set(settingsBase as object, setting.key, setting.value)
@@ -64,16 +60,8 @@ export class SettingsService extends AbstractService {
     return value
   }
 
-  public async set<T = MixedValue>(
-    key: string,
-    value: T,
-    options?: { for: SettingFor, scope: string },
-  ): Promise<T> {
-    const updated = await this._model.findOneAndUpdate(
-      { key },
-      { $set: { value, ...options } },
-      { upsert: true, new: true },
-    )
+  public async set<T = MixedValue>(key: string, value: T, options?: { for: SettingFor; scope: string }): Promise<T> {
+    const updated = await this._model.findOneAndUpdate({ key }, { $set: { value, ...options } }, { upsert: true, new: true })
     return <T>updated.value
   }
 }

@@ -41,14 +41,16 @@ export interface ConfigInstance {
   //   options: BuildOpenIdClientOptions
   // }
   factorydrive: {
-    options: StorageManagerConfig | {
-      disks: {
-        [key: string]: {
-          driver: 's3'
-          config: AmazonWebServicesS3StorageConfig
+    options:
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: 's3'
+              config: AmazonWebServicesS3StorageConfig
+            }
+          }
         }
-      }
-    }
   }
   settings: Settings
   i18n: {
@@ -184,8 +186,8 @@ export default (): ConfigInstance => ({
             suffix: '',
             length: 6,
           },
-        }
-      }
+        },
+      },
     },
   },
   i18n: {

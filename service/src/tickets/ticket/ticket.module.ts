@@ -19,5 +19,4 @@ import { ThreadModule } from '~/tickets/thread/thread.module'
   controllers: [TicketController],
   exports: [TicketService],
 })
-export class TicketModule {
-}
+export class TicketModule {}

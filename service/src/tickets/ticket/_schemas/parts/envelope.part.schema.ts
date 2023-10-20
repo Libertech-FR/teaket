@@ -36,10 +36,9 @@ export class EnvelopePart {
   public assigned: EntityPart[]
 }
 
-export const EnvelopePartSchema = SchemaFactory.createForClass(EnvelopePart)
-  .pre('save', function(next: CallbackWithoutResultAndOptionalError): void {
-    // if (this.observers.length === 0) {
-    //   this.observers = this.senders
-    // }
-    next()
-  })
+export const EnvelopePartSchema = SchemaFactory.createForClass(EnvelopePart).pre('save', function (next: CallbackWithoutResultAndOptionalError): void {
+  // if (this.observers.length === 0) {
+  //   this.observers = this.senders
+  // }
+  next()
+})

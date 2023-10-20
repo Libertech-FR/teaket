@@ -11,7 +11,10 @@ import { AppInfoDto } from '~/_dto/app.dto'
 @Public()
 @Controller()
 export class AppController extends AbstractController {
-  public constructor(private readonly _service: AppService, private readonly _shutdown: ShutdownService) {
+  public constructor(
+    private readonly _service: AppService,
+    private readonly _shutdown: ShutdownService,
+  ) {
     super()
   }
 

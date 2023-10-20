@@ -58,8 +58,8 @@ export class MailsService extends AbstractService implements OnModuleInit {
       const url = `${mailrestConfig.url}/accounts`
       const res = await this.httpService.axiosRef.get<{ data: MailRestAccountType[] }>(url, {
         headers: {
-          ...mailrestConfig.defaultHeaders || {},
-          'Authorization': `Bearer ${mailrestConfig.token}`,
+          ...(mailrestConfig.defaultHeaders || {}),
+          Authorization: `Bearer ${mailrestConfig.token}`,
         },
       })
       return res.data.data
@@ -80,18 +80,20 @@ export class MailsService extends AbstractService implements OnModuleInit {
       for (const account of accounts) {
         if (queries.accounts?.length && !queries.accounts?.includes(account.id)) continue
         const url = `${mailrestConfig.url}/accounts/${account.id}/messages`
-        const res = await this.httpService.axiosRef.get<{ data: MailRestMessageType[], total: number }>(url, {
+        const res = await this.httpService.axiosRef.get<{ data: MailRestMessageType[]; total: number }>(url, {
           params: omit(queries, ['accounts']),
           headers: {
-            ...mailrestConfig.defaultHeaders || {},
-            'Authorization': `Bearer ${mailrestConfig.token}`,
+            ...(mailrestConfig.defaultHeaders || {}),
+            Authorization: `Bearer ${mailrestConfig.token}`,
           },
         })
-        data = data.concat(res.data.data.map((message) => ({
-          ...message,
-          accountId: account.id,
-          accountName: account.name,
-        })))
+        data = data.concat(
+          res.data.data.map((message) => ({
+            ...message,
+            accountId: account.id,
+            accountName: account.name,
+          })),
+        )
         total += res.data.total
       }
     } catch (e) {
@@ -121,8 +123,8 @@ export class MailsService extends AbstractService implements OnModuleInit {
       const url = `${mailrestConfig.url}/accounts/${account}/messages/${seq}/source`
       const res = await this.httpService.axiosRef.get<string>(url, {
         headers: {
-          ...mailrestConfig.defaultHeaders || {},
-          'Authorization': `Bearer ${mailrestConfig.token}`,
+          ...(mailrestConfig.defaultHeaders || {}),
+          Authorization: `Bearer ${mailrestConfig.token}`,
         },
       })
       return res.data
@@ -140,8 +142,8 @@ export class MailsService extends AbstractService implements OnModuleInit {
       const url = `${mailrestConfig.url}/accounts/${account}/messages/${seq}`
       const res = await this.httpService.axiosRef.delete<{ deleted?: boolean }>(url, {
         headers: {
-          ...mailrestConfig.defaultHeaders || {},
-          'Authorization': `Bearer ${mailrestConfig.token}`,
+          ...(mailrestConfig.defaultHeaders || {}),
+          Authorization: `Bearer ${mailrestConfig.token}`,
         },
       })
       return res.data.deleted

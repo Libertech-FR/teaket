@@ -29,24 +29,23 @@ export class FragmentPart extends Document {
   public filestorage?: IdfsPart
 }
 
-export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart)
-  .pre('validate', function(this: FragmentPart, next: Function): void {
-    switch (this.disposition) {
-      case FragmentType.RAW: {
-        delete this.filestorage
-        if (!this.message) {
-          next(new Error('Message field is required'))
-        }
-        break
+export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart).pre('validate', function (this: FragmentPart, next: Function): void {
+  switch (this.disposition) {
+    case FragmentType.RAW: {
+      delete this.filestorage
+      if (!this.message) {
+        next(new Error('Message field is required'))
       }
-
-      case FragmentType.FILE: {
-        delete this.message
-        if (!this.filestorage) {
-          next(new Error('Filestorage field is required'))
-        }
-        break
-      }
+      break
     }
-    next()
-  })
+
+    case FragmentType.FILE: {
+      delete this.message
+      if (!this.filestorage) {
+        next(new Error('Filestorage field is required'))
+      }
+      break
+    }
+  }
+  next()
+})

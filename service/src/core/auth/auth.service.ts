@@ -59,9 +59,12 @@ export class AuthService extends AbstractService implements OnModuleInit {
       const { access_token } = await this.createTokens(new ConsoleSession(), false, {
         expiresIn: '1y',
       })
-      writeFileSync(devTokenPath, JSON.stringify({
-        access_token,
-      }))
+      writeFileSync(
+        devTokenPath,
+        JSON.stringify({
+          access_token,
+        }),
+      )
 
       this.logger.log(`NEW TOKEN CREATED : <${access_token}>`)
     }
@@ -71,7 +74,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     try {
       //TODO: change any
       const user: any = await this.identityService.findOne({ username })
-      if (user && await argon2Verify(user.password, password)) {
+      if (user && (await argon2Verify(user.password, password))) {
         return user
       }
     } catch (e) {
@@ -94,31 +97,46 @@ export class AuthService extends AbstractService implements OnModuleInit {
     return null
   }
 
-  public async createTokens(identity: IdentityType, refresh_token?: string | false, options?: JwtSignOptions): Promise<{
-    access_token: string,
+  public async createTokens(
+    identity: IdentityType,
+    refresh_token?: string | false,
+    options?: JwtSignOptions,
+  ): Promise<{
+    access_token: string
     refresh_token?: string
   }> {
     const scopes = ['teaket']
     if (refresh_token === false) scopes.push('offline')
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`
-    const access_token = this.jwtService.sign({ identity, scopes }, {
-      expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
-      jwtid,
-      subject: `${identity._id}`,
-      ...options,
-    })
+    const access_token = this.jwtService.sign(
+      { identity, scopes },
+      {
+        expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
+        jwtid,
+        subject: `${identity._id}`,
+        ...options,
+      },
+    )
     if (refresh_token === false) return { access_token }
     if (!refresh_token) {
       refresh_token = [`${identity._id}`, randomBytes(64).toString('hex')].join(this.TOKEN_PATH_SEPARATOR)
-      await this.redis.set([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR), JSON.stringify({
-        identityId: identity._id,
-      }))
+      await this.redis.set(
+        [this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR),
+        JSON.stringify({
+          identityId: identity._id,
+        }),
+      )
     }
     await this.redis.expire([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR), this.REFRESH_TOKEN_EXPIRES_IN)
-    await this.redis.set([this.ACCESS_TOKEN_PREFIX, jwtid].join(this.TOKEN_PATH_SEPARATOR), JSON.stringify({
-      identity,
-      refresh_token,
-    }), 'EX', this.ACCESS_TOKEN_EXPIRES_IN)
+    await this.redis.set(
+      [this.ACCESS_TOKEN_PREFIX, jwtid].join(this.TOKEN_PATH_SEPARATOR),
+      JSON.stringify({
+        identity,
+        refresh_token,
+      }),
+      'EX',
+      this.ACCESS_TOKEN_EXPIRES_IN,
+    )
     return {
       access_token,
       refresh_token,
@@ -127,11 +145,14 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   //TODO: change any
   public async getSessionData(identity: IdentityType): Promise<any> {
-    const entity = await this.entityService.findOne({ _id: identity.entityId }, {
-      projection: {
-        metadata: 0,
+    const entity = await this.entityService.findOne(
+      { _id: identity.entityId },
+      {
+        projection: {
+          metadata: 0,
+        },
       },
-    })
+    )
     return {
       ...identity,
       entity,
@@ -139,7 +160,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   public async renewTokens(refresh_token: string): Promise<{
-    access_token: string,
+    access_token: string
     refresh_token?: string
   }> {
     const data = await this.redis.get([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR))

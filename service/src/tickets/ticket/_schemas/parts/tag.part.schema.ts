@@ -21,9 +21,8 @@ export class TagPart extends Document {
   public manual: boolean
 }
 
-export const TagPartSchema = SchemaFactory.createForClass(TagPart)
-  .pre('validate', function (this: TagPart) {
-    if (!this.manual && !this.id) {
-      throw new Error('If tag is not manual, id must be provided')
-    }
-  })
+export const TagPartSchema = SchemaFactory.createForClass(TagPart).pre('validate', function (this: TagPart) {
+  if (!this.manual && !this.id) {
+    throw new Error('If tag is not manual, id must be provided')
+  }
+})

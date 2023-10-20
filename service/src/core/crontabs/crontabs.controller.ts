@@ -3,13 +3,7 @@ import { CrontabsCreateDto, CrontabsDto, CrontabsUpdateDto } from './_dto/cronta
 import { CrontabsService } from './crontabs.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ApiParam, ApiTags } from '@nestjs/swagger'
-import {
-  FilterOptions,
-  FilterSchema,
-  ObjectIdValidationPipe,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@streamkits/nestjs_module_scrud'
+import { FilterOptions, FilterSchema, ObjectIdValidationPipe, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { Response } from 'express'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'

@@ -17,7 +17,7 @@ IDSchema.index({ field: 1, modelName: 1 }, { unique: true })
 export const AutoIncrementIDSkipSymbol = Symbol('AutoIncrementIDSkip')
 
 export function isNullOrUndefined(val: unknown): val is null | undefined {
-  return val === null || val === undefined;
+  return val === null || val === undefined
 }
 
 export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
@@ -35,7 +35,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
 
   logger.info('AutoIncrementID called with options %O', opt)
 
-  schema.pre('save', async function(next): Promise<void> {
+  schema.pre('save', async function (next): Promise<void> {
     logger.info('AutoIncrementID PreSave')
 
     const originalModelName: string = (this.constructor as any).modelName

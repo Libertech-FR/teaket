@@ -42,5 +42,4 @@ export class CrontabsDto extends CrontabsCreateDto {
   public _id: string
 }
 
-export class CrontabsUpdateDto extends PartialType(CrontabsCreateDto) {
-}
+export class CrontabsUpdateDto extends PartialType(CrontabsCreateDto) {}

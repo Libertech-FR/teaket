@@ -1,14 +1,18 @@
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Headers,
-  HttpStatus, Param,
+  HttpStatus,
+  Param,
   ParseFilePipe,
-  Post, Query,
+  Post,
+  Query,
   Req,
-  Res, UnauthorizedException,
+  Res,
+  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -25,7 +29,6 @@ import { Readable } from 'stream'
 
 @Controller('mails')
 export class MailsController extends AbstractController {
-
   public constructor(
     private readonly _service: MailsService,
     protected readonly webhooks: WebhooksService,
@@ -34,10 +37,7 @@ export class MailsController extends AbstractController {
   }
 
   @Get()
-  public async search(
-    @Res() res: Response,
-    @Query() queries: SearchMailsDto,
-  ): Promise<Response> {
+  public async search(@Res() res: Response, @Query() queries: SearchMailsDto): Promise<Response> {
     const [data, total] = await this._service.search(queries)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -47,11 +47,7 @@ export class MailsController extends AbstractController {
   }
 
   @Get(':account([\\w-.]+)/:seq([\\w-.]+)')
-  public async get(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-  ): Promise<Response> {
+  public async get(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string): Promise<Response> {
     const [signature, parsed] = await this._service.get(account, seq)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -68,12 +64,7 @@ export class MailsController extends AbstractController {
 
   @Public()
   @Get(':account([\\w-.]+)/:seq([\\w-.]+)/render')
-  public async getRender(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-    @Query('signature') signature?: string,
-  ): Promise<void> {
+  public async getRender(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string, @Query('signature') signature?: string): Promise<void> {
     const [fingerprint, parsed] = await this._service.get(account, seq)
     if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')
     res.setHeader('Content-Type', 'text/html')
@@ -90,12 +81,7 @@ export class MailsController extends AbstractController {
 
   @Public()
   @Get(':account([\\w-.]+)/:seq([\\w-.]+)/source')
-  public async getSource(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-    @Query('signature') signature?: string,
-  ): Promise<Response> {
+  public async getSource(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string, @Query('signature') signature?: string): Promise<Response> {
     const parsed = await this._service.getSource(account, seq)
     const fingerprint = await this._service.getSignature(parsed)
     if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')
@@ -105,11 +91,7 @@ export class MailsController extends AbstractController {
   }
 
   @Delete(':account([\\w-.]+)/:seq([\\w-.]+)')
-  public async delete(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-  ): Promise<Response> {
+  public async delete(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string): Promise<Response> {
     const data = await this._service.delete(account, seq)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -118,10 +100,7 @@ export class MailsController extends AbstractController {
   }
 
   @Post('import')
-  public async import(
-    @Res() res: Response,
-    @Body() body: MailsWebhookDto,
-  ) {
+  public async import(@Res() res: Response, @Body() body: MailsWebhookDto) {
     const source = await this._service.getSource(body.account, body.seq)
     const buffer = Buffer.from(source)
     const stream = Readable.from(buffer)
@@ -152,9 +131,7 @@ export class MailsController extends AbstractController {
     @Res() res: Response,
     @Req() req: Request & { rawBody: string },
     @Body() body: MailsWebhookDto,
-    @UploadedFile(
-      new ParseFilePipe({ fileIsRequired: true }),
-    ) file: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true })) file: Express.Multer.File,
     @Headers('X-Webhook-Signature') signatureChain?: string,
   ) {
     this.logger.log(`Webhook received: ${body.id} with signature ${signatureChain}`)

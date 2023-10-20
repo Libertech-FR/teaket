@@ -10,8 +10,5 @@ export const ApiUpdateDecorator = <TModel extends Type<any>>(
   bodyOptions?: ApiBodyOptions | null | undefined,
   responseOptions?: ApiResponseOptions | null | undefined,
 ) => {
-  return applyDecorators(
-    ApiBodyDecorator(bodyModel, bodyOptions),
-    ApiUpdatedResponseDecorator(responseModel, responseOptions),
-  )
+  return applyDecorators(ApiBodyDecorator(bodyModel, bodyOptions), ApiUpdatedResponseDecorator(responseModel, responseOptions))
 }

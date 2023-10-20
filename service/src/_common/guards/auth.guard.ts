@@ -10,13 +10,8 @@ export class AuthGuard extends AuthGuardInternal(['jwt']) {
     super()
   }
 
-  public canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const isUnprotected = this.reflector.getAllAndOverride<boolean>(
-      META_UNPROTECTED,
-      [context.getClass(), context.getHandler()],
-    )
+  public canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const isUnprotected = this.reflector.getAllAndOverride<boolean>(META_UNPROTECTED, [context.getClass(), context.getHandler()])
     return isUnprotected || super.canActivate(context)
   }
 }

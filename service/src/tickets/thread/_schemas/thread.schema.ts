@@ -60,10 +60,9 @@ export class Thread extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue }
 }
 
-export const ThreadSchema = SchemaFactory.createForClass(Thread)
-  .pre('validate', function(next) {
-    if (this.fragments.length === 0) {
-      next(new Error('Un fragment est obligatoire'))
-    }
-    next()
-  })
+export const ThreadSchema = SchemaFactory.createForClass(Thread).pre('validate', function (next) {
+  if (this.fragments.length === 0) {
+    next(new Error('Un fragment est obligatoire'))
+  }
+  next()
+})

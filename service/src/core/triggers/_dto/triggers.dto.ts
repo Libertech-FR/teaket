@@ -33,5 +33,4 @@ export class TriggersDto extends TriggersCreateDto {
   public _id: string
 }
 
-export class TriggersUpdateDto extends TriggersCreateDto {
-}
+export class TriggersUpdateDto extends TriggersCreateDto {}

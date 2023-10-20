@@ -21,9 +21,7 @@ export default function (app: NestExpressApplication) {
   SwaggerModule.setup(config.get<string>('swagger.path'), app, document, {
     ...config.get<SwaggerCustomOptions>('swagger.options'),
     explorer: true,
-    swaggerOptions: {
-
-    },
+    swaggerOptions: {},
     customCss: theme.getBuffer('dark'),
   })
 

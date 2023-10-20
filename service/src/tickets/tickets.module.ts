@@ -10,14 +10,7 @@ import { ThreadModule } from './thread/thread.module'
 import { MailsModule } from '~/tickets/mails/mails.module'
 
 @Module({
-  imports: [
-    SlaModule,
-    StateModule,
-    TicketModule,
-    SourceRequestModule,
-    ThreadModule,
-    MailsModule,
-  ],
+  imports: [SlaModule, StateModule, TicketModule, SourceRequestModule, ThreadModule, MailsModule],
   providers: [TicketsService],
   controllers: [TicketsController],
 })

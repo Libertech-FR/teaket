@@ -69,9 +69,8 @@ export class Filestorage extends AbstractSchema {
   public customFields?: { [key: string]: any }
 }
 
-export const FilestorageSchema = SchemaFactory.createForClass(Filestorage)
-  .index({ namespace: 1, path: 1 }, { unique: true })
+export const FilestorageSchema = SchemaFactory.createForClass(Filestorage).index({ namespace: 1, path: 1 }, { unique: true })
 
-FilestorageSchema.virtual('filename').get(function(this: Filestorage): string {
+FilestorageSchema.virtual('filename').get(function (this: Filestorage): string {
   return this.path.split('/').pop()
 })

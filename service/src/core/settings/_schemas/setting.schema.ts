@@ -34,5 +34,4 @@ export class Setting extends AbstractSchema {
   public value: MixedValue
 }
 
-export const SettingSchema = SchemaFactory.createForClass(Setting)
-  .index({ key: 1, for: 1, scope: 1 }, { unique: true })
+export const SettingSchema = SchemaFactory.createForClass(Setting).index({ key: 1, for: 1, scope: 1 }, { unique: true })

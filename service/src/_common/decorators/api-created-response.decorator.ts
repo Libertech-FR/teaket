@@ -3,10 +3,7 @@ import { ApiBadRequestResponse, ApiCreatedResponse, ApiExtraModels, getSchemaPat
 import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator'
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto'
 
-export const ApiCreatedResponseDecorator = <TModel extends Type<any>>(
-  model: TModel,
-  options?: ApiResponseOptions | null | undefined,
-) => {
+export const ApiCreatedResponseDecorator = <TModel extends Type<any>>(model: TModel, options?: ApiResponseOptions | null | undefined) => {
   return applyDecorators(
     ApiExtraModels(model),
     ApiExtraModels(ErrorSchemaDto),
@@ -19,8 +16,8 @@ export const ApiCreatedResponseDecorator = <TModel extends Type<any>>(
           },
           data: {
             $ref: getSchemaPath(model),
-          }
-        }
+          },
+        },
       },
       ...options,
     }),

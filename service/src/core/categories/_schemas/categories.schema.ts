@@ -57,5 +57,4 @@ export class Categories extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue }
 }
 
-export const CategoriesSchema = SchemaFactory.createForClass(Categories)
-  .index({ name: 1, parentId: 1 }, { unique: true })
+export const CategoriesSchema = SchemaFactory.createForClass(Categories).index({ name: 1, parentId: 1 }, { unique: true })

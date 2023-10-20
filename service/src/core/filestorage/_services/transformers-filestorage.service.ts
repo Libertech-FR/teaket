@@ -7,7 +7,6 @@ import { Readable } from 'stream'
 
 @Injectable()
 export class TransformersFilestorageService extends AbstractService {
-
   public static readonly TRANSFORMERS = {
     'text/plain': TransformersFilestorageService.transformPlain,
     'message/rfc822': TransformersFilestorageService.transformEml,
@@ -64,7 +63,7 @@ export class TransformersFilestorageService extends AbstractService {
     const embed = parsed.attachments.find((attachment) => {
       if (attachment.filename === embedId) return true
       if (attachment.cid === embedId) return true
-      return attachment.checksum === embedId.replace(/\.checksum$/, '');
+      return attachment.checksum === embedId.replace(/\.checksum$/, '')
     })
     if (!embed) throw new Error(`No embed found for ${embedId}`)
     const streamEmbed = Readable.from(embed.content)

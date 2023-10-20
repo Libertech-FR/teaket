@@ -7,8 +7,5 @@ export interface RawBodyBufferOptions {
 }
 
 export function rawBodyBuffer(options?: RawBodyBufferOptions) {
-  return [
-    bodyParser.urlencoded({ limit: options.limit, extended: true }),
-    bodyParser.json({ limit: options.limit }),
-  ]
+  return [bodyParser.urlencoded({ limit: options.limit, extended: true }), bodyParser.json({ limit: options.limit })]
 }

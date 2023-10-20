@@ -118,7 +118,7 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket)
     field: 'sequence',
     startAt: 1,
   })
-  .pre('save', function(next) {
+  .pre('save', function (next) {
     if (this.isNew) {
       this.sequence = 'LT' + this.sequence.padStart(6, '0') //TODO: get prefix from config
     }

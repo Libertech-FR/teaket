@@ -26,9 +26,8 @@ export class SlaPart extends Document {
   public manual: boolean
 }
 
-export const SlaPartSchema = SchemaFactory.createForClass(SlaPart)
-  .pre('validate', function (this: SlaPart) {
-    if (!this.manual && !this.id) {
-      throw new Error('If sla is not manual, id must be provided')
-    }
-  })
+export const SlaPartSchema = SchemaFactory.createForClass(SlaPart).pre('validate', function (this: SlaPart) {
+  if (!this.manual && !this.id) {
+    throw new Error('If sla is not manual, id must be provided')
+  }
+})

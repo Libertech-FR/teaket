@@ -3,7 +3,7 @@ import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-va
 import { ApiProperty } from '@nestjs/swagger'
 
 export class TagPartDto {
-  @IsMongoId({ message: 'ObjectId invalide'})
+  @IsMongoId({ message: 'ObjectId invalide' })
   @IsOptional()
   @ApiProperty({ type: String })
   public id: string

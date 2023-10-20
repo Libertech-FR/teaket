@@ -1,14 +1,4 @@
-import {
-  Document,
-  FilterQuery,
-  ModifyResult,
-  ProjectionType,
-  Query,
-  QueryOptions,
-  SaveOptions,
-  Types,
-  UpdateQuery,
-} from 'mongoose'
+import { Document, FilterQuery, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
 import { AbstractSchema } from '../schemas/abstract.schema'
 
 export interface ServiceSchemaInterface {
