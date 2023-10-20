@@ -18,6 +18,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 import * as process from 'process'
 import { ConsoleSession } from '~/_common/data/console-session'
+import { Entity } from '~/core/entities/_schemas/entities.schema'
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -70,10 +71,9 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
-  public async authenticateWithLocal(username: string, password: string): Promise<Identities> {
+  public async authenticateWithLocal(username: string, password: string): Promise<Identities | null> {
     try {
-      //TODO: change any
-      const user: any = await this.identityService.findOne({ username })
+      const user = await this.identityService.findOne<Identities>({ username })
       if (user && (await argon2Verify(user.password, password))) {
         return user
       }
@@ -82,7 +82,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
-  //TODO: change any
+  // eslint-disable-next-line
   public async verifyIdentity(payload: JwtPayload & { identity: IdentityType }): Promise<any> {
     try {
       if (payload.scopes.includes('offline')) {
@@ -144,8 +144,8 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   //TODO: change any
-  public async getSessionData(identity: IdentityType): Promise<any> {
-    const entity = await this.entityService.findOne(
+  public async getSessionData(identity: IdentityType): Promise<{ entity: Entity } & IdentityType> {
+    const entity = await this.entityService.findOne<Entity>(
       { _id: identity.entityId },
       {
         projection: {

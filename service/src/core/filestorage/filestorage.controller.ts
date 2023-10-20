@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common'
 import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto } from './_dto/filestorage.dto'
 import { FilestorageService } from './filestorage.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
@@ -52,7 +66,11 @@ export class FilestorageController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(FilestorageDto, FilestorageController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
+  public async search(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, FilestorageController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -85,14 +103,23 @@ export class FilestorageController extends AbstractController {
   @Get(':_id([0-9a-fA-F]{24})/raw')
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(FilestorageDto)
-  public async readRawData(@Res() res: Response, @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Query('mime') mime?: string): Promise<void> {
+  public async readRawData(
+    @Res() res: Response,
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Query('mime') mime?: string,
+  ): Promise<void> {
     const [data, stream, parent] = await this._service.findByIdWithRawData(_id)
     await this.transformerService.transform(mime, res, data, stream, parent)
   }
 
   @Get('path/raw')
   @ApiReadResponseDecorator(FilestorageDto)
-  public async readPathRawData(@Res() res: Response, @Query('namespace') namespace: string, @Query('path') path: string, @Query('mime') mime?: string): Promise<void> {
+  public async readPathRawData(
+    @Res() res: Response,
+    @Query('namespace') namespace: string,
+    @Query('path') path: string,
+    @Query('mime') mime?: string,
+  ): Promise<void> {
     const [data, stream, parent] = await this._service.findOneWithRawData({ namespace, path })
     await this.transformerService.transform(mime, res, data, stream, parent)
   }
@@ -100,7 +127,11 @@ export class FilestorageController extends AbstractController {
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(FilestorageUpdateDto, FilestorageDto)
-  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: FilestorageUpdateDto, @Res() res: Response): Promise<Response> {
+  public async update(
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: FilestorageUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Scope } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Entity } from '~/core/entities/_schemas/entities.schema'
 import { Model, ModifyResult, Query } from 'mongoose'
@@ -23,6 +23,7 @@ export class EntitiesService extends AbstractServiceSchema {
     })
   }
 
+  // eslint-disable-next-line
   public async findOrCreateFromEmail<T extends Entity>(rfc822: EmailAddress): Promise<ModifyResult<Query<T, T, any, T>> & Entity> {
     return this._model.findOneAndUpdate(
       <EntitiesDto>{

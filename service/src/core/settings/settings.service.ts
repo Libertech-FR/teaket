@@ -12,14 +12,11 @@ import { SettingsGetOptions } from '~/core/settings/settings.interface'
 
 @Injectable()
 export class SettingsService extends AbstractService {
-  public constructor(
-    protected readonly config: ConfigService,
-    @InjectModel(Setting.name) protected _model: Model<Setting>,
-  ) {
+  public constructor(protected readonly config: ConfigService, @InjectModel(Setting.name) protected _model: Model<Setting>) {
     super()
   }
 
-  public async settings(forType: SettingFor[], identity: IdentityType): Promise<any> {
+  public async settings(forType: SettingFor[], identity: IdentityType): Promise<MixedValue> {
     const settingsBase = this.config.get<MixedValue>(`settings`)
     const filters = [{ for: SettingFor.ALL, scope: null }]
     forType.forEach((type) => {

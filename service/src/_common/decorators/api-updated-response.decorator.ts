@@ -4,7 +4,7 @@ import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorato
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto'
 import { NotFoundDto } from '~/_common/dto/not-found.dto'
 
-export const ApiUpdatedResponseDecorator = <TModel extends Type<any>>(
+export const ApiUpdatedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   responseOptions?: ApiResponseOptions | null | undefined,
   badRequestOptions?: ApiResponseOptions | null | undefined,

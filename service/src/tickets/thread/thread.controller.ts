@@ -16,6 +16,7 @@ import { FragmentPart } from '~/tickets/thread/_schemas/parts/fragment.part.sche
 import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { pick } from 'radash'
+import { Thread } from '~/tickets/thread/_schemas/thread.schema'
 
 @ApiTags('tickets')
 @Controller('thread')
@@ -46,11 +47,11 @@ export class ThreadController extends AbstractController {
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(ThreadDto, ThreadController.projection))
   public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
-    const [data, total] = await this._service.findAndCount(searchFilterSchema, ThreadController.projection, searchFilterOptions)
+    const [data, total] = await this._service.findAndCount<Thread>(searchFilterSchema, ThreadController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
-      data: data.map((thread: any) => {
+      data: data.map((thread) => {
         return {
           ...thread.toObject(),
           fragments: thread.fragments.map((frag: FragmentPart) => {

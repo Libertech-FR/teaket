@@ -16,7 +16,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   //TODO: change any
-  public async validate(_: Request, username: string, password: string, done: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void): Promise<void> {
+  public async validate(
+    _: Request,
+    username: string,
+    password: string,
+    // eslint-disable-next-line
+    done: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void,
+  ): Promise<void> {
     Logger.debug(`Try to authenticate user : ${username}`, 'LocalStrategy')
     const user = await this.auth.authenticateWithLocal(username, password)
     if (!user) done(new UnauthorizedException(), false)

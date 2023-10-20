@@ -37,6 +37,7 @@ export class Project extends AbstractSchema {
   @Prop({
     type: Object,
   })
+  // eslint-disable-next-line
   public customFields?: { [key: string]: any }
 }
 

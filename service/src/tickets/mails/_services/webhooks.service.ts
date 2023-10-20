@@ -254,6 +254,7 @@ export class WebhooksService extends AbstractService {
             disposition: FragmentType.FILE,
             filestorage: <IdfsPartDto>{
               id: context.storedFile._id,
+              // eslint-disable-next-line
               name: (context.storedFile as any).filename,
               namespace: context.storedFile.namespace,
               path: context.storedFile.path,
@@ -294,6 +295,7 @@ export class WebhooksService extends AbstractService {
           messageId: context.parsed.messageId,
           filestorage: <IdfsPartDto>{
             id: context.storedFile._id,
+            // eslint-disable-next-line
             name: (context.storedFile as any).filename,
             namespace: context.storedFile.namespace,
             path: context.storedFile.path,

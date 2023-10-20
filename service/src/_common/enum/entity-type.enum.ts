@@ -8,5 +8,7 @@ export enum EntityType {
 }
 
 export const EntityTypeList: number[] = Object.keys(EntityType)
+  // eslint-disable-next-line
   .filter((k) => typeof EntityType[k as any] === 'number')
+  // eslint-disable-next-line
   .map((k) => parseInt(EntityType[k as any], 10))

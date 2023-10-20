@@ -4,7 +4,7 @@ import { ApiBodyDecorator } from '~/_common/decorators/api-body.decorator'
 import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator'
 import { ApiCreatedResponseDecorator } from '~/_common/decorators/api-created-response.decorator'
 
-export const ApiCreateDecorator = <TModel extends Type<any>>(
+export const ApiCreateDecorator = <TModel extends Type<NonNullable<unknown>>>(
   bodyModel: TModel,
   responseModel: TModel,
   bodyOptions?: ApiBodyOptions | null | undefined,

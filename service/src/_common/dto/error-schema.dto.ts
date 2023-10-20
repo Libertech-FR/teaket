@@ -12,5 +12,6 @@ export class ErrorSchemaDto {
   public validations?: { [key: string]: string }[]
 
   @ApiProperty()
+  // eslint-disable-next-line
   public _exception?: { [key: string]: any }
 }

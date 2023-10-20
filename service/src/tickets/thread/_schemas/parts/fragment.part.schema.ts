@@ -29,7 +29,7 @@ export class FragmentPart extends Document {
   public filestorage?: IdfsPart
 }
 
-export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart).pre('validate', function (this: FragmentPart, next: Function): void {
+export const FragmentPartSchema = SchemaFactory.createForClass(FragmentPart).pre('validate', function (this: FragmentPart, next: (err?: Error) => void): void {
   switch (this.disposition) {
     case FragmentType.RAW: {
       delete this.filestorage

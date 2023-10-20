@@ -15,11 +15,7 @@ import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
 @ApiTags('core')
 @Controller('auth')
 export class AuthController extends AbstractController {
-  constructor(
-    protected moduleRef: ModuleRef,
-    private readonly service: AuthService,
-    private readonly settings: SettingsService,
-  ) {
+  constructor(protected moduleRef: ModuleRef, private readonly service: AuthService, private readonly settings: SettingsService) {
     super()
   }
 
@@ -48,7 +44,7 @@ export class AuthController extends AbstractController {
 
   //TODO: change any
   @Post('refresh')
-  public async refresh(@Res() res: Response, @Body() body: any): Promise<Response> {
+  public async refresh(@Res() res: Response, @Body() body: { refresh_token: string }): Promise<Response> {
     const tokens = await this.service.renewTokens(body.refresh_token)
     return res.status(HttpStatus.OK).json({
       ...tokens,

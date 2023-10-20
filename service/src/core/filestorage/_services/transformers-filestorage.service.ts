@@ -31,6 +31,7 @@ export class TransformersFilestorageService extends AbstractService {
     const mimeType = mime || data.mime || 'application/octet-stream'
     if (!TransformersFilestorageService.TRANSFORMERS.hasOwnProperty(mimeType)) {
       res.setHeader('Content-Type', mimeType)
+      // eslint-disable-next-line
       res.setHeader('Content-Disposition', `attachment; filename="${(data as any).filename}"`)
       stream.pipe(res)
       return
@@ -40,6 +41,7 @@ export class TransformersFilestorageService extends AbstractService {
 
   public static async transformPlain(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
     res.setHeader('Content-Type', 'text/plain')
+    // eslint-disable-next-line
     res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}"`)
     stream.pipe(res)
     return
@@ -47,6 +49,7 @@ export class TransformersFilestorageService extends AbstractService {
 
   protected static async transformEml(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
     res.setHeader('Content-Type', 'text/html')
+    // eslint-disable-next-line
     res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}.html"`)
     const { simpleParser } = await import('mailparser')
     const parsed = await simpleParser(stream)

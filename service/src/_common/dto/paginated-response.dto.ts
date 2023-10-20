@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { HttpStatus } from '@nestjs/common'
 
-export class PaginatedResponseDto<TData = {}> {
+export class PaginatedResponseDto<TData = NonNullable<unknown>> {
   @ApiProperty({ enum: [HttpStatus.OK] })
   public statusCode: HttpStatus
 

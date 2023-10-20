@@ -3279,18 +3279,18 @@
     "@smithy/types" "^2.3.5"
     tslib "^2.5.0"
 
-"@streamkits/nestjs_module_factorydrive-s3@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_factorydrive-s3/-/nestjs_module_factorydrive-s3-0.0.8.tgz#56e4bd7aa379c2eb4a18311d060ad3e9eb71ca53"
-  integrity sha512-7jswNKQlXOcPrv1bj5iVq8IyfiB4kmdX2PaMvdsLK/y/DT1RGX+zIDDuwtzpS31w9PLJibnItdYjse4bWhJ3ww==
+"@streamkits/nestjs_module_factorydrive-s3@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_factorydrive-s3/-/nestjs_module_factorydrive-s3-1.0.0.tgz#e6ea1b90ab223370ee9932a611ce3408103ecc06"
+  integrity sha512-H/oxSRgWzaqyzY5CcXdkAWVO8vYOatszJhvyR5lma3cQBmcw3EUXxf41fwSsszSd0apq5HvPMFXpujBLbMuLQg==
   dependencies:
     "@aws-sdk/client-s3" ">=3.328.0"
     "@aws-sdk/s3-request-presigner" "^3.414.0"
 
-"@streamkits/nestjs_module_factorydrive@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_factorydrive/-/nestjs_module_factorydrive-0.0.7.tgz#f613445e0121a23f2da95785e261a6fca9a6f3b4"
-  integrity sha512-zq2CVd8kNrIUfQ30NndJtZrh+OspJNqSVlLEWZTVJIHAzX5/8vxcyUeL3rxZTalD6xMxxNXKznDop1FSZYxZTQ==
+"@streamkits/nestjs_module_factorydrive@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_factorydrive/-/nestjs_module_factorydrive-1.0.0.tgz#017bb1fbdf8e52be672fa770e86a64a68eff7956"
+  integrity sha512-BwFUfPjHhgloummlyVrB8jSiZCHyQk76GWVNQhEJx7KJh+PiUzteUDJyVTHBmj6WW3vbJWtFUYYunEGcpdrmFQ==
   dependencies:
     fs-extra "^11.1.1"
     node-exceptions "^4.0.1"
@@ -10906,7 +10906,7 @@ prettier@^2.3.2:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
-prettier@^3.0.2, prettier@^3.0.3:
+prettier@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.3.tgz#432a51f7ba422d1469096c0fdc28e235db8f9643"
   integrity sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==

@@ -26,6 +26,7 @@ export class SourceRequestCreateDto extends CustomFieldsDto {
   @IsArray()
   @IsOptional()
   @ApiProperty({ type: [Object] })
+  // eslint-disable-next-line
   public rules: { [key: string]: any }[]
 
   @IsString()

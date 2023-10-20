@@ -7,5 +7,7 @@ export enum PhoneType {
 }
 
 export const PhoneTypeList: number[] = Object.keys(PhoneType)
+  // eslint-disable-next-line
   .filter((k) => typeof PhoneType[k as any] === 'number')
+  // eslint-disable-next-line
   .map((k) => parseInt(PhoneType[k as any], 10))

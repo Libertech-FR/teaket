@@ -33,7 +33,7 @@ export class ThreadService extends AbstractServiceSchema {
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Query<Array<T>, T, any, T>[], number]> {
+  ): Promise<[Array<T> & Query<Array<T>, T, any, T>[], number]> {
     if (!filter.ticketId) throw new ConflictException('Search must be contain filter by ticketId')
     //TODO: check acl
     return await super.findAndCount(
@@ -46,9 +46,12 @@ export class ThreadService extends AbstractServiceSchema {
     )
   }
 
-  public async create<T extends AbstractSchema | Document>(data?: ThreadCreateDto, options?: SaveOptions & {
-    checkTicketId?: boolean
-  }): Promise<Document<T, any, T>> {
+  public async create<T extends AbstractSchema | Document>(
+    data?: ThreadCreateDto,
+    options?: SaveOptions & {
+      checkTicketId?: boolean
+    },
+  ): Promise<Document<T, any, T>> {
     if (options?.checkTicketId !== false) {
       const count = await this.ticketService.count({ _id: data.ticketId })
       if (!count) throw new ConflictException(this.i18n.t(`thread.service.create.ticketNotFound`))

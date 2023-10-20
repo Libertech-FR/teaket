@@ -3,7 +3,7 @@ import { ApiExtraModels, ApiNotFoundResponse, getSchemaPath } from '@nestjs/swag
 import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator'
 import { NotFoundDto } from '~/_common/dto/not-found.dto'
 
-export const ApiReadResponseDecorator = <TModel extends Type<any>>(
+export const ApiReadResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   responseOptions?: ApiResponseOptions | null | undefined,
   notFoundOptions?: ApiResponseOptions | null | undefined,

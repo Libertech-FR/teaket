@@ -20,6 +20,7 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
   return val === null || val === undefined
 }
 
+// eslint-disable-next-line
 export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
   const opt: Required<AutoIncrementPluginOptions> = {
     field: '_id',
@@ -38,10 +39,12 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
   schema.pre('save', async function (next): Promise<void> {
     logger.info('AutoIncrementID PreSave')
 
+    // eslint-disable-next-line
     const originalModelName: string = (this.constructor as any).modelName
     let modelName: string
 
     if (typeof opt.overwriteModelName === 'function') {
+      // eslint-disable-next-line
       modelName = opt.overwriteModelName(originalModelName, this.constructor as any)
 
       if (!modelName || typeof modelName !== 'string') {
@@ -54,6 +57,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
     if (!model) {
       logger.info('Creating idtracker model named "%s"', opt.trackerModelName)
       // needs to be done, otherwise "undefiend" error if the plugin is used in an sub-document
+      // eslint-disable-next-line
       const db: Connection = this.db ?? (this as any).ownerDocument().db
       model = db.model<AutoIncrementPluginTrackerSpec>(opt.trackerModelName, IDSchema, opt.trackerCollection)
       // test if the counter document already exists
@@ -80,6 +84,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       return
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (typeof this[AutoIncrementIDSkipSymbol] === 'boolean' && AutoIncrementIDSkipSymbol) {
       logger.info('Symbol "AutoIncrementIDSkipSymbol" is set to "true", skipping')

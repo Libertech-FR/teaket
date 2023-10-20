@@ -66,6 +66,7 @@ export class Filestorage extends AbstractSchema {
     required: false,
     type: Object,
   })
+  // eslint-disable-next-line
   public customFields?: { [key: string]: any }
 }
 

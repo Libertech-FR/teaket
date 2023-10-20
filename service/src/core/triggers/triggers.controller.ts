@@ -1,6 +1,13 @@
 import { Controller, Post, Res, Body, HttpStatus, Get, Param, Patch, Delete } from '@nestjs/common'
 import { ApiTags, ApiParam } from '@nestjs/swagger'
-import { AbstractController, SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
+import {
+  AbstractController,
+  SearchFilterSchema,
+  FilterSchema,
+  SearchFilterOptions,
+  FilterOptions,
+  ObjectIdValidationPipe,
+} from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator'
@@ -38,7 +45,11 @@ export class TriggersController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(TriggersDto, TriggersController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
+  public async search(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response> {
     const [data, total] = await this._service.findAndCount(searchFilterSchema, TriggersController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -61,7 +72,11 @@ export class TriggersController extends AbstractController {
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(TriggersUpdateDto, TriggersDto)
-  public async update(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: TriggersUpdateDto, @Res() res: Response): Promise<Response> {
+  public async update(
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: TriggersUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

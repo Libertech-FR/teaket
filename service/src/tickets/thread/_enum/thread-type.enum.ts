@@ -15,5 +15,7 @@ export const ThreadTypeLabel: Record<ThreadType, string> = {
 }
 
 export const ThreadTypeList: number[] = Object.keys(ThreadType)
+  // eslint-disable-next-line
   .filter((k) => typeof ThreadType[k as any] === 'number')
+  // eslint-disable-next-line
   .map((k) => parseInt(ThreadType[k as any], 10))

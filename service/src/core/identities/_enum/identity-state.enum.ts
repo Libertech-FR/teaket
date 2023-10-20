@@ -5,5 +5,7 @@ export enum IdentityState {
 }
 
 export const IdentityStateList: number[] = Object.keys(IdentityState)
+  // eslint-disable-next-line
   .filter((k) => typeof IdentityState[k as any] === 'number')
+  // eslint-disable-next-line
   .map((k) => parseInt(IdentityState[k as any], 10))
