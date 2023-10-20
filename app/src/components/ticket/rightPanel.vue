@@ -116,10 +116,13 @@ q-scroll-area(:style="{height: '100%'}")
 import { ref, onMounted, computed, inject, watch } from 'vue'
 import { ticketType, lifeSteps, useDayjs, usePinia, useQuasar } from '#imports';
 import { useHttpApi } from '~/composables/useHttpApi';
+import useCloseTicket from '~/composables/useCloseTicket';
 import { useRouter } from 'vue-router';
 import { impact, priority, LifeStep, EntityType } from '~/utils';
 import type { PropType } from 'vue';
 import type { components } from '#build/types/service-api'
+
+
 type Ticket = components['schemas']['TicketDto']
 type TicketUpdateDto = components['schemas']['TicketUpdateDto']
 type IdnamePartDto = components["schemas"]["IdnamePartDto"]
@@ -242,52 +245,68 @@ const getSlaData = computed(() => {
 
 const body = ref<TicketUpdateDto>({})
 const countdown = ref(0)
-
 let timeoutId: NodeJS.Timeout
 let intervalId: NodeJS.Timeout
 
 const updateData = (ticket: { field: string, value: IdnamePartDto | SlaPartDto | EntityPartDto[] | LifeStep }) => {
     clearTimeout(timeoutId)
     clearInterval(intervalId)
-    if (ticket.field === 'envelope.senders') {
-        body.value.envelope = {
-            ...props.ticketData.envelope,
-            senders: ticket.value as EntityPartDto[]
-        }
-    }
-    if (ticket.field === 'envelope.observers') {
-        body.value.envelope = {
-            ...props.ticketData.envelope,
-            observers: ticket.value as EntityPartDto[]
-        }
-    }
-    if (ticket.field === 'envelope.assigned') {
-        body.value.envelope = {
-            ...props.ticketData.envelope,
-            assigned: ticket.value as EntityPartDto[]
-        }
-    }
-    if (ticket.field === 'project') body.value.project = ticket.value as IdnamePartDto
-    if (ticket.field === 'priority') body.value.priority = ticket.value as IdnamePartDto
-    if (ticket.field === 'impact') body.value.impact = ticket.value as IdnamePartDto
-    if (ticket.field === 'sla') body.value.sla = { ...ticket.value as SlaPartDto, manual: true } as SlaPartDto
-    if (ticket.field === 'lifestep') body.value.lifestep = ticket.value as LifeStep
+  switch (ticket.field) {
+    case 'envelope.senders':
+      body.value.envelope = {
+        ...props.ticketData.envelope,
+        senders: ticket.value as EntityPartDto[]
+      };
+      break;
+    case 'envelope.observers':
+      body.value.envelope = {
+        ...props.ticketData.envelope,
+        observers: ticket.value as EntityPartDto[]
+      };
+      break;
+    case 'envelope.assigned':
+      body.value.envelope = {
+        ...props.ticketData.envelope,
+        assigned: ticket.value as EntityPartDto[]
+      };
+      break;
+    case 'project':
+      body.value.project = ticket.value as IdnamePartDto;
+      break;
+    case 'priority':
+      body.value.priority = ticket.value as IdnamePartDto;
+      break;
+    case 'impact':
+      body.value.impact = ticket.value as IdnamePartDto;
+      break;
+    case 'sla':
+      body.value.sla = { ...ticket.value as SlaPartDto, manual: true } as SlaPartDto;
+      break;
+    case 'lifestep':
+      body.value.lifestep = ticket.value as LifeStep;
+      break;
+    default:
+      return;
+  }
+  saveCountdown()
+}
 
-    countdown.value = 3
-    intervalId = setInterval(() => {
-        countdown.value--
-    }, 1000)
-    timeoutId = setTimeout(() => {
-        useHttpApi(`/tickets/ticket/{_id}`, {
-            method: 'patch',
-            pathParams: {
-                _id: props.ticketData._id
-            },
-            body: body.value
-        })
-        body.value = {}
-        emit('fetch:ticketData')
-    }, 3000)
+function saveCountdown() {
+  countdown.value = 3
+  intervalId = setInterval(() => {
+    countdown.value--
+  }, 1000)
+  timeoutId = setTimeout(() => {
+    useHttpApi(`/tickets/ticket/{_id}`, {
+      method: 'patch',
+      pathParams: {
+        _id: props.ticketData._id
+      },
+      body: body.value
+    })
+    body.value = {}
+    emit('fetch:ticketData')
+  }, 3000)
 }
 
 const ticketCountdown = computed(() => {
@@ -360,6 +379,13 @@ const unasignTicket = async () => {
         })
     }
     emit('fetch:ticketData')
+}
+const { openDialog } = useCloseTicket()
+function refreshEvent() {
+    emit('update:ticketData')
+}
+function showCloseTicketDialog() {
+    openDialog({ticket: props.ticketData, refreshEvent})
 }
 
 const isDisabledTicket = inject<boolean>('isDisabledTicket')

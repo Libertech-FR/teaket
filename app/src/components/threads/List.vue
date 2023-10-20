@@ -73,7 +73,7 @@ onMounted(() => {
     scroll()
 })
 
-const threadsRefresh = async () => {
+async function threadsRefresh(): Promise<void> {
     await refresh()
     scroll()
 }
@@ -125,7 +125,7 @@ function getThreadFragments(thread: ThreadDto): Fragments {
 
 defineExpose({
     scroll,
-    threadsRefresh,
+  threadsRefresh,
 })
 
 </script>

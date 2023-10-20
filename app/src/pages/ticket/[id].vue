@@ -35,7 +35,6 @@ const { data: ticketData, refresh, error } = await useHttpApi(`/tickets/ticket/{
 
 const refreshTicketData = () => {
     refresh()
-    // router.go(0)
 }
 
 const isDisabledTicket = computed(() => {

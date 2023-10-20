@@ -192,7 +192,6 @@ const importMail = async (mail: any) => {
     },
   })
   if (error.value) {
-    console.log()
     $q.notify({
       color: 'negative',
       message: `Impossible d\'importer l'email <${mail.uid}> ${error.value?.data?.message || error.value?.message}`,
