@@ -3,7 +3,7 @@ q-select(
   :options="options"
   multiple hide-selected
   emit-value use-chips
-  options-dense map-options 
+  options-dense map-options
   :model-value="filters"
   :option-value="(item) => item"
   :label="`Etats: ${filters.length} filtre(s) appliqué(s)`"
@@ -159,7 +159,6 @@ const addFilter = (option: Option) => {
     return filter.group === option.group && filter.value === option.value
 
   })
-  console.log('index', index)
   // If the option is not in the filters array, add it else remove it
   if (index === -1) {
     filters.value.push(option)

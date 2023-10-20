@@ -16,7 +16,6 @@ export default function usePagination() {
   })
 
   function initializePagination(total: number = 0) {
-    console.log('initializePagination', total)
     if (!pagination.value) return
     const query = { ...route.query }
     const limit = query.limit ?? 10
