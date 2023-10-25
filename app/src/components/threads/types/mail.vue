@@ -14,9 +14,10 @@ div
             template(v-slot:default)
                 div
                     div(v-for='(raw, key) in props.data.fragments.raw' :key='key' v-html="raw.message.data")
-                    object(v-for='(file, key) in props.data.fragments.file' :key='key' :ref="el => { objectIframe[file.filestorage.id] = el }" :data='"http://localhost:7100" + file.filestorage.link' width='100%' height='400px' style="background: white;")
+                    object(v-for='(file, key) in props.data.fragments.file' :key='key' :ref="el => { objectIframe[file.filestorage.id] = el }" :data='"http://host.docker.internal:7100" + file.filestorage.link' width='100%' height='400px' style="background: white;")
                     q-separator.q-my-xs(v-if="props.data.attachments.length > 0")
-                    q-chip(v-for='(attachment, key) in props.data.attachments' :key='key' icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
+                    a(v-for='(attachment, key) in props.data.attachments' :key='key' :href="'http://host.docker.internal:7100' + attachment.path" target="_blank")
+                      q-chip(icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
         .col.flex.items-center.q-pa-sm.column.q-gutter-sm
             q-btn(round size="md" icon="mdi-share" color="primary" @click="emailReponse(props.data.mailinfo)")
             q-btn(round size="md" icon="mdi-dots-vertical" color="primary")
