@@ -1,12 +1,12 @@
 <template lang="pug">
 q-td
-    q-btn-group(flat rounded dark)
-        q-btn(:icon="isDisabledTicket ? 'mdi-eye' : 'mdi-pencil'" color="white" @click="goToTicket" size="sm" flat)
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
-        q-btn(v-if="!isArchivedTicket" :icon="isDisabledTicket ? 'mdi-lock-open-variant' : 'mdi-lock'" color="white" @click="updateLifestep(buttonAction)" size="sm" flat)
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale" v-text="isDisabledTicket ? 'Ouvrir le ticket' : 'Clore le ticket'" )
-        q-btn(v-if="isDisabledTicket" icon='mdi-archive' color='white' @click='updateLifestep(LifeStep.ARCHIVED)' size="sm" flat)
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Archiver le ticket
+  q-btn-group(flat rounded dark)
+    q-btn(:icon="isDisabledTicket ? 'mdi-eye' : 'mdi-pencil'" color="primary" @click="goToTicket" size="sm" flat)
+      q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher le ticket
+    q-btn(v-if="!isArchivedTicket" :icon="isDisabledTicket ? 'mdi-lock-open-variant' : 'mdi-lock'" color="primary" @click="updateLifestep(buttonAction)" size="sm" flat)
+      q-tooltip.text-body2(transition-show="scale" transition-hide="scale" v-text="isDisabledTicket ? 'Ouvrir le ticket' : 'Clore le ticket'" )
+    q-btn(v-if="isDisabledTicket" icon='mdi-archive' color='primary' @click='updateLifestep(LifeStep.ARCHIVED)' size="sm" flat)
+      q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Archiver le ticket
 </template>
 
 <script lang="ts" setup>
