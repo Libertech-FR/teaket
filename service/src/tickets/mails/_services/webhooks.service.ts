@@ -48,6 +48,7 @@ export class WebhooksService extends AbstractService {
       )}`,
     )
     const checkEmail = (await this.thread.model.findOne({
+      'mailinfo.account': body.account,
       'mailinfo.messageId': parsed.messageId,
     })) as Thread
     if (checkEmail) {
@@ -289,6 +290,7 @@ export class WebhooksService extends AbstractService {
           }),
         ),
         mailinfo: {
+          account: context.body.account,
           subject: context.parsed.subject,
           from,
           to,

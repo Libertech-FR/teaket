@@ -191,7 +191,7 @@ export default (): ConfigInstance => ({
     },
   },
   i18n: {
-    fallbackLanguage: 'en',
+    fallbackLanguage: 'fr',
   },
   swagger: {
     path: '/swagger',

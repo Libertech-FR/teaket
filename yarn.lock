@@ -1841,10 +1841,10 @@
   resolved "https://registry.yarnpkg.com/@kwsites/promise-deferred/-/promise-deferred-1.1.1.tgz#8ace5259254426ccef57f3175bc64ed7095ed919"
   integrity sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==
 
-"@libertech-fr/mailrest-sdk@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@libertech-fr/mailrest-sdk/-/mailrest-sdk-0.0.10.tgz#52816af46ddee0148e162e57227c2a2aac3a0555"
-  integrity sha512-YixKejeeLNrR+QcFbEy1102jZbkUf+Mk+WFCNhzuL0CmZiisMcIghR3aa7DVwb/u3HPP/YyT5pJlxlxqAYF4UA==
+"@libertech-fr/mailrest-sdk@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@libertech-fr/mailrest-sdk/-/mailrest-sdk-0.0.11.tgz#799e6c056ceb85fb32ece3d76db7003ae5e420af"
+  integrity sha512-lfWCe5U2yHK3DrMeMS6nys3VWNVmbeCDOI9NHDIhh6Vt5y8FQAxbXW/bGVTnTKH/eq4Td/m4RMFjmsEanKH+bg==
 
 "@lukeed/csprng@^1.0.0":
   version "1.1.0"
