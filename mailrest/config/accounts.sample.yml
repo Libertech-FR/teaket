@@ -1,0 +1,17 @@
+version: '1'
+
+mailboxes:
+  - id: 'my.mailbox'
+    name: 'Mailbox 1'
+    imap:
+      host: 'imap.gmail.com'
+      port: 993
+      tls: true
+      username: ''
+      password: ''
+    smtp:
+      host: 'smtp.gmail.com'
+      port: 465
+      tls: true
+      username: ''
+      password: ''

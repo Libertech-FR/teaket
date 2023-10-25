@@ -4,11 +4,13 @@
   },
   "schema": {
     "type": "Type",
-    "subject": "Subject"
+    "subject": "Subject",
+    "impact": "Impact",
+    "project": "Project"
   },
   "service": {
     "update": {
-      "newFragment": "Fields are updated {fields}."
+      "newFragment": "Field(s) are updated {fields}."
     }
   }
 }

@@ -2,6 +2,8 @@ IMGNAME?=ghcr.io/libertech-fr/teaket
 APPNAME?=teaket
 APP_PORT?=7000
 SERVICE_PORT?=7100
+MAILREST_PORT?=7200
+MAILREST_IMAGE?=ghcr.io/libertech-fr/mailrest
 MINIO_ACCESS_KEY?=AKIAIOSFODNN7EXAMPLE
 MINIO_SECRET_KEY?=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
@@ -118,6 +120,18 @@ dbs: ## Start databases
 			(mc mb myminio/teaket || true) \
 		" || true
 	@docker exec -it teaket-mongodb mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
+
+run-mailrest: ## start Mailrest container
+	@docker run -it -d \
+		--name $(APPNAME)-mailrest \
+		--network dev \
+		-p $(MAILREST_PORT):7200 \
+		-v $(CURDIR)/mailrest/config:/usr/src/app/config \
+		-e MR_LOGGER="debug" \
+		-e MR_IOREDIS_URL="redis://host.docker.internal:6379/7" \
+		-e MR_JWT_SECRET="QOkPuZ99tDowZfUW8i4dlG8NXS6L82Us" \
+		-e MR_CRYPT_SECURITYKEY="JfdKI8WCFTba0M3JXZeIb2FwIIhzmQvZ" \
+		$(MAILREST_IMAGE) || true
 
 stop-dbs: ## Stop databases
 	@docker stop $(APPNAME)-redis || true

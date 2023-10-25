@@ -1,5 +1,5 @@
 import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
-import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, ValidateNested } from 'class-validator'
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, ValidateNested, ValidateIf, IsDefined } from 'class-validator'
 import { Type } from 'class-transformer'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
@@ -49,7 +49,8 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @ApiProperty({ type: [IdfsPartDto], required: false })
   public attachments?: IdfsPartDto[]
 
-  @IsOptional()
+  // @ValidateIf((o) => [ThreadType.OUTGOING, ThreadType.INCOMING].includes(o.type))
+  // @IsDefined()
   @ValidateNested()
   @Type(() => MailinfoPartDto)
   @ApiProperty({ type: MailinfoPartDto, required: false })

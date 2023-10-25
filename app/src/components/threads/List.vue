@@ -46,8 +46,8 @@ function getThreadHookName(type: ThreadType) {
   switch (type) {
     case ThreadType.EXTERNAL:
     case ThreadType.INTERNAL:
-    case ThreadType.OUTGOING:
       return `${baseUrl}Base`
+    case ThreadType.OUTGOING:
     case ThreadType.INCOMING:
       return `${baseUrl}Mail`
     case ThreadType.SYSTEM:

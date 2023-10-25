@@ -15,7 +15,7 @@ export interface ServiceSchemaInterface {
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Array<Query<Array<T>, T, any, T>>, number]>
+  ): Promise<[Array<T & Query<T, T, any, T>>, number]>
 
   findById<T extends AbstractSchema | Document>(
     id: Types.ObjectId | any,
