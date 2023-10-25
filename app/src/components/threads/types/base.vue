@@ -12,7 +12,8 @@ div
                         q-tooltip.text-body2 {{ getHour(props.data.metadata.createdAt) }}
             template(v-slot:default)
                 div
-                    q-chip(v-for='(attachment, key) in props.data.attachments' :key='key' icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
+                    a(v-for='(attachment, key) in props.data.attachments' :key='key' :href="'http://host.docker.internal:7100/core/filestorage/' + attachment.id + '/raw?signature=empty'" target="_blank")
+                      q-chip(icon="mdi-paperclip" text-color="white" color="primary" dense size='md' :label="attachment.name")
                     q-separator.q-my-xs(v-if="props.data.fragments.file")
                     div(v-for='(raw, key) in props.data.fragments.raw' :key='key' v-html="raw.message")
 </template>
