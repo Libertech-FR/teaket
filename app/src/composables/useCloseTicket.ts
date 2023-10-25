@@ -2,6 +2,7 @@ import type { components } from '#build/types/service-api'
 import { useQuasar } from 'quasar'
 import { defineEmits } from 'vue'
 import { ComponentInternalInstance } from 'vue'
+import { LifeStep, lifeSteps } from '../utils'
 
 export default function useCloseTicket() {
   const $q = useQuasar()
@@ -17,42 +18,49 @@ export default function useCloseTicket() {
     return tickets.value.length > 1
   })
 
-  function setTickets(newTickets: Ticket | Ticket[]) {
-    Array.isArray(newTickets) ? (tickets.value = [...tickets.value, newTickets]) : tickets.value.push(newTickets)
+  function getTickets(newTickets: Ticket | Ticket[]): Ticket[] {
+    return Array.isArray(newTickets) ? newTickets : [newTickets]
   }
 
-  async function closeTickets() {
-    if (tickets.value === null) return
-    const { data, error } = await useHttpApi('/tickets/ticket/close-many', {
+  async function updateTickets(tickets: Ticket[], lifestep: LifeStep) {
+    if (tickets === null) return
+    const { data, error } = await useHttpApi('/tickets/ticket/update-many', {
       method: 'post',
       body: {
-        ids: tickets.value.map((s) => s._id),
+        ids: tickets.map((s) => s._id),
+        lifestep,
       },
     })
     if (error.value) {
       $q.notify({
-        message: `Impossible de cloturer le${multipleTickets.value ? 's' : ''} ticket${multipleTickets.value ? 's' : ''}`,
+        message: `Impossible de passer le${multipleTickets.value ? 's' : ''} ticket${multipleTickets.value ? 's' : ''} a l'état ${getLifestepLabel(lifestep)}`,
         type: 'negative',
       })
       return false
     } else {
       $q.notify({
-        message: `Ticket${multipleTickets.value ? 's' : ''} cloturé${multipleTickets.value ? 's' : ''}`,
+        message: `Ticket${multipleTickets.value ? 's' : ''} passé${multipleTickets.value ? 's' : ''} a l'état ${getLifestepLabel(lifestep)}`,
         type: 'positive',
       })
       return true
     }
   }
 
+  function getLifestepLabel(lifestep: LifeStep) {
+    const result = lifeSteps.find((lifeStep) => lifeStep.value === lifestep)
+    if(result) return result.label
+    return 'Etat inconnu'
+  }
+
   /**
    *@param {Payload} payload
    */
-  function openDialog(payload: { ticket: Ticket | Ticket[]; refreshEvent: Function | null }): void {
-    const { ticket, refreshEvent } = payload
-    setTickets(ticket)
+  function openDialog(payload: { ticket: Ticket | Ticket[]; lifestep: LifeStep; refreshEvent?: () => void }): void {
+    const { ticket, lifestep, refreshEvent } = payload
+    const tickets = getTickets(ticket)
     $q.dialog({
       title: 'Confirmation',
-      message: `Voulez-vous clore le${multipleTickets.value ? 's' : ''} ticket${multipleTickets.value ? 's' : ''} selectionné${multipleTickets.value ? 's' : ''} ?`,
+      message: `Voulez-vous passer le${multipleTickets.value ? 's' : ''} ticket${multipleTickets.value ? 's' : ''} selectionné${multipleTickets.value ? 's' : ''} a l'état ${getLifestepLabel(lifestep)}?`,
       ok: {
         push: true,
       },
@@ -61,7 +69,8 @@ export default function useCloseTicket() {
         color: 'negative',
       },
     }).onOk(async () => {
-      if ((await closeTickets()) && refreshEvent) refreshEvent()
+      const test = await updateTickets(tickets, lifestep)
+      if (test && refreshEvent !== undefined) return refreshEvent()
     })
   }
 

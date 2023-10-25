@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, 
 import { TicketService } from './ticket.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { TicketCreateDto, TicketDto, TicketUpdateDto } from './_dto/ticket.dto'
+import { TicketLifestep } from './_enum/ticket-lifestep.enum'
 import { Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
@@ -42,10 +43,11 @@ export class TicketController extends AbstractController {
     })
   }
 
-  @Post('close-many')
+  @Post('update-many')
   @ApiParam({ name: '_ids', type: Array<string> })
-  public async closeMany(@Res() res: Response, @Body() body: { ids: Types.ObjectId[] }) {
-    const data = await this._service.closeMany(body.ids)
+  @ApiParam({ name: 'lifestep', enum: TicketLifestep})
+  public async updateMany(@Res() res: Response, @Body() body: { ids: Types.ObjectId[], lifestep: TicketLifestep }) {
+    const data = await this._service.updateMany(body.ids, body.lifestep)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
