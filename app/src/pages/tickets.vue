@@ -16,7 +16,7 @@ q-page
       template(v-slot:top-right)
         tk-tickets-table-top-right(:columns="columns" v-model="visibleColumns" @refresh="refresh")
       template(v-slot:body-cell-actions="props")
-        tk-tickets-table-actions(:ticket="props.row" @closeTicket="closeTicket($event)")
+        tk-tickets-table-actions(:ticket="props.row" @updateLifestep="updateLifestep($event)")
 
       template(v-slot:body-cell-states="props")
         tk-tickets-table-state-col(:ticket="props.row")
@@ -52,6 +52,7 @@ import { useQuasar } from 'quasar'
 import type { QTableProps } from 'quasar'
 import type { components } from '#build/types/service-api'
 import useCloseTicket from '~/composables/useCloseTicket'
+import { LifeStep } from '../utils'
 type Ticket = components['schemas']['TicketDto']
 type State = components['schemas']['StatesDto']
 
@@ -216,9 +217,14 @@ const columnsType = ref([
 
 const selected = ref<Ticket[]>([])
 const { openDialog } = useCloseTicket()
-function closeTicket(ticket: Ticket) {
-  selected.value = [ticket]
-  openDialog({ ticket: selected.value, refreshEvent: refresh })
+function updateLifestep(payload: { ticket: Ticket, lifestep: LifeStep }) {
+  selected.value = [payload.ticket]
+  openDialog({ ticket: selected.value, lifestep: payload.lifestep, refreshEvent })
+}
+
+function refreshEvent() {
+  refresh()
+  selected.value = []
 }
 
 const fieldsList = computed(() => {

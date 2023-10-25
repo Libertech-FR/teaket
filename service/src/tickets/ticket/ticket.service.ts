@@ -33,9 +33,9 @@ export class TicketService extends AbstractServiceSchema {
     super({ moduleRef, request })
   }
 
-  public async closeMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[]): Promise<UpdateQuery<Query<T, T, any, T>>> {
-    this.logger.log(`closeMany: ${ids}`)
-    return this._model.updateMany({ _id: { $in: ids } }, { $set: { lifestep: TicketLifestep.CLOSED } })
+  public async updateMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[], lifestep: TicketLifestep): Promise<UpdateQuery<Query<T, T, any, T>>> {
+    this.logger.log(`updateMany: ${ids}`)
+    return this._model.updateMany({ _id: { $in: ids } }, { $set: { lifestep } })
   }
 
   /* eslint-disable */
