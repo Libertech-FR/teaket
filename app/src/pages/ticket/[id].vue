@@ -5,20 +5,19 @@ q-page.row.items-stretch
             //- .col-12.col-md-2.q-pa-sm
             //-     tk-ticketLeftPanel(:sequence="ticketData.data.sequence")
             .col-12.col-md-9.q-pa-sm
-                tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject")
+                tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject" :ticketData="ticketData.data" ref='mainPanelRef')
             .col-12.col-md-3.q-pa-sm
-                tk-ticketRightPanel(:ticketData="ticketData.data" @fetch:ticket-data="refreshTicketData")
+                tk-ticketRightPanel(v-model="ticketData.data" @fetch:ticket-data="refreshThreadsList" @refresh:ticket-data='refresh')
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed, provide } from 'vue'
+import { ref, computed, provide } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app'
-import { useHttpApi } from '~/composables/useHttpApi'
-import { useDraggable } from '@vueuse/core'
-import { LifeStep } from '~/utils'
+import { useHttpApi } from "~/composables/useHttpApi"
+import { LifeStep } from "~/utils"
 import { useQuasar } from 'quasar'
-import type { components } from '#build/types/service-api'
-import { assign } from 'radash'
+import type { components } from "#build/types/service-api"
+import { TkTicketMainPanel } from '#components'
 type Ticket = components['schemas']['TicketDto']
 
 const route = useRoute()
@@ -37,15 +36,16 @@ const {
   },
 })
 
-const refreshTicketData = () => {
-  refresh()
+const mainPanelRef = ref<InstanceType<typeof TkTicketMainPanel> | null>(null)
+const refreshThreadsList = () => {
+  mainPanelRef.value.$.exposed.refreshThreadsList()
 }
 
 const isDisabledTicket = computed(() => {
-  return ticketData.value?.data?.lifestep === LifeStep.CLOSED
+  return ticketData.value?.data?.lifestep <= LifeStep.CLOSED
 })
 
-provide('isDisabledTicket', isDisabledTicket.value)
+provide('isDisabledTicket', isDisabledTicket)
 </script>
 
 <style lang="css" scoped>
