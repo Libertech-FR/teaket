@@ -22,10 +22,10 @@
                         q-list(dense)
                             q-item(clickable v-for="(threadType, key) in threadTypes" :key="key" v-ripple tag="label")
                                 q-item-section
-                                    q-item-label {{ type.label }}
+                                    q-item-label {{ threadType.label }}
             q-btn(
                 icon="mdi-send" size="md" color="primary" flat
-                @click="isFullscreen = true"
+                @click="isFullscreen = true" :disable="isDisabledTicket"
             ).col-1
                 q-tooltip.text-body2 Envoyer
 
@@ -59,8 +59,12 @@
                         q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
 
             .row
-                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledTicket").col-6
-                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledTicket").col-6
+                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
+                  q-tooltip(v-if='isDisabledInternalButton').text-body2
+                    span Champs 'To' non vide
+                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledEmailButton").col-6
+                  q-tooltip(v-if='isDisabledEmailButton').text-body2
+                    span Champs 'To' vide
 </template>
 
 <script lang="ts" setup>
@@ -77,7 +81,6 @@ import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
 
 const emit = defineEmits(['refreshThreadsList'])
-const isDisabledTicket = inject<boolean>('isDisabledTicket')
 
 const dayjs = useDayjs()
 const store = usePinia()
@@ -91,7 +94,7 @@ onMounted(() => {
 
 // Manage dropzone
 const onDrop = (files: File[] | null) => {
-  if (isDisabledTicket) {
+  if (isDisabledTicket.value) {
     $q.notify({
       message: "Impossible d'envoyer le fichier, le ticket est fermé",
       type: 'negative',
@@ -216,8 +219,7 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
       color: 'negative',
     },
   )
-
-  if (error) return
+  if (error.value) return
 
   message.value = ''
   attachements.value = []
@@ -241,6 +243,15 @@ const editorDefinitions = computed(() => ({
 }))
 const editorToolbar = computed(() => {
   return [['left', 'center', 'right', 'justify'], ['bold', 'italic', 'underline', 'strike'], ['undo', 'redo'], ['fullscreen']]
+})
+
+const isDisabledTicket = inject<ref<boolean>>('isDisabledTicket')
+const isDisabledInternalButton = computed(() => {
+  return isDisabledTicket.value || mailInfo.value.to !== ''
+})
+
+const isDisabledEmailButton = computed(() => {
+  return isDisabledTicket.value || mailInfo.value.to === ''
 })
 
 defineExpose({
