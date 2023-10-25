@@ -23,5 +23,5 @@ export class FragmentPartDto {
   @ValidateNested()
   @Type(() => IdfsPartDto)
   @ApiProperty({ type: IdfsPartDto })
-  public filestorage?: object
+  public filestorage?: IdfsPartDto
 }

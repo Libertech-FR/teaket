@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { FragmentType, FragmentTypeList } from '~/tickets/thread/_enum/fragment-type.enum'
-import { Document, Types } from 'mongoose'
+import { Document } from 'mongoose'
 import { IdfsPart, IdfsPartSchema } from '~/_common/schemas/parts/idfs.part.schema'
 import { MailaddressPart, MailaddressPartSchema } from '~/_common/schemas/parts/mailaddress.part.schema'
 
@@ -10,7 +9,10 @@ export class MailinfoPart extends Document {
     type: String,
     required: true,
   })
-  public subject: string
+  public account: string
+
+  @Prop({ type: String })
+  public subject?: string
 
   @Prop({
     type: MailaddressPartSchema,

@@ -1,12 +1,8 @@
 import { AbstractService } from '~/_common/abstracts/abstract.service'
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { HttpException, Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ParsedMail } from 'mailparser'
-import { mkdirSync, writeFileSync } from 'fs'
-import openapiTS from 'openapi-typescript'
-import { resolve } from 'path'
-import { MailRestAccountType, MailRestMessageType } from '~/tickets/mails/_types/mailrest-generated.type'
-import { fileExistsSync } from 'tsconfig-paths/lib/filesystem'
+import { MailRestAccountType, MailRestMailSubmit, MailRestMailSubmited, MailRestMessageType } from '~/tickets/mails/_types/mailrest-generated.type'
 import { SettingsService } from '~/core/settings/settings.service'
 import { MailsSettingsInterface } from '~/tickets/mails/_interfaces/mails-settings.interface'
 import { omit } from 'radash'
@@ -14,13 +10,11 @@ import { ServiceUnavailableException } from '@nestjs/common/exceptions/service-u
 import { SearchMailsDto } from '~/tickets/mails/_dto/search-mails.dto'
 import { SettingFor } from '~/core/settings/_enum/setting-for.enum'
 import { createHash } from 'crypto'
+import FormData from 'form-data'
 
 @Injectable()
-export class MailsService extends AbstractService implements OnModuleInit {
-  public constructor(
-    private readonly httpService: HttpService,
-    private readonly settings: SettingsService,
-  ) {
+export class MailsService extends AbstractService {
+  public constructor(private readonly httpService: HttpService, private readonly settings: SettingsService) {
     super()
   }
 
@@ -36,22 +30,7 @@ export class MailsService extends AbstractService implements OnModuleInit {
     })
   }
 
-  public async onModuleInit() {
-    // const path = resolve('src/_generated/mailrest-api.generated.d.ts')
-    // if (fileExistsSync(path)) return
-    // this.logger.log(`OpenapiTS - Generating ${path}...`)
-    // try {
-    //   const mailrestConfig = await this.getMailrestConfig()
-    //   const fileData = await openapiTS(`${mailrestConfig.url}/swagger/json`)
-    //   mkdirSync('src/_generated', { recursive: true })
-    //   writeFileSync(path, fileData)
-    //   this.logger.log(`OpenapiTS - Generated ${path} !`)
-    // } catch (error) {
-    //   this.logger.error(`OpenapiTS - Error while generating ${path}`, error)
-    // }
-  }
-
-  protected async getAccounts(): Promise<MailRestAccountType[]> {
+  public async getAccounts(): Promise<MailRestAccountType[]> {
     this.logger.debug(`Update list of mailrest accounts`)
     try {
       const mailrestConfig = await this.getMailrestConfig()
@@ -149,6 +128,57 @@ export class MailsService extends AbstractService implements OnModuleInit {
       return res.data.deleted
     } catch (e) {
       const msg = `Error to delete message with seq <${seq}>: ${JSON.stringify(e.response?.data || e)}`
+      this.logger.error(msg)
+      throw new ServiceUnavailableException(e, msg)
+    }
+  }
+
+  public async submit(account: string, form: MailRestMailSubmit, files?: Express.Multer.File[]): Promise<MailRestMailSubmited> {
+    this.logger.debug(`Attempt to submit message with account <${account}>`)
+    try {
+      const mailrestConfig = await this.getMailrestConfig()
+      const url = `${mailrestConfig.url}/accounts/${account}/submit`
+      const formData = new FormData()
+      const keys = Object.entries(form).filter(([_, value]) => value !== undefined)
+      for (const [key, value] of keys) {
+        if (!Array.isArray(value)) {
+          formData.append(key, value)
+        } else {
+          value.forEach((v) => formData.append(key, v))
+        }
+      }
+      if (files?.length) {
+        for (const file of files) {
+          formData.append('files', file.buffer, {
+            filename: file.originalname,
+          })
+        }
+      }
+      const res = await this.httpService.axiosRef.post<{ data: MailRestMailSubmited }>(url, formData, {
+        headers: {
+          ...(mailrestConfig.defaultHeaders || {}),
+          Authorization: `Bearer ${mailrestConfig.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return res.data?.data
+    } catch (e) {
+      const msg = `Error to submit message with account <${account}>: ${JSON.stringify(e.response?.data || e)}`
+      if (e.response) {
+        const validations = {}
+        for (const [key, value] of Object.entries(e.response?.data?.validations || {})) {
+          validations['mailinfo.' + key] = value
+        }
+        throw new HttpException(
+          {
+            statusCode: e.response?.status,
+            message: msg,
+            validations,
+          },
+          e.response.status,
+        )
+      }
+      console.log(e)
       this.logger.error(msg)
       throw new ServiceUnavailableException(e, msg)
     }

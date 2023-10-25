@@ -15,7 +15,6 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 import { FragmentPart } from '~/tickets/thread/_schemas/parts/fragment.part.schema'
 import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
-import { pick } from 'radash'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
 
 @ApiTags('tickets')

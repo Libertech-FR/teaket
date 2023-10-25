@@ -38,7 +38,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ): Promise<[Query<Array<T>, T, any, T>[], number]> {
+  ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
     this.logger.debug(['findAndCount', JSON.stringify(Object.values(arguments))].join(' '))
     if (this.eventEmitter) {
       const beforeEvents = await this.eventEmitter?.emitAsync(
@@ -54,7 +54,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     let count = await this._model.countDocuments(filter).exec()
-    let total = await this._model.find<Query<Array<T>, T, any, T>>(filter, projection, options).exec()
+    let total = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
@@ -202,9 +202,10 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         { _id },
         {
           ...update,
-          metadata: {
-            lastUpdatedBy: this.request?.user?.username || 'anonymous',
-            lastUpdatedAt: new Date(),
+          $set: {
+            ...(update?.$set || {}),
+            'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
+            'metadata.lastUpdatedAt': new Date(),
           },
         },
         {

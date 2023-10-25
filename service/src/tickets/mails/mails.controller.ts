@@ -29,10 +29,7 @@ import { Readable } from 'stream'
 
 @Controller('mails')
 export class MailsController extends AbstractController {
-  public constructor(
-    private readonly _service: MailsService,
-    protected readonly webhooks: WebhooksService,
-  ) {
+  public constructor(private readonly _service: MailsService, protected readonly webhooks: WebhooksService) {
     super()
   }
 
@@ -43,6 +40,15 @@ export class MailsController extends AbstractController {
       statusCode: HttpStatus.OK,
       data,
       total,
+    })
+  }
+
+  @Get('accounts')
+  public async getAccounts(@Res() res: Response): Promise<Response> {
+    const data = await this._service.getAccounts()
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
     })
   }
 
@@ -64,12 +70,7 @@ export class MailsController extends AbstractController {
 
   @Public()
   @Get(':account([\\w-.]+)/:seq([\\w-.]+)/render')
-  public async getRender(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-    @Query('signature') signature?: string,
-  ): Promise<void> {
+  public async getRender(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string, @Query('signature') signature?: string): Promise<void> {
     const [fingerprint, parsed] = await this._service.get(account, seq)
     if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')
     res.setHeader('Content-Type', 'text/html')
@@ -86,12 +87,7 @@ export class MailsController extends AbstractController {
 
   @Public()
   @Get(':account([\\w-.]+)/:seq([\\w-.]+)/source')
-  public async getSource(
-    @Res() res: Response,
-    @Param('account') account: string,
-    @Param('seq') seq: string,
-    @Query('signature') signature?: string,
-  ): Promise<Response> {
+  public async getSource(@Res() res: Response, @Param('account') account: string, @Param('seq') seq: string, @Query('signature') signature?: string): Promise<Response> {
     const parsed = await this._service.getSource(account, seq)
     const fingerprint = await this._service.getSignature(parsed)
     if (signature !== fingerprint) throw new UnauthorizedException('Invalid signature')

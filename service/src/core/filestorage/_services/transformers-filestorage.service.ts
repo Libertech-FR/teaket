@@ -9,6 +9,7 @@ import { Readable } from 'stream'
 export class TransformersFilestorageService extends AbstractService {
   public static readonly TRANSFORMERS = {
     'text/plain': TransformersFilestorageService.transformPlain,
+    'text/html': TransformersFilestorageService.transformHtml,
     'message/rfc822': TransformersFilestorageService.transformEml,
   }
 
@@ -41,6 +42,14 @@ export class TransformersFilestorageService extends AbstractService {
 
   public static async transformPlain(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
     res.setHeader('Content-Type', 'text/plain')
+    // eslint-disable-next-line
+    res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}"`)
+    stream.pipe(res)
+    return
+  }
+
+  public static async transformHtml(res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
+    res.setHeader('Content-Type', 'text/html')
     // eslint-disable-next-line
     res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}"`)
     stream.pipe(res)
