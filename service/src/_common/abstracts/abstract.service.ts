@@ -2,12 +2,13 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { Request } from 'express'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { RequestContext } from 'nestjs-request-context'
 
 export interface AbstractServiceContext {
   [key: string | number]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   moduleRef?: ModuleRef
-  request?: Request & { user?: Express.User }
+  req?: Request & { user?: Express.User }
   eventEmitter?: EventEmitter2
 }
 
@@ -15,16 +16,21 @@ export interface AbstractServiceContext {
 export abstract class AbstractService {
   protected logger: Logger
   protected moduleRef: ModuleRef
-  protected request?: Request & { user?: Express.User & any } // eslint-disable-line
+  private readonly _req?: Request & { user?: Express.User & any } // eslint-disable-line
   protected eventEmitter?: EventEmitter2
 
   protected constructor(context?: AbstractServiceContext) {
     this.moduleRef = context?.moduleRef
-    this.request = context?.request
+    this._req = context?.req
     this.logger = new Logger(this.serviceName)
-    if (context?.eventEmitter) {
-      if (!context?.request) throw new Error('Request is not defined in ' + this.serviceName)
-    }
+  }
+
+  protected get request():
+    | (Request & {
+        user?: Express.User & any // eslint-disable-line
+      })
+    | null {
+    return this._req || RequestContext.currentContext?.req
   }
 
   public get moduleName(): string {

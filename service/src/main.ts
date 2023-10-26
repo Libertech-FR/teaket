@@ -20,6 +20,7 @@ AppClusterService.clusterize(async (): Promise<void> => {
   const cfg = config()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    // snapshot: true,
     // logger: false,
     bodyParser: false,
     rawBody: true,

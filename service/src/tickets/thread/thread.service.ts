@@ -1,4 +1,4 @@
-import { ConflictException, forwardRef, Inject, Injectable, Scope } from '@nestjs/common'
+import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
 import { Document, FilterQuery, Model, ProjectionType, Query, QueryOptions, SaveOptions, Types } from 'mongoose'
@@ -21,11 +21,13 @@ import { FsType } from '~/core/filestorage/_enum/fs-type.enum'
 import { Readable } from 'stream'
 import { Filestorage } from '~/core/filestorage/_schemas/filestorage.schema'
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable({
+  /*scope: Scope.REQUEST*/
+})
 export class ThreadService extends AbstractServiceSchema {
   public constructor(
     protected readonly moduleRef: ModuleRef,
-    @Inject(REQUEST) protected readonly request: Request,
+    // @Inject(REQUEST) protected readonly req: Request,
     @InjectModel(Thread.name) protected _model: Model<Thread>,
     @Inject(forwardRef(() => TicketService))
     protected ticketService: WrapperType<TicketService>,
@@ -35,7 +37,7 @@ export class ThreadService extends AbstractServiceSchema {
     // private readonly i18n: I18nService<I18nTranslations>,
     protected readonly eventEmitter: EventEmitter2,
   ) {
-    super({ moduleRef, request, eventEmitter })
+    super({ moduleRef, /* req,*/ eventEmitter })
   }
 
   /* eslint-disable */

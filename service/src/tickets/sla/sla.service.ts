@@ -6,13 +6,13 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable(/*{ scope: Scope.REQUEST }*/)
 export class SlaService extends AbstractServiceSchema {
   constructor(
     protected readonly moduleRef: ModuleRef,
     @InjectModel(Sla.name) protected _model: Model<Sla>,
-    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
-  ) {
-    super({ moduleRef, request })
+  ) // @Inject(REQUEST) protected request?: Request & { user?: Express.User },
+  {
+    super({ moduleRef /*, request*/ })
   }
 }

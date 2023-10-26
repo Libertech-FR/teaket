@@ -6,13 +6,13 @@ import { State } from '~/tickets/state/_schemas/state.schema'
 import { ModuleRef, REQUEST } from '@nestjs/core'
 import { Request } from 'express'
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable(/*{ scope: Scope.REQUEST }*/)
 export class StateService extends AbstractServiceSchema {
   public constructor(
     protected readonly moduleRef: ModuleRef,
     @InjectModel(State.name) protected _model: Model<State>,
-    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
-  ) {
-    super({ moduleRef, request })
+  ) // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
+  {
+    super({ moduleRef /*, req*/ })
   }
 }

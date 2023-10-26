@@ -18,7 +18,7 @@ import { TicketLifestep } from './_enum/ticket-lifestep.enum'
 import { WrapperType } from '~/_common/types/wrapper.type'
 import { I18nTranslations } from '~/_generated/i18n.generated'
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable(/*{ scope: Scope.REQUEST }*/)
 export class TicketService extends AbstractServiceSchema {
   public constructor(
     protected readonly moduleRef: ModuleRef,
@@ -28,9 +28,9 @@ export class TicketService extends AbstractServiceSchema {
     // private readonly i18n: I18nService,
     private readonly i18n: I18nService<I18nTranslations>,
     @InjectModel(Ticket.name) protected _model: Model<Ticket>,
-    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
-  ) {
-    super({ moduleRef, request })
+  ) // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
+  {
+    super({ moduleRef /*, req*/ })
   }
 
   public async updateMany<T extends AbstractSchema | Document>(ids: Types.ObjectId[], lifestep: TicketLifestep): Promise<UpdateQuery<Query<T, T, any, T>>> {

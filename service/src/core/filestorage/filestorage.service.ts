@@ -20,7 +20,7 @@ function hasFileExtension(path: string): boolean {
   return regex.test(path)
 }
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable(/*{ scope: Scope.REQUEST }*/)
 export class FilestorageService extends AbstractServiceSchema {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#']
 
@@ -28,9 +28,9 @@ export class FilestorageService extends AbstractServiceSchema {
     protected readonly moduleRef: ModuleRef,
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage>,
     protected readonly storage: FactorydriveService,
-    @Inject(REQUEST) protected request?: Request & { user?: Express.User },
-  ) {
-    super({ moduleRef, request })
+  ) // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
+  {
+    super({ moduleRef /*, req*/ })
   }
 
   /* eslint-disable */
@@ -104,11 +104,7 @@ export class FilestorageService extends AbstractServiceSchema {
     const data = await super.findById<Document<any, any, Filestorage> & Filestorage>(_id, projection, options)
     if (data.type === FsType.FILE) {
       const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
-      return [
-        data,
-        stream,
-        null,
-      ]
+      return [data, stream, null]
     } else if (data.type === FsType.EMBED) {
       return this.findRawDataWithEmbed(data, projection, options)
     }
@@ -123,11 +119,7 @@ export class FilestorageService extends AbstractServiceSchema {
     const data = await super.findOne<Document<any, any, Filestorage> & Filestorage>(filter, projection, options)
     if (data.type === FsType.FILE) {
       const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
-      return [
-        data,
-        stream,
-        null,
-      ]
+      return [data, stream, null]
     } else if (data.type === FsType.EMBED) {
       return this.findRawDataWithEmbed(data, projection, options)
     }
@@ -183,11 +175,7 @@ export class FilestorageService extends AbstractServiceSchema {
     const data = await this.findById<Document<any, any, Filestorage> & Filestorage>(embedFilestorage.linkedTo, projection, options)
     if (!data) throw new BadRequestException(`Filestorage ${embedFilestorage.linkedTo} not found`)
     const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
-    return [
-      embedFilestorage,
-      stream,
-      data,
-    ]
+    return [embedFilestorage, stream, data]
   }
 
   /* eslint-enable */
