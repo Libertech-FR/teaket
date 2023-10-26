@@ -10,11 +10,11 @@ export class MailaddressPartDto {
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
-  public name: string
+  @ApiProperty({ required: false })
+  public name?: string
 
   @IsMongoId({ message: 'Id invalide' })
   @IsOptional()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, required: false })
   public entityId?: Types.ObjectId
 }

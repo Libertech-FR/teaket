@@ -3,9 +3,9 @@ div
   q-card(flat)
     q-card-section(horizontal)
       q-card-section.full-width(:style="{maxWidth: '50vw', overflow: 'hidden'}")
-        //v-model:selected="selected"
-        //  selection="multiple"
         q-table.tk-sticky-last-column-table(
+          selection="single"
+          v-model:selected="selected"
           v-model:pagination="pagination"
           title="Mails"
           :rows="mails?.data"
@@ -209,6 +209,7 @@ const importMail = async (mail: any) => {
     color: 'positive',
     message: 'Email importé avec succès',
   })
+  target.value = null
   await refresh()
 }
 const goToMail = async (mail: Mail) => {

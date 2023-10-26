@@ -16,6 +16,8 @@ import { FragmentPart } from '~/tickets/thread/_schemas/parts/fragment.part.sche
 import { FragmentType } from '~/tickets/thread/_enum/fragment-type.enum'
 import { FragmentPartDto } from '~/tickets/thread/_dto/parts/fragment.part.dto'
 import { Thread } from '~/tickets/thread/_schemas/thread.schema'
+import { IdfsPart } from '~/_common/schemas/parts/idfs.part.schema'
+import { IdfsPartDto } from '~/_common/dto/parts/idfs.part.dto'
 
 @ApiTags('tickets')
 @Controller('thread')
@@ -53,6 +55,11 @@ export class ThreadController extends AbstractController {
       data: data.map((thread) => {
         return {
           ...thread.toObject(),
+          attachments: thread.attachments.map((attach: IdfsPart) => {
+            const attachment: IdfsPartDto & { link?: string } = { ...attach.toObject() }
+            attachment.link = '/' + ['core', 'filestorage', attach.id, 'raw'].join('/') + '?' + [`signature=empty`].join('&')
+            return attachment
+          }),
           fragments: thread.fragments.map((frag: FragmentPart) => {
             const fragment: FragmentPartDto & { filestorage?: { link?: string } } = { ...frag.toObject() }
             if (frag.disposition === FragmentType.FILE && frag.filestorage) {

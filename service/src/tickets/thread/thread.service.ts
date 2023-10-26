@@ -156,7 +156,7 @@ export class ThreadService extends AbstractServiceSchema {
 
           //TODO: replyTo à gerer
           const mailed = await this.mailsService.submit(
-            data.mailinfo.account,
+            data.mailinfo?.account,
             {
               to: data.mailinfo?.to?.map((to) => to.address),
               cc: data.mailinfo?.cc?.map((cc) => cc.address),

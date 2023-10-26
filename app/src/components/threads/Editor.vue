@@ -200,6 +200,12 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
         message: message.value,
       },
     ] as components['schemas']['FragmentPartDto'][],
+    mailinfo: {
+      account: 'clement.mail_mail.libertech.fr',
+      subject: mailInfo.value.subject,
+      to: mailInfo.value.to ? mailInfo.value.to.split(',').map((to) => ({ address: to.trim() })) : null,
+      cc: mailInfo.value.cc ? mailInfo.value.cc.split(',').map((cc) => ({ address: cc.trim() })) : null,
+    },
     metadata: {
       createdBy: user.username,
       createdAt: dayjs().toISOString(),

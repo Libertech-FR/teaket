@@ -115,9 +115,20 @@ export class WebhooksService extends AbstractService {
       }
       throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original thread found`)
     }
-    const existTicket = (await this.ticket.model.findOne({
-      _id: checkReplyEmail.ticketId,
-    })) as Ticket
+    const existTicket = (await this.ticket.model.findOneAndUpdate(
+      {
+        _id: checkReplyEmail.ticketId,
+      },
+      {
+        $set: {
+          lifeStep: TicketLifestep.OPEN,
+        },
+      },
+      {
+        upsert: false,
+        new: true,
+      },
+    )) as Ticket
     const existStoredFile = (await this.filestorage.model.findOne({
       _id: checkReplyEmail.mailinfo.filestorage.id,
     })) as Filestorage
@@ -243,6 +254,15 @@ export class WebhooksService extends AbstractService {
         } as MailaddressPartDto
       }),
     )
+    const cc = await Promise.all(
+      Object.values(isArray(context.parsed.cc) ? context.parsed.cc : [context.parsed.cc]).map(async (cc) => {
+        const entityCc = await this.entities.findOrCreateFromEmail(cc.value[0])
+        return {
+          ...pick(cc.value[0], ['address', 'name']),
+          entityId: entityCc._id,
+        } as MailaddressPartDto
+      }),
+    )
     const newThreadId = new Types.ObjectId()
     const thread = await this.thread.create(
       <ThreadCreateDto>{
@@ -294,6 +314,7 @@ export class WebhooksService extends AbstractService {
           subject: context.parsed.subject,
           from,
           to,
+          cc,
           messageId: context.parsed.messageId,
           filestorage: <IdfsPartDto>{
             id: context.storedFile._id,
