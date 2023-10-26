@@ -122,7 +122,7 @@ dbs: ## Start databases
 	@docker exec -it teaket-mongodb mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
 
 run-mailrest: ## start Mailrest container
-	@docker run -it -d \
+	@docker run -it -d --rm \
 		--name $(APPNAME)-mailrest \
 		--network dev \
 		-p $(MAILREST_PORT):7200 \

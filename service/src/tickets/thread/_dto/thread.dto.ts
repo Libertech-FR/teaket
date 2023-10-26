@@ -49,7 +49,7 @@ export class ThreadCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @ApiProperty({ type: [IdfsPartDto], required: false })
   public attachments?: IdfsPartDto[]
 
-  // @ValidateIf((o) => [ThreadType.OUTGOING, ThreadType.INCOMING].includes(o.type))
+  @ValidateIf((o) => [ThreadType.OUTGOING, ThreadType.INCOMING].includes(o.type))
   // @IsDefined()
   @ValidateNested()
   @Type(() => MailinfoPartDto)

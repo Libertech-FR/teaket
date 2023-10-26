@@ -1,5 +1,5 @@
 <template lang="pug" @keypress.enter="addFilter">
-.q-ma-sm
+.q-pa-sm
   tk-SearchfiltersMain(ref="mainData")
   //Filters chips
   .row.q-gutter-sm.items-center.q-mt-sm

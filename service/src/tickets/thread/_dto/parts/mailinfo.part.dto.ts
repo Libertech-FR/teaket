@@ -16,17 +16,17 @@ export class MailinfoPartDto {
 
   @IsString()
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   public subject?: string
 
   @IsOptional()
   @Type(() => MailaddressPartDto)
-  @ApiProperty({ type: MailaddressPartDto })
+  @ApiProperty({ type: MailaddressPartDto, required: false })
   public from?: MailaddressPartDto
 
   @IsOptional()
   @Type(() => MailaddressPartDto)
-  @ApiProperty({ type: [MailaddressPartDto] })
+  @ApiProperty({ type: [MailaddressPartDto], required: false })
   public cc?: MailaddressPartDto[]
 
   @IsString()
@@ -37,6 +37,6 @@ export class MailinfoPartDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => IdfsPartDto)
-  @ApiProperty({ type: IdfsPartDto })
+  @ApiProperty({ type: IdfsPartDto, required: false })
   public filestorage?: object
 }
