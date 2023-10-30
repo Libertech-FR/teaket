@@ -22,6 +22,7 @@ export class EntitiesController extends AbstractController {
     profile: 1,
     state: 1,
     type: 1,
+    publicEmail: 1,
   }
 
   public constructor(private readonly _service: EntitiesService) {

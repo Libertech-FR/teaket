@@ -1,70 +1,92 @@
 <template lang="pug">
 .column
-    .col-10
-        .row(style="height: 100%")
-            q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
-                size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
-            ).col-1.bg-grey-2
-                q-badge(floating) {{ attachements.length }}
-            //- client-only
-            //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
-            q-editor(
-                v-model="message" placeholder="Votre message ..."
-                :definitions="editorDefinitions" :disable="isDisabledTicket"
-                :toolbar="editorToolbar" dense style="height: 100%"
-            ).col
-                template(v-slot:threadTypes)
-                    q-btn-dropdown(
-                        v-model="threadType" :options="threadTypes"
-                        no-wrap unelevated no-caps dense flat
-                        label="Type de thread" :icon="threadType.icon" :color="threadType.color"
-                    )
-                        q-list(dense)
-                            q-item(clickable v-for="(threadType, key) in threadTypes" :key="key" v-ripple tag="label")
-                                q-item-section
-                                    q-item-label {{ threadType.label }}
-            q-btn(
-                icon="mdi-send" size="md" color="primary" flat
-                @click="isFullscreen = true" :disable="isDisabledTicket"
-            ).col-1
-                q-tooltip.text-body2 Envoyer
+  .col-10
+    .row(style="height: 100%")
+      q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
+        size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
+      ).col-1.bg-grey-2
+        q-badge(floating) {{ attachements.length }}
+      //- client-only
+      //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
+      q-editor(
+        v-model="message" placeholder="Votre message ..."
+        :definitions="editorDefinitions" :disable="isDisabledTicket"
+        :toolbar="editorToolbar" dense style="height: 100%"
+      ).col
+        template(v-slot:threadTypes)
+          q-btn-dropdown(
+            v-model="threadType" :options="threadTypes"
+            no-wrap unelevated no-caps dense flat
+            label="Type de thread" :icon="threadType.icon" :color="threadType.color"
+          )
+            q-list(dense)
+              q-item(clickable v-for="(threadType, key) in threadTypes" :key="key" v-ripple tag="label")
+                q-item-section
+                  q-item-label {{ threadType.label }}
+      q-btn(
+        icon="mdi-send" size="md" color="primary" flat
+        @click="isFullscreen = true" :disable="isDisabledTicket"
+      ).col-1
+        q-tooltip.text-body2 Envoyer
 
-    q-scroll-area(style="width: 100%").col
-        q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-            q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
+  q-scroll-area(style="width: 100%").col
+    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+      q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
 
-    q-dialog(v-model="isFullscreen")
-        q-card
-            q-card-section.bg-grey-2
-                //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
-                q-input(dense label="To" v-model="mailInfo.to" :disable="isDisabledTicket")
-                q-input(dense label="Copy" v-model="mailInfo.cc" :disable="isDisabledTicket")
-                q-input(dense label="Subject" v-model="mailInfo.subject" :disable="isDisabledTicket")
-            q-card-section
-                q-editor(
-                    min-height="50vh" min-width="50vw"
-                    v-model="message" placeholder="Votre message ..."
-                    :definitions="editorDefinitions"
-                    :toolbar="editorToolbar" class="q-pa-none"
-                    :readonly="isDisabledTicket" ref="dropZoneRef"
-                )
-            q-card-section.q-pa-sm
-                div(ref="dropZoneDialogRef").row.center.bg-grey-3
-                    .col.text-center
-                        q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
-                        span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
-            q-card-section
-                q-scroll-area(style="width: 100%; height: 100%")
-                    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-                        q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
+  q-dialog(v-model="isFullscreen")
+    q-card
+      q-card-section.bg-grey-2
+        //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
+        tk-form-autocomplete(
+          apiUrl="/core/entities"
+          optionLabel="publicEmail"
+          optionValue="publicEmail"
+          searchField="publicEmail"
+          :emitValue="true"
+          label="Destinataire"
+          v-model="mailInfo.to"
+          :addManualValue="true"
+          use-chips dense
+          :disabled="isDisabledTicket"
+        )
+        tk-form-autocomplete(
+          apiUrl="/core/entities"
+          optionLabel="publicEmail"
+          optionValue="publicEmail" 
+          searchField="publicEmail"
+          :emitValue="true"
+          label="Cc"
+          v-model="mailInfo.cc"
+          :addManualValue="true"
+          use-chips dense
+          :disabled="isDisabledTicket"
+        )
+        q-input(dense label="Sujet" v-model="mailInfo.subject" :disable="isDisabledTicket")
+      q-card-section
+        q-editor(
+          min-height="50vh" min-width="50vw"
+          v-model="message" placeholder="Votre message ..."
+          :definitions="editorDefinitions"
+          :toolbar="editorToolbar" class="q-pa-none"
+          :readonly="isDisabledTicket" ref="dropZoneRef"
+        )
+      q-card-section.q-pa-sm
+        div(ref="dropZoneDialogRef").row.center.bg-grey-3
+          .col.text-center
+            q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
+            span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
+      q-card-section
+        q-scroll-area(style="width: 100%; height: 100%")
+          q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+            q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
 
-            .row
-                q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
-                  q-tooltip(v-if='isDisabledInternalButton').text-body2
-                    span Champs 'To' non vide
-                q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledEmailButton").col-6
-                  q-tooltip(v-if='isDisabledEmailButton').text-body2
-                    span Champs 'To' vide
+      .row
+        q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
+          q-tooltip(v-if='isDisabledInternalButton').text-body2
+            span Champs 'Destinataire' non vide
+        q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledEmailButton").col-6
+          q-tooltip(v-if='isDisabledEmailButton').text-body2
+            span Champs 'Destinataire' vide
 </template>
 
 <script lang="ts" setup>
@@ -90,6 +112,34 @@ const user = store.state.value.auth.user
 
 onMounted(() => {
   currentThreadId.value = generateMongoId()
+})
+
+const {
+  data: entities,
+  pending: entitiesPending,
+  refresh: entitiesRefresh,
+  error: entitiesError,
+} = await useHttpApi('/core/entities', {
+  method: 'get',
+})
+if (entitiesError.value) {
+  $q.notify({
+    message: 'Erreur lors de la recupération des entités',
+    color: 'negative',
+  })
+}
+
+const observers = computed(() => {
+  return entities.value?.data.reduce((acc: { id: string; name: string; type: number }[], entity: Entity) => {
+    if (entity.type <= EntityType.OTHER) {
+      acc.push({
+        id: entity._id,
+        name: entity.profile.commonName,
+        type: entity.type,
+      })
+    }
+    return acc
+  }, [])
 })
 
 // Manage dropzone
@@ -173,8 +223,8 @@ const editorDialog = ref()
 const isFullscreen = ref(false)
 const mailInfo = ref({
   from: '',
-  to: '',
-  cc: '',
+  to: [],
+  cc: [],
   subject: '',
 })
 type MailinfoPartDto = components['schemas']['MailinfoPartDto']
@@ -203,8 +253,8 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
     mailinfo: {
       account: 'clement.mail_mail.libertech.fr',
       subject: mailInfo.value.subject,
-      to: mailInfo.value.to ? mailInfo.value.to.split(',').map((to) => ({ address: to.trim() })) : null,
-      cc: mailInfo.value.cc ? mailInfo.value.cc.split(',').map((cc) => ({ address: cc.trim() })) : null,
+      to: mailInfo.value.to,
+      cc: mailInfo.value.cc,
     },
     metadata: {
       createdBy: user.username,
@@ -253,11 +303,11 @@ const editorToolbar = computed(() => {
 
 const isDisabledTicket = inject<ref<boolean>>('isDisabledTicket')
 const isDisabledInternalButton = computed(() => {
-  return isDisabledTicket.value || mailInfo.value.to !== ''
+  return isDisabledTicket.value || mailInfo.value.to.length !== 0
 })
 
 const isDisabledEmailButton = computed(() => {
-  return isDisabledTicket.value || mailInfo.value.to === ''
+  return isDisabledTicket.value || mailInfo.value.to.length === 0
 })
 
 defineExpose({
