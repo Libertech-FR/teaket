@@ -1,16 +1,11 @@
 import type { components } from '#build/types/service-api'
 import { useQuasar } from 'quasar'
-import { defineEmits } from 'vue'
 import { ComponentInternalInstance } from 'vue'
 import { LifeStep, lifeSteps } from '../utils'
 
 export default function useCloseTicket() {
   const $q = useQuasar()
   type Ticket = components['schemas']['TicketDto']
-  type emit = ComponentInternalInstance['emit']
-
-  const emit = defineEmits(['refresh'])
-
   const tickets = ref<Ticket[]>([])
 
   const multipleTickets = computed(() => {

@@ -12,7 +12,7 @@ q-page
       selection="multiple" v-model:selected="selected" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
     )
       template(v-slot:top-left)
-        tk-tickets-table-top-left(:selected="selected" @openDialog="closeTicketsDialog = true" @clear="selected = []")
+        tk-tickets-table-top-left(:selected="selected" @updateLifestep="updateLifestep($event)" @clear="selected = []")
       template(v-slot:top-right)
         tk-tickets-table-top-right(:columns="columns" v-model="visibleColumns" @refresh="refresh")
       template(v-slot:body-cell-actions="props")
@@ -217,9 +217,9 @@ const columnsType = ref([
 
 const selected = ref<Ticket[]>([])
 const { openDialog } = useCloseTicket()
-function updateLifestep(payload: { ticket: Ticket, lifestep: LifeStep }) {
-  selected.value = [payload.ticket]
-  openDialog({ ticket: selected.value, lifestep: payload.lifestep, refreshEvent })
+function updateLifestep(payload: { ticket: Ticket | Ticket[], lifestep: LifeStep }) {
+  const selectedTickets = Array.isArray(payload.ticket) ? payload.ticket : [payload.ticket]
+  openDialog({ ticket: selectedTickets, lifestep: payload.lifestep, refreshEvent })
 }
 
 function refreshEvent() {
