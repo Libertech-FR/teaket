@@ -1,5 +1,5 @@
 <template lang="pug">
-q-page
+div
   .q-px-md
     tk-searchfilters(:fields="fieldsList")
   .q-px-md
@@ -11,29 +11,28 @@ q-page
       :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
       selection="multiple" v-model:selected="selected" :selected-rows-label="(numberOfRows) => `${numberOfRows} tickets sélectionnées`"
     )
-      template(v-slot:top-left)
+      template(#top-left)
         tk-tickets-table-top-left(:selected="selected" @updateLifestep="updateLifestep($event)" @clear="selected = []")
-      template(v-slot:top-right)
+      template(#top-right)
         tk-tickets-table-top-right(:columns="columns" v-model="visibleColumns" @refresh="refresh")
-      template(v-slot:body-cell-actions="props")
+      template(#body-cell-actions="props")
         tk-tickets-table-actions(:ticket="props.row" @updateLifestep="updateLifestep($event)")
-
-      template(v-slot:body-cell-states="props")
+      template(#body-cell-states="props")
         tk-tickets-table-state-col(:ticket="props.row")
 
-      template(v-slot:body-cell-envelope.senders.name="props")
+      template(#body-cell-envelope.senders.name="props")
         q-td(:props="props")
           span.q-ml-sm {{ props.row.envelope.senders.length === 0 ? "Pas d'appelant" : props.row.envelope.senders[0].name }}
           span(v-if="props.row.envelope.senders.length > 1") , {{ props.row.envelope.senders.length -1 }} autre{{ props.row.envelope.senders.length === 2 ? '' : 's'  }}...
             q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.senders].slice(1).map(s => s.name).join(', ') }}
 
-      template(v-slot:body-cell-envelope.observers.name="props")
+      template(#body-cell-envelope.observers.name="props")
         q-td(:props="props")
           span.q-ml-sm {{ props.row.envelope.observers.length === 0 ? "Pas de concerné" : props.row.envelope.observers[0].name }}
           span(v-if="props.row.envelope.observers.length > 1") , {{ props.row.envelope.observers.length -1 }} autre{{ props.row.envelope.observers.length === 2 ? '' : 's'  }}...
             q-tooltip.text-body2(transition-show="scale" transition-hide="scale") ...{{ [...props.row.envelope.observers].slice(1).map(s => s.name).join(', ') }}
 
-      template(v-slot:body-cell-envelope.assigned.name="props")
+      template(#body-cell-envelope.assigned.name="props")
         q-td(:props="props")
           span.q-ml-sm {{ props.row.envelope.assigned.length === 0 ? "Pas d'assigné" : props.row.envelope.assigned[0].name }}
           span(v-if="props.row.envelope.assigned.length > 1") , {{ props.row.envelope.assigned.length -1 }} autre{{ props.row.envelope.assigned.length === 2 ? '' : 's'  }}...
@@ -61,6 +60,10 @@ const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
 
+onMounted(() => {
+  initializePagination(tickets.value.total)
+})
+
 const closeTicketsDialog = ref<boolean>(false)
 const { pagination, onRequest, initializePagination } = usePagination()
 
@@ -77,10 +80,6 @@ const {
     }
   }),
 })
-
-if (tickets.value) {
-  initializePagination(tickets.value.total)
-}
 
 if (error.value) {
   $q.notify({

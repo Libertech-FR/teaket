@@ -15,7 +15,7 @@ export default function usePagination() {
     descending: true,
   })
 
-  function initializePagination(total: number = 0) {
+  async function initializePagination(total: number = 0) {
     if (!pagination.value) return
     const query = { ...route.query }
     const limit = query.limit ?? 10
@@ -25,7 +25,7 @@ export default function usePagination() {
     pagination.value.rowsNumber = total
 
     setSortOptions(query)
-    paginationQuery()
+    await paginationQuery()
   }
 
   function setSortOptions(query: { [x: string]: LocationQueryValue | LocationQueryValue[] }) {
@@ -49,10 +49,10 @@ export default function usePagination() {
     pagination.value.rowsPerPage = rowsPerPage
     pagination.value.sortBy = sortBy
     pagination.value.descending = descending
-    paginationQuery()
+    await paginationQuery()
   }
 
-  function paginationQuery() {
+  async function paginationQuery() {
     if (!pagination.value) return
     if (!pagination.value.page || !pagination.value.rowsPerPage) return
     const query = removeSortKey()
@@ -69,7 +69,7 @@ export default function usePagination() {
     query['skip'] = skip
     query['limit'] = limit
 
-    router.push({
+    await router.push({
       query,
     })
   }
