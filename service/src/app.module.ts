@@ -21,7 +21,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
 import { FactorydriveModule, FactorydriveService } from '@streamkits/nestjs_module_factorydrive'
 import { AwsS3Storage } from '@streamkits/nestjs_module_factorydrive-s3'
 import { SettingsModule } from '~/core/settings/settings.module'
-import { DevtoolsModule } from '@nestjs/devtools-integration'
 import { RequestContextModule } from 'nestjs-request-context'
 
 @Module({
