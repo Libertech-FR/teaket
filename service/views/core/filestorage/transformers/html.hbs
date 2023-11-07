@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>App</title>
+  <base href='/'>
+</head>
+<body>
+{{{ html }}}
+<!--suppress ES6ConvertVarToLetConst -->
+<script>
+  window.parent.postMessage({
+    type: 'iframeInfo',
+    id: '{{data._id}}',
+    scrollHeight: document.documentElement.scrollHeight + 20,
+  }, '*')
+</script>
+</body>
+</html>

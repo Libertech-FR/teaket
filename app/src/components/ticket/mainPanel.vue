@@ -49,7 +49,7 @@ const emailReponse = (data: MailinfoPartDto) => {
   if (!threadsEditorRef.value) {
     return
   }
-  threadsEditorRef.value?.emailReponse(data)
+  threadsEditorRef.value.$.exposed?.emailReponse(data)
 }
 
 const lifestepOfTicket = computed(() => {

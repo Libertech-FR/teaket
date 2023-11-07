@@ -35,7 +35,7 @@
 
   q-dialog(v-model="isFullscreen")
     q-card
-      q-card-section.bg-grey-2
+      q-card-section(:class='{"bg-grey-2": !$q.dark.isActive}')
         //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
         tk-form-autocomplete(
           apiUrl="/core/entities"
@@ -52,7 +52,7 @@
         tk-form-autocomplete(
           apiUrl="/core/entities"
           optionLabel="publicEmail"
-          optionValue="publicEmail" 
+          optionValue="publicEmail"
           searchField="publicEmail"
           :emitValue="true"
           label="Cc"
@@ -71,7 +71,7 @@
           :readonly="isDisabledTicket" ref="dropZoneRef"
         )
       q-card-section.q-pa-sm
-        div(ref="dropZoneDialogRef").row.center.bg-grey-3
+        div(ref="dropZoneDialogRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
           .col.text-center
             q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
             span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
@@ -222,17 +222,19 @@ const removeAttachment = (id: string) => {
 const editorDialog = ref()
 const isFullscreen = ref(false)
 const mailInfo = ref({
-  from: '',
+  // from: '',
   to: [],
   cc: [],
   subject: '',
 })
 type MailinfoPartDto = components['schemas']['MailinfoPartDto']
-const emailReponse = (data: MailinfoPartDto) => {
-  mailInfo.value.to = data.from.address
-  mailInfo.value.from = data.to[0].address
+const emailReponse = (data: MailinfoPartDto & { message?: string }) => {
+  mailInfo.value.to = [data.from.address]
+  // mailInfo.value.from = data.to[0].address
   mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
   isFullscreen.value = true
+  if (data.message) message.value = data.message
+  console.log('emailReponse2', data)
 }
 
 // Manage editor

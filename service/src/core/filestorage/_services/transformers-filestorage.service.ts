@@ -13,10 +13,12 @@ export class TransformersFilestorageService extends AbstractService {
     'application/pdf': TransformersFilestorageService.transformPdf,
     'image/*': TransformersFilestorageService.transformImage,
     'message/rfc822': TransformersFilestorageService.transformEml,
+    'message/partial': TransformersFilestorageService.transformMessagePartial,
   }
 
   public static readonly EMBED_TRANSFORMERS = {
     'message/rfc822': TransformersFilestorageService.transformEmbedEml,
+    'message/partial': TransformersFilestorageService.transformMessagePartial,
   }
 
   public constructor() {
@@ -58,6 +60,21 @@ export class TransformersFilestorageService extends AbstractService {
     return
   }
 
+  public static async transformMessagePartial(_: string, res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
+    res.setHeader('Content-Type', 'text/html')
+    // eslint-disable-next-line
+    res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}.html"`)
+    let content = ''
+    if (data.mime === 'message/rfc822') {
+      const { simpleParser } = await import('mailparser')
+      const parsed = await simpleParser(stream)
+      content = parsed.html || parsed.textAsHtml
+    } else if (data.mime === 'text/html') {
+      content = await TransformersFilestorageService.streamToString(stream)
+    }
+    res.send(`<br><blockquote>${content}</blockquote>`)
+  }
+
   public static async transformPdf(_: string, res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
     res.setHeader('Content-Type', 'application/pdf')
     // eslint-disable-next-line
@@ -70,8 +87,10 @@ export class TransformersFilestorageService extends AbstractService {
     res.setHeader('Content-Type', 'text/html')
     // eslint-disable-next-line
     res.setHeader('Content-Disposition', `inline; filename="${(data as any).filename}"`)
-    stream.pipe(res)
-    return
+    res.render('core/filestorage/transformers/html', {
+      data,
+      html: await TransformersFilestorageService.streamToString(stream),
+    })
   }
 
   public static async transformImage(mime: string, res: Response, data: Filestorage, stream: NodeJS.ReadableStream): Promise<void> {
@@ -121,5 +140,14 @@ export class TransformersFilestorageService extends AbstractService {
     }
 
     await TransformersFilestorageService.TRANSFORMERS[mimeType](mimeType, res, data, streamEmbed)
+  }
+
+  private static async streamToString(stream: NodeJS.ReadableStream): Promise<string> {
+    const chunks = []
+    return new Promise((resolve, reject) => {
+      stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)))
+      stream.on('error', (err) => reject(err))
+      stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')))
+    })
   }
 }
