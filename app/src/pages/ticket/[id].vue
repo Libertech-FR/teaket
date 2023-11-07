@@ -2,8 +2,6 @@
 q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height"  :limits="[20,80]")
   template(#before)
     tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject" :ticketData="ticketData.data" ref='mainPanelRef')
-  template(#separator)
-    q-avatar(size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")  
   template(#after)
     tk-ticketRightPanel(v-model="ticketData.data" @fetch:ticket-data="refreshThreadsList" @refresh:ticket-data='refresh')
 </template>

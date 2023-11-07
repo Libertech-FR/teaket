@@ -1,17 +1,17 @@
 <template lang="pug">
-.column.full-height.q-col-gutter-none.q-gutter-none
+.column.full-height
   .col-11
-    .row.q-py-sm.full-height.q-gutter-none.q-col-gutter-none
+    .row.q-py-sm.full-height
       q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
         size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
-      ).col-1.full-height
+      ).col-1.full-height.text-caption
         q-badge(floating) {{ attachements.length }}
       //- client-only
       //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
       q-editor(
         v-model="message" placeholder="Votre message ..."
         :definitions="editorDefinitions" :disable="isDisabledTicket"
-        :toolbar="editorToolbar" height="100%"
+        :toolbar="editorToolbar" :content-style="{'min-height': '0px'}"
       ).col-10.full-height
         template(#threadTypes)
           q-btn-dropdown(
@@ -103,7 +103,6 @@ import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
 
 const emit = defineEmits(['refreshThreadsList'])
-
 const dayjs = useDayjs()
 const store = usePinia()
 const route = useRoute()

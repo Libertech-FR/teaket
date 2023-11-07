@@ -1,5 +1,5 @@
 <template lang="pug">
-q-splitter(horizontal v-model="splitterModel" separator-style="width: 8px" background-color="primary" :limits="[20,80]")
+q-splitter(horizontal v-model="splitterModel" separator-style="height: 4px" separator-class="bg-gray" :limits="[20,85]")
   template(#before)
     q-card(style="height: 100%").column
       q-toolbar.col-1
@@ -8,9 +8,7 @@ q-splitter(horizontal v-model="splitterModel" separator-style="width: 8px" backg
         q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
       tk-SearchfiltersThreads.col-1
       tk-threadsList.col-10(ref="threadsListRef" @email:response="emailReponse($event)")
-  template(#separator)
-    q-avatar(size="xs" color="primary" icon="mdi-unfold-more-horizontal" class="text-white")
-  template(#after).q-pa-sm.full-height
+  template(#after)
     tk-threadsEditor(ref="threadsEditorRef" @refreshThreadsList="refreshThreadsList")
 </template>
 
@@ -21,7 +19,7 @@ import type { components } from '#build/types/service-api'
 import { TkThreadsList, TkThreadsEditor } from '#components'
 type ThreadDto = components['schemas']['ThreadDto']
 type Ticket = components['schemas']['TicketDto']
-const splitterModel = ref(80)
+const splitterModel = ref(85)
 const props = defineProps({
   sequence: {
     type: String,
@@ -36,6 +34,7 @@ const props = defineProps({
     required: true,
   },
 })
+
 
 const threadsListRef = ref<InstanceType<typeof TkThreadsList> | null>(null)
 const threadsEditorRef = ref<InstanceType<typeof TkThreadsEditor> | null>(null)
