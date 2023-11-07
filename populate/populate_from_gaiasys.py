@@ -192,7 +192,7 @@ async def populate_collection_source_requests(collection, headers):
 async def populate_collection_source_ticket(collection, headers):
     logger.info(f"Populating {collection.get('name')}...")
     cursor = client[collection.get('import_db')][collection.get('import_collection')].find({'metadata.creationDate': {
-        '$gte': datetime(2023, 9, 1),
+        '$gte': datetime(2023, 10, 31),
     }})
     async for document in cursor:
         lifestep = -1
@@ -265,7 +265,7 @@ async def populate_collection_source_ticket(collection, headers):
             'sla': {
                 'id': str(document['sla']),
                 'name': document['slaCn'],
-                'dueAt': document['dueDate'].strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                'dueAt': document['dueDate'].strftime("%Y-%m-%dT%H:%M:%S.%fZ") if document['dueDate'] else None,
             },
             "customFields": {
                 "importData": json.loads(json.dumps(docImport, default=json_serial, indent=4)),
@@ -362,11 +362,12 @@ async def populate_collection_source_ticket(collection, headers):
                     }
 
                 mailinfo = {
+                    "account": "sysimport",
                     "subject": thread['mailtitle'],
                     "messageId": thread['messageId'],
                     "from": fromMailInfo,
-                    "to": toMailInfo,
-                    "cc": ccMailInfo,
+                    "to": [toMailInfo] if toMailInfo else [],
+                    "cc": [ccMailInfo] if ccMailInfo else [],
                     "filestorage": filestorage,
                 }
             else:
@@ -417,7 +418,7 @@ async def populate_collection_filestorage(collection, headers):
         'nameSpace': 'gridfs',
         'type': 1,
         'metadata.creationDate': {
-            '$gte': datetime(2023, 9, 1),
+            '$gte': datetime(2023, 10, 31),
         },
     })
     sftp = ssh.open_sftp()
@@ -463,45 +464,34 @@ async def populate_collection_filestorage(collection, headers):
             logger.warning(f"Failed to insert {collection.get('name')}: {e} \n {e.response.text}")
 
 collections = [
-    {
-        "name": "filestorage",
-        "import_db": "libertech-sys",
-        "import_db_ticket": "libertech-data",
-        "import_db_mail": "mails",
-        "import_collection": "userstorage",
-        "import_collection_ticket": "tickets",
-        "import_collection_mail": "mailsStore",
-        "endpoint": "core/filestorage",
-        "method": populate_collection_filestorage,
-    },
-    {
-        "name": "sla",
-        "import_db": "libertech-data",
-        "import_collection": "tickets_sla",
-        "endpoint": "tickets/sla",
-        "method": populate_collection_sla
-    },
-    {
-        "name": "entities",
-        "import_db": "libertech-data",
-        "import_collection": "peoples",
-        "endpoint": "core/entities",
-        "method": populate_collection_entities
-    },
-    {
-        "name": "categories",
-        "import_db": "libertech-data",
-        "import_collection": "tickets_category",
-        "endpoint": "core/categories",
-        "method": populate_collection_categories
-    },
-    {
-        "name": "source-requests",
-        "import_db": "libertech-data",
-        "import_collection": "tickets_sourcetype",
-        "endpoint": "tickets/source-request",
-        "method": populate_collection_source_requests
-    },
+    # {
+    #     "name": "sla",
+    #     "import_db": "libertech-data",
+    #     "import_collection": "tickets_sla",
+    #     "endpoint": "tickets/sla",
+    #     "method": populate_collection_sla
+    # },
+    # {
+    #     "name": "entities",
+    #     "import_db": "libertech-data",
+    #     "import_collection": "peoples",
+    #     "endpoint": "core/entities",
+    #     "method": populate_collection_entities
+    # },
+    # {
+    #     "name": "categories",
+    #     "import_db": "libertech-data",
+    #     "import_collection": "tickets_category",
+    #     "endpoint": "core/categories",
+    #     "method": populate_collection_categories
+    # },
+    # {
+    #     "name": "source-requests",
+    #     "import_db": "libertech-data",
+    #     "import_collection": "tickets_sourcetype",
+    #     "endpoint": "tickets/source-request",
+    #     "method": populate_collection_source_requests
+    # },
     {
         "name": "ticket",
         "nameThread": "thread",
@@ -514,6 +504,17 @@ collections = [
         "endpoint": "tickets/ticket",
         "endpointThread": "tickets/thread",
         "method": populate_collection_source_ticket
+    },
+    {
+        "name": "filestorage",
+        "import_db": "libertech-sys",
+        "import_db_ticket": "libertech-data",
+        "import_db_mail": "mails",
+        "import_collection": "userstorage",
+        "import_collection_ticket": "tickets",
+        "import_collection_mail": "mailsStore",
+        "endpoint": "core/filestorage",
+        "method": populate_collection_filestorage,
     },
 ]
 
