@@ -79,7 +79,6 @@
         q-scroll-area(style="width: 100%; height: 100%")
           q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
             q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
-
       .row
         q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
           q-tooltip(v-if='isDisabledInternalButton').text-body2
