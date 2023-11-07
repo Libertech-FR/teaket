@@ -129,15 +129,33 @@ export class WebhooksService extends AbstractService {
         new: true,
       },
     )) as Ticket
-    const existStoredFile = (await this.filestorage.model.findOne({
-      _id: checkReplyEmail.mailinfo.filestorage.id,
-    })) as Filestorage
+    console.log('checkReplyEmail', checkReplyEmail)
+    // const existStoredFile = (await this.filestorage.model.findOne({
+    //   _id: checkReplyEmail.mailinfo.filestorage.id,
+    // })) as Filestorage
     if (!existTicket) {
       throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original ticket found`)
     }
-    if (!existStoredFile) {
-      throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original filestorage found`)
-    }
+    // if (!existStoredFile) {
+    //   throw new BadRequestException(`Email considered as reply to ${context.parsed.inReplyTo} but no original filestorage found`)
+    // }
+    const path = ['ticket', existTicket._id, ThreadTypeLabel[ThreadType.INCOMING].toLowerCase(), `${context.body.id}.eml`].join('/')
+    const existStoredFile = (await this.filestorage.create(
+      {
+        namespace: 'ticket',
+        type: FsType.FILE,
+        path,
+        file: context.file,
+        customFields: {
+          ticketId: existTicket._id,
+          email: {
+            messageId: context.parsed.messageId,
+            headers: context.parsed.headers,
+          },
+        },
+      },
+      { session },
+    )) as Filestorage
     return [existTicket, existStoredFile]
   }
 
@@ -254,8 +272,10 @@ export class WebhooksService extends AbstractService {
         } as MailaddressPartDto
       }),
     )
+    const parsedCc = isArray(context.parsed.cc) ? context.parsed.cc : context.parsed.cc ? [context.parsed.cc] : []
     const cc = await Promise.all(
-      Object.values(isArray(context.parsed.cc) ? context.parsed.cc : [context.parsed.cc]).map(async (cc) => {
+      Object.values(parsedCc).map(async (cc) => {
+        console.log('cc', cc)
         const entityCc = await this.entities.findOrCreateFromEmail(cc.value[0])
         return {
           ...pick(cc.value[0], ['address', 'name']),

@@ -1,13 +1,9 @@
 <template lang="pug">
-q-page.row.items-stretch
-    .col-12
-        .row(style="height: 100%")
-            //- .col-12.col-md-2.q-pa-sm
-            //-     tk-ticketLeftPanel(:sequence="ticketData.data.sequence")
-            .col-12.col-md-9.q-pa-sm
-                tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject" :ticketData="ticketData.data" ref='mainPanelRef')
-            .col-12.col-md-3.q-pa-sm
-                tk-ticketRightPanel(v-model="ticketData.data" @fetch:ticket-data="refreshThreadsList" @refresh:ticket-data='refresh')
+q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height"  :limits="[20,80]")
+  template(#before)
+    tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject" :ticketData="ticketData.data" ref='mainPanelRef')
+  template(#after)
+    tk-ticketRightPanel(v-model="ticketData.data" @fetch:ticket-data="refreshThreadsList" @refresh:ticket-data='refresh')
 </template>
 
 <script lang="ts" setup>
@@ -24,7 +20,7 @@ const route = useRoute()
 const router = useRouter()
 const id = ref<string>('')
 const $q = useQuasar()
-
+const splitterModel = ref(80)
 const {
   data: ticketData,
   refresh,

@@ -1,12 +1,15 @@
 <template lang="pug">
-q-card(style="height: 100%").column
-  q-toolbar.col
-    q-toolbar-title {{ props.ticketData.sequence }} | {{ props.ticketData.subject }}
-    q-space
-    q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
-  tk-SearchfiltersThreads.col
-  tk-threadsList.col-8(ref="threadsListRef" @email:response="emailReponse($event)")
-  tk-threadsEditor.col-3(ref="threadsEditorRef" @refreshThreadsList="refreshThreadsList")
+q-splitter(horizontal v-model="splitterModel" separator-style="height: 4px" separator-class="bg-gray" :limits="[20,85]")
+  template(#before)
+    q-card(style="height: 100%").column
+      q-toolbar.col-1
+        q-toolbar-title {{ props.ticketData.sequence }} | {{ props.ticketData.subject }}
+        q-space
+        q-chip(:icon="lifestepOfTicket?.icon" :color="lifestepOfTicket?.color" outline).q-mx-auto {{ lifestepOfTicket?.label }}
+      tk-SearchfiltersThreads.col-1
+      tk-threadsList.col-10(ref="threadsListRef" @email:response="emailReponse($event)")
+  template(#after)
+    tk-threadsEditor(ref="threadsEditorRef" @refreshThreadsList="refreshThreadsList")
 </template>
 
 <script lang="ts" setup>
@@ -16,7 +19,7 @@ import type { components } from '#build/types/service-api'
 import { TkThreadsList, TkThreadsEditor } from '#components'
 type ThreadDto = components['schemas']['ThreadDto']
 type Ticket = components['schemas']['TicketDto']
-
+const splitterModel = ref(85)
 const props = defineProps({
   sequence: {
     type: String,
@@ -32,6 +35,7 @@ const props = defineProps({
   },
 })
 
+
 const threadsListRef = ref<InstanceType<typeof TkThreadsList> | null>(null)
 const threadsEditorRef = ref<InstanceType<typeof TkThreadsEditor> | null>(null)
 
@@ -44,7 +48,7 @@ const emailReponse = (data: MailinfoPartDto) => {
   if (!threadsEditorRef.value) {
     return
   }
-  threadsEditorRef.value?.emailReponse(data)
+  threadsEditorRef.value.$.exposed?.emailReponse(data)
 }
 
 const lifestepOfTicket = computed(() => {

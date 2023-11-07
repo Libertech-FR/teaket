@@ -20,7 +20,11 @@
     {{/each}}</p>
   {{/if}}
 </div>
-{{{ parsed.html }}}
+{{#if parsed.html }}
+  {{{ parsed.html }}}
+{{else}}
+  {{{ parsed.textAsHtml }}}
+{{/if}}
 <!--suppress ES6ConvertVarToLetConst -->
 <script>
   window.parent.postMessage({

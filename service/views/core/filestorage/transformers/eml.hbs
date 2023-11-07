@@ -15,7 +15,11 @@
 <!--  <p style="margin-left: 5px;margin-top: 5px; margin-bottom: 5px;">Date : <b>{{ parsed.date }}</b></p>-->
 <!--  <p style="margin-left: 5px;margin-top: 5px;margin-bottom: 5px;">Sujet : <b>{{ parsed.subject }}</b></p>-->
 <!--</div>-->
-{{{ parsed.html }}}
+{{#if parsed.html }}
+  {{{ parsed.html }}}
+{{else}}
+  {{{ parsed.textAsHtml }}}
+{{/if}}
 <!--suppress ES6ConvertVarToLetConst -->
 <script>
   window.parent.postMessage({

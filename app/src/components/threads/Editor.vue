@@ -1,19 +1,19 @@
 <template lang="pug">
-.column
-  .col-10
-    .row(style="height: 100%")
+.column.full-height
+  .col-11
+    .row.q-py-sm.full-height
       q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
         size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
-      ).col-1.bg-grey-2
+      ).col-1.full-height.text-caption
         q-badge(floating) {{ attachements.length }}
       //- client-only
       //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
       q-editor(
         v-model="message" placeholder="Votre message ..."
         :definitions="editorDefinitions" :disable="isDisabledTicket"
-        :toolbar="editorToolbar" dense style="height: 100%"
-      ).col
-        template(v-slot:threadTypes)
+        :toolbar="editorToolbar" :content-style="{'min-height': '0px'}"
+      ).col-10.full-height
+        template(#threadTypes)
           q-btn-dropdown(
             v-model="threadType" :options="threadTypes"
             no-wrap unelevated no-caps dense flat
@@ -26,16 +26,16 @@
       q-btn(
         icon="mdi-send" size="md" color="primary" flat
         @click="isFullscreen = true" :disable="isDisabledTicket"
-      ).col-1
+      ).col-1.full-height
         q-tooltip.text-body2 Envoyer
-
-  q-scroll-area(style="width: 100%").col
-    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-      q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
+  .col.bg-grey-3(style="height: 30px")
+    q-scroll-area(style="width: 100%")
+      q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+        q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
 
   q-dialog(v-model="isFullscreen")
     q-card
-      q-card-section.bg-grey-2
+      q-card-section(:class='{"bg-grey-2": !$q.dark.isActive}')
         //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
         tk-form-autocomplete(
           apiUrl="/core/entities"
@@ -52,7 +52,7 @@
         tk-form-autocomplete(
           apiUrl="/core/entities"
           optionLabel="publicEmail"
-          optionValue="publicEmail" 
+          optionValue="publicEmail"
           searchField="publicEmail"
           :emitValue="true"
           label="Cc"
@@ -71,7 +71,7 @@
           :readonly="isDisabledTicket" ref="dropZoneRef"
         )
       q-card-section.q-pa-sm
-        div(ref="dropZoneDialogRef").row.center.bg-grey-3
+        div(ref="dropZoneDialogRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
           .col.text-center
             q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
             span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
@@ -79,7 +79,6 @@
         q-scroll-area(style="width: 100%; height: 100%")
           q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
             q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
-
       .row
         q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
           q-tooltip(v-if='isDisabledInternalButton').text-body2
@@ -103,7 +102,6 @@ import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
 
 const emit = defineEmits(['refreshThreadsList'])
-
 const dayjs = useDayjs()
 const store = usePinia()
 const route = useRoute()
@@ -222,17 +220,19 @@ const removeAttachment = (id: string) => {
 const editorDialog = ref()
 const isFullscreen = ref(false)
 const mailInfo = ref({
-  from: '',
+  // from: '',
   to: [],
   cc: [],
   subject: '',
 })
 type MailinfoPartDto = components['schemas']['MailinfoPartDto']
-const emailReponse = (data: MailinfoPartDto) => {
-  mailInfo.value.to = data.from.address
-  mailInfo.value.from = data.to[0].address
+const emailReponse = (data: MailinfoPartDto & { message?: string }) => {
+  mailInfo.value.to = [data.from.address]
+  // mailInfo.value.from = data.to[0].address
   mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
   isFullscreen.value = true
+  if (data.message) message.value = data.message
+  console.log('emailReponse2', data)
 }
 
 // Manage editor

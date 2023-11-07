@@ -10,3 +10,4 @@ extensions.yml
 .env
 .env.*
 !.env.example
+*.pyc
