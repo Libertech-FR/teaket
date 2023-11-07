@@ -1,5 +1,5 @@
 <template lang="pug">
-q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height")
+q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height"  :limits="[20,80]")
   template(#before)
     tk-ticketMainPanel(:sequence="ticketData.data.sequence" :subject="ticketData.data.subject" :ticketData="ticketData.data" ref='mainPanelRef')
   template(#separator)

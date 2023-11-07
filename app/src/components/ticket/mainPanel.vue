@@ -1,5 +1,5 @@
 <template lang="pug">
-q-splitter(horizontal v-model="splitterModel" separator-style="width: 2px" background-color="primary")
+q-splitter(horizontal v-model="splitterModel" separator-style="width: 8px" background-color="primary" :limits="[20,80]")
   template(#before)
     q-card(style="height: 100%").column
       q-toolbar.col-1

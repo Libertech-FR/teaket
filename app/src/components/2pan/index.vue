@@ -1,5 +1,5 @@
 <template lang="pug">
-q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height")
+q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height"  :limits="[20,80]")
   template(#before)
     q-card.full-height.q-pa-sm(bordered)
       span {{ text }}
