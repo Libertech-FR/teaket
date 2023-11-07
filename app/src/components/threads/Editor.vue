@@ -1,19 +1,19 @@
 <template lang="pug">
-.column
-  .col-10
-    .row(style="height: 100%")
+.column.full-height.q-col-gutter-none.q-gutter-none
+  .col-11
+    .row.q-py-sm.full-height.q-gutter-none.q-col-gutter-none
       q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
         size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
-      ).col-1.bg-grey-2
+      ).col-1.full-height
         q-badge(floating) {{ attachements.length }}
       //- client-only
       //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
       q-editor(
         v-model="message" placeholder="Votre message ..."
         :definitions="editorDefinitions" :disable="isDisabledTicket"
-        :toolbar="editorToolbar" dense style="height: 100%"
-      ).col
-        template(v-slot:threadTypes)
+        :toolbar="editorToolbar" height="100%"
+      ).col-10.full-height
+        template(#threadTypes)
           q-btn-dropdown(
             v-model="threadType" :options="threadTypes"
             no-wrap unelevated no-caps dense flat
@@ -26,12 +26,12 @@
       q-btn(
         icon="mdi-send" size="md" color="primary" flat
         @click="isFullscreen = true" :disable="isDisabledTicket"
-      ).col-1
+      ).col-1.full-height
         q-tooltip.text-body2 Envoyer
-
-  q-scroll-area(style="width: 100%").col
-    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-      q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
+  .col.bg-grey-3(style="height: 30px")
+    q-scroll-area(style="width: 100%")
+      q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+        q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
 
   q-dialog(v-model="isFullscreen")
     q-card
