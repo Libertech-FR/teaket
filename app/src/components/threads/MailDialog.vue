@@ -1,61 +1,61 @@
 <template lang="pug">
 q-dialog(:model-value="isOpened" @update:model-value="emit('closeDialog')" ref="dialogRef" @show="onShow" @hide="emit('clear')")
-    q-card(style="position: fixed" :style="style").resizable-card
-        q-card-section(horizontal)
-            .row.bg-primary( style="cursor: move" ref="handle").full-width
+    q-card(style="position: fixed" :style="style" ref="cardRef").resizable-card
+        div.flex(style="flex-flow: column; height: 100%")
+            .row.bg-primary( style="cursor: move" ref="handle").full-width.q-pa-sm
                 span.text-h6.text-white Email
                 q-space
                 q-btn(
                     icon="mdi-close" flat round dense text-color="white" @click="emit('closeDialog')"
                 )
                     q-tooltip Fermer
-        q-card-section(:class='{"bg-grey-2": !$q.dark.isActive}')
-            tk-form-autocomplete(
-                apiUrl="/core/entities"
-                optionLabel="publicEmail"
-                optionValue="publicEmail"
-                searchField="publicEmail"
-                :emitValue="true"
-                label="Destinataire"
-                v-model="emailInfo.to"
-                :addManualValue="true"
-                use-chips dense
-                :disabled="isDisabledTicket"
-            )
-            tk-form-autocomplete(
-                apiUrl="/core/entities"
-                optionLabel="publicEmail"
-                optionValue="publicEmail"
-                searchField="publicEmail"
-                :emitValue="true"
-                label="Cc"
-                v-model="emailInfo.cc"
-                :addManualValue="true"
-                use-chips dense
-                :disabled="isDisabledTicket"
-            )
-            q-input(dense label="Sujet" v-model="emailInfo.subject" :disable="isDisabledTicket")
-        q-card-section
-            q-editor(
-                min-height="30vh" height="100%"
-                v-model="email" placeholder="Votre message ..."
-                :definitions="editor.definitions"
-                :toolbar="editor.toolbar" class="q-pa-none"
-                :readonly="isDisabledTicket" ref="dropZoneRef"
-            )
-        q-card-section.q-pa-sm
-            div(ref="dropZoneDialogRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
-                .col.text-center
-                    q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
-                    span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
-        q-card-section
-            q-scroll-area(style="width: 100%; height: 100%")
-                q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-                    q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
-        q-card-actions.justify-around
-            q-btn(label="Fermer" color="negative" flat icon="mdi-close" @click="emit('closeDialog')")
-            q-btn(label="Vider les champs" color="warning" icon="mdi-nuke" flat @click="clear")
-            q-btn(label="Envoyer" color="primary" flat icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)")
+            .q-pa-sm(:class='{"bg-grey-2": !$q.dark.isActive}')
+                tk-form-autocomplete(
+                    apiUrl="/core/entities"
+                    optionLabel="publicEmail"
+                    optionValue="publicEmail"
+                    searchField="publicEmail"
+                    :emitValue="true"
+                    label="Destinataire"
+                    v-model="emailInfo.to"
+                    :addManualValue="true"
+                    use-chips dense
+                    :disabled="isDisabledTicket"
+                )
+                tk-form-autocomplete(
+                    apiUrl="/core/entities"
+                    optionLabel="publicEmail"
+                    optionValue="publicEmail"
+                    searchField="publicEmail"
+                    :emitValue="true"
+                    label="Cc"
+                    v-model="emailInfo.cc"
+                    :addManualValue="true"
+                    use-chips dense
+                    :disabled="isDisabledTicket"
+                )
+                q-input(dense label="Sujet" v-model="emailInfo.subject" :disable="isDisabledTicket")
+            .fit.q-pa-sm
+                q-editor.fit(
+                    height="100%"
+                    v-model="email" placeholder="Votre message ..."
+                    :definitions="editor.definitions"
+                    :toolbar="editor.toolbar" class="q-pa-none"
+                    :readonly="isDisabledTicket" ref="dropZoneRef"
+                )
+            .q-pa-sm
+                div(ref="dropZoneDialogRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
+                    .col.text-center
+                        q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
+                        span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
+            .q-pa-sm
+                q-scroll-area.fit
+                    q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
+                        q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
+            .row.justify-around
+                q-btn(label="Fermer" color="negative" flat icon="mdi-close" @click="emit('closeDialog')")
+                q-btn(label="Vider les champs" color="warning" icon="mdi-nuke" flat @click="clear")
+                q-btn(label="Envoyer" color="primary" flat icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)")
 </template>
 
 <script lang="ts" setup>
@@ -134,11 +134,35 @@ const emailInfo = ref<MailInfo>({
     subject: ''
 })
 
+const cardRef = ref<HTMLElement | null>(null)
+
+const cardStyle = ref()
 const dialogRef = ref<HTMLElement | null>(null)
 const handle = ref<HTMLElement | null>(null)
-const { x, y, style } = useDraggable(handle, {})
+const { x, y, style } = useDraggable(handle, () => {
+    cardStyle.value = style
+})
+useResizeObserver(cardRef, (entries) => {
+    const { width, height } = entries[0].contentRect
+    cardStyle.value = {
+        ...cardStyle.value,
+        width: `${width}px`,
+        height: `${height}px`,
+    }
+    // cardStyle.value = {
+    //     ...cardStyle.value,
+    //     width: `${cardRef.value?.clientWidth}px`,
+    //     height: `${cardRef.value?.clientHeight}px`,
+    // }
+})
 
 
+const completeStyle = computed(() => {
+    return {
+        ...style,
+        ...cardStyle,
+    }
+})
 function onShow() {
     if (props.message !== '') email.value = props.message
     if (props.attachements.length > 0) emailAttachments.value = props.attachements
