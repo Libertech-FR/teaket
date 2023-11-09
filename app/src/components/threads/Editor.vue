@@ -1,91 +1,35 @@
 <template lang="pug">
-.column.full-height
-  .col-11
-    .row.q-py-sm.full-height
-      q-btn(icon="mdi-paperclip" label="Glissez vos fichiers ici"
-        size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef"
-      ).col-1.full-height.text-caption
-        q-badge(floating) {{ attachements.length }}
-      //- client-only
-      //-   tk-tiptap-editor(v-model="message" ref="editorDialog")
-      q-editor(
-        v-model="message" placeholder="Votre message ..."
-        :definitions="editorDefinitions" :disable="isDisabledTicket"
-        :toolbar="editorToolbar" :content-style="{'min-height': '0px'}"
-      ).col-10.full-height
-        template(#threadTypes)
-          q-btn-dropdown(
-            v-model="threadType" :options="threadTypes"
-            no-wrap unelevated no-caps dense flat
-            label="Type de thread" :icon="threadType.icon" :color="threadType.color"
-          )
-            q-list(dense)
-              q-item(clickable v-for="(threadType, key) in threadTypes" :key="key" v-ripple tag="label")
-                q-item-section
-                  q-item-label {{ threadType.label }}
+.row.q-py-xs.full-height.q-gutter-none
+  .col-1
+    q-btn(icon="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef").text-caption.q-pa-none.fit
+      q-badge(floating) {{ attachements.length }}
+      q-tooltip.text-body2 Glissez vos fichiers ici
+  .col-10.full-height
+    q-editor(
+      v-model="message" placeholder="Votre message ..." dense
+        :disable="isDisabledTicket" :definitions="editorDefinitions"
+      :toolbar="editorToolbar" min-height="0px" :max-height="editorContentMaxHeight+'px'"
+      style="height: 100%" ref="editorRef"
+    )
+  .col-1
+    .column.full-height
       q-btn(
-        icon="mdi-send" size="md" color="primary" flat
+        icon="mdi-email" size="md" text-color="primary" color="grey-2" square unelevated
         @click="isFullscreen = true" :disable="isDisabledTicket"
-      ).col-1.full-height
-        q-tooltip.text-body2 Envoyer
-  .col.bg-grey-3(style="height: 30px")
-    q-scroll-area(style="width: 100%")
-      q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-        q-chip(:key="item.id" icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
-
-  q-dialog(v-model="isFullscreen")
-    q-card
-      q-card-section(:class='{"bg-grey-2": !$q.dark.isActive}')
-        //- q-input(dense label="From" v-model="mailInfo.from" :disable="isDisabledTicket")
-        tk-form-autocomplete(
-          apiUrl="/core/entities"
-          optionLabel="publicEmail"
-          optionValue="publicEmail"
-          searchField="publicEmail"
-          :emitValue="true"
-          label="Destinataire"
-          v-model="mailInfo.to"
-          :addManualValue="true"
-          use-chips dense
-          :disabled="isDisabledTicket"
-        )
-        tk-form-autocomplete(
-          apiUrl="/core/entities"
-          optionLabel="publicEmail"
-          optionValue="publicEmail"
-          searchField="publicEmail"
-          :emitValue="true"
-          label="Cc"
-          v-model="mailInfo.cc"
-          :addManualValue="true"
-          use-chips dense
-          :disabled="isDisabledTicket"
-        )
-        q-input(dense label="Sujet" v-model="mailInfo.subject" :disable="isDisabledTicket")
-      q-card-section
-        q-editor(
-          min-height="50vh" min-width="50vw"
-          v-model="message" placeholder="Votre message ..."
-          :definitions="editorDefinitions"
-          :toolbar="editorToolbar" class="q-pa-none"
-          :readonly="isDisabledTicket" ref="dropZoneRef"
-        )
-      q-card-section.q-pa-sm
-        div(ref="dropZoneDialogRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
-          .col.text-center
-            q-icon(name="mdi-paperclip" size="md" :class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
-            span.q-ml-md(:class="isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
-      q-card-section
-        q-scroll-area(style="width: 100%; height: 100%")
-          q-virtual-scroll(:items="attachements" virtual-scroll-horizontal v-slot="{item}")
-            q-chip(v-for="(attachement, key) in attachements" :key="key" icon="mdi-paperclip" dense size='md' :label="attachement.name" removable @remove="removeAttachment(attachement.id)")
-      .row
-        q-btn(label="Envoyer en note interne" color="primary" icon="mdi-note" @click="sendMessage(ThreadType.INTERNAL)" :disable="isDisabledInternalButton").col-6
-          q-tooltip(v-if='isDisabledInternalButton').text-body2
-            span Champs 'Destinataire' non vide
-        q-btn(label="Envoyer par mail" color="primary" icon="mdi-email" @click="sendMessage(ThreadType.OUTGOING)" :disable="isDisabledEmailButton").col-6
-          q-tooltip(v-if='isDisabledEmailButton').text-body2
-            span Champs 'Destinataire' vide
+      ).col
+        q-tooltip.text-body2 Envoyer par mail
+      q-separator
+      q-btn(
+        icon="mdi-send" size="md" text-color="primary" color="grey-2" square unelevated
+        @click="noteModale" :disable="isDisabledTicket || message === ''"
+      ).col
+        q-tooltip.text-body2(v-html="message === '' ? 'Veuillez entrer un message' : 'Envoyer une note'")
+  tk-threads-mail-dialog( 
+    :isOpened="isFullscreen" :thread-id="currentThreadId"
+    @closeDialog="isFullscreen = false" @clear="clear"
+    :mailInfo="mailInfo" :message="message" :attachements="attachements"
+    :isDisabledTicket="isDisabledTicket" :editor="{definitions: editorDefinitions, toolbar: editorToolbar}"
+  )
 </template>
 
 <script lang="ts" setup>
@@ -100,7 +44,10 @@ import { useDropZone, useResizeObserver } from '@vueuse/core'
 import { FsType } from '~/utils'
 import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
+type FsPart = components['schemas']['FsPart']
+type Entity = components['schemas']['Entity']
 
+const isDisabledTicket = inject<ref<boolean>>('isDisabledTicket')
 const emit = defineEmits(['refreshThreadsList'])
 const dayjs = useDayjs()
 const store = usePinia()
@@ -139,85 +86,21 @@ const observers = computed(() => {
     return acc
   }, [])
 })
+const { onDrop, removeAttachment } = useUploadFile(isDisabledTicket)
 
-// Manage dropzone
-const onDrop = (files: File[] | null) => {
-  if (isDisabledTicket.value) {
-    $q.notify({
-      message: "Impossible d'envoyer le fichier, le ticket est fermé",
-      type: 'negative',
-    })
-    return
-  }
-  if (!files) {
-    $q.notify({
-      message: "Impossible d'envoyer le fichier",
-      type: 'negative',
-    })
-    return
-  }
-  for (const file of files) {
-    uploadFile(file)
-  }
-}
+const attachements = ref<FsPart[]>([])
 const dropZoneRef = ref<HTMLDivElement>()
 const dropZoneDialogRef = ref<HTMLDivElement>()
-const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
-const { isOverDropZone: isOverDropZoneDialog } = useDropZone(dropZoneDialogRef, onDrop)
-
-// Manage attachements
-type FsPart = components['schemas']['IdfsPartDto']
-type FilestorageCreateDto = components['schemas']['FilestorageCreateDto']
-const attachements = ref<FsPart[]>([])
+const { isOverDropZone } = useDropZone(dropZoneRef, onDropAction)
+const { isOverDropZone: isOverDropZoneDialog } = useDropZone(dropZoneDialogRef, onDropAction)
 const currentThreadId = ref<ObjectID | null>(null)
-const uploadFile = async (file: File) => {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('namespace', 's3')
-  formData.append('path', `/ticket/${route.params.id}/attachement/${currentThreadId.value}/${file.name}`)
-  formData.append('type', FsType.FILE)
-  const { data, error } = await useHttpApi(`/core/filestorage`, {
-    method: 'post',
-    body: formData as unknown as FilestorageCreateDto,
-  })
-  if (error.value) {
-    $q.notify({
-      message: "Impossible d'envoyer le fichier",
-      type: 'negative',
-    })
-    return
-  }
-  const id = generateMongoId(data.value?.data?._id).toHexString()
-  const fsPart: FsPart = {
-    id,
-    name: file.name,
-    namespace: data.value?.data?.namespace || '',
-    path: data.value?.data?.path || '',
-    mime: data.value?.data?.mime || '',
-  }
-  attachements.value.push(fsPart)
-  $q.notify('Fichier envoyé')
+
+async function onDropAction(file: File[] | null) {
+  const path = `/ticket/${route.params.id}/attachement/${currentThreadId.value}`
+  const newAttachments = await onDrop(file, path)
+  attachements.value = [...attachements.value, ...newAttachments]
 }
 
-const removeAttachment = (id: string) => {
-  const { data, error } = useHttpApi(`/core/filestorage/{_id}`, {
-    method: 'delete',
-    pathParams: {
-      _id: id,
-    },
-  })
-  if (error.value) {
-    $q.notify({
-      message: 'Impossible de supprimer le fichier',
-      type: 'negative',
-    })
-    return
-  }
-  attachements.value = attachements.value.filter((attachement) => `${attachement.id}` !== id)
-  $q.notify('Fichier supprimé')
-}
-
-const editorDialog = ref()
 const isFullscreen = ref(false)
 const mailInfo = ref({
   // from: '',
@@ -232,12 +115,39 @@ const emailReponse = (data: MailinfoPartDto & { message?: string }) => {
   mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
   isFullscreen.value = true
   if (data.message) message.value = data.message
-  console.log('emailReponse2', data)
 }
 
 // Manage editor
 const threadType = ref(threadTypes[0])
 const message = ref('')
+const noteType = ref(null)
+function noteModale() {
+  $q.dialog({
+    title: 'Quel type de note voulez vous envoyer ?',
+    message: message.value,
+    html: true,
+    options: {
+      type: 'radio',
+      model: '',
+      isValid: (val: ThreadType) => val !== '',
+      items: [
+        { label: 'Note interne', value: ThreadType.INTERNAL },
+        { label: 'Note externe', value: ThreadType.EXTERNAL },
+      ]
+    },
+    cancel: true,
+  })
+    .onOk((data: ThreadType) => {
+      sendMessage(data)
+    })
+    .onCancel(() => {
+      $q.notify({
+        message: 'Note annulée',
+        color: 'negative',
+      })
+    })
+}
+
 async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
   const body: components['schemas']['ThreadCreateDto'] & { _id: string } = {
     _id: currentThreadId.value?.toHexString() || '',
@@ -298,16 +208,37 @@ const editorDefinitions = computed(() => ({
   },
 }))
 const editorToolbar = computed(() => {
-  return [['left', 'center', 'right', 'justify'], ['bold', 'italic', 'underline', 'strike'], ['undo', 'redo'], ['fullscreen']]
+  return [
+    ['left', 'center', 'right', 'justify'],
+    ['bold', 'italic', 'underline', 'strike'],
+    ['undo', 'redo'],
+    // ['fullscreen']
+  ]
 })
 
-const isDisabledTicket = inject<ref<boolean>>('isDisabledTicket')
 const isDisabledInternalButton = computed(() => {
   return isDisabledTicket.value || mailInfo.value.to.length !== 0
 })
 
 const isDisabledEmailButton = computed(() => {
   return isDisabledTicket.value || mailInfo.value.to.length === 0
+})
+
+function clear() {
+  mailInfo.value = {
+    // from: '',
+    to: [],
+    cc: [],
+    subject: '',
+  }
+  message.value = ''
+  attachements.value = []
+}
+
+const editorRef = ref<HTMLDivElement>()
+const editorContentMaxHeight = ref(0)
+useResizeObserver(editorRef, (entries) => {
+  editorContentMaxHeight.value = entries[0].contentRect.height - 32
 })
 
 defineExpose({
