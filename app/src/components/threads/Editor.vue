@@ -1,35 +1,45 @@
 <template lang="pug">
-.row.q-py-xs.full-height.q-gutter-none
-  .col-1
-    q-btn(icon="mdi-paperclip" size="md" :class="isOverDropZone ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef").text-caption.q-pa-none.fit
-      q-badge(floating) {{ attachements.length }}
-      q-tooltip.text-body2 Glissez vos fichiers ici
-  .col-10.full-height
-    q-editor(
-      v-model="message" placeholder="Votre message ..." dense
-        :disable="isDisabledTicket" :definitions="editorDefinitions"
-      :toolbar="editorToolbar" min-height="0px" :max-height="editorContentMaxHeight+'px'"
-      style="height: 100%" ref="editorRef"
+.flex(style="flex-flow: column; height: 100%")
+  .row.q-py-xs.full-height.q-gutter-none.fit
+    .col-1
+      q-btn(icon="mdi-paperclip" size="md" :class="isOverDropZone | isOverDropZoneScroll ? 'text-primary' : 'text-grey-5'" flat ref="dropZoneRef" @click="attachmentDialog = true").text-caption.q-pa-none.fit
+        q-badge(floating) {{ attachements.length }}
+        q-tooltip.text-body2 Glissez vos fichiers ici
+    .col-10.full-height
+      q-editor(
+        v-model="message" placeholder="Votre message ..." dense
+          :disable="isDisabledTicket" :definitions="editorDefinitions"
+        :toolbar="editorToolbar" min-height="0px" :max-height="editorContentMaxHeight+'px'"
+        style="height: 100%" ref="editorRef"
+      )
+    .col-1
+      .column.full-height
+        q-btn(
+          icon="mdi-email" size="md" text-color="primary" color="grey-2" square unelevated
+          @click="mailDialog = true" :disable="isDisabledTicket"
+        ).col
+          q-tooltip.text-body2 Envoyer par mail
+        q-separator
+        q-btn(
+          icon="mdi-send" size="md" text-color="primary" color="grey-2" square unelevated
+          @click="noteModale" :disable="isDisabledTicket || message === ''"
+        ).col
+          q-tooltip.text-body2(v-html="message === '' ? 'Veuillez entrer un message' : 'Envoyer une note'")
+  q-separator
+  .row.q-py-xs.justify-center.items-center(style="height: 50px" ref="dropZoneScrollRef")
+    q-scroll-area.fit(v-if="attachments.length > 0")
+      q-virtual-scroll(:items="attachments" virtual-scroll-horizontal v-slot="{item}")
+        q-chip(icon="mdi-paperclip" dense size='md' :label="item.name" removable @remove="removeAttachment(item.id)")
+    span(v-else).text-grey-5 Aucun fichier joint
+    tk-threads-mail-dialog( 
+      v-model="mailDialog" :thread-id="currentThreadId" @clear="clear"
+      :mailInfo="mailInfo" :message="message" :attachements="attachements"
+      :isDisabledTicket="isDisabledTicket" :editor="{definitions: editorDefinitions, toolbar: editorToolbar}"
     )
-  .col-1
-    .column.full-height
-      q-btn(
-        icon="mdi-email" size="md" text-color="primary" color="grey-2" square unelevated
-        @click="isFullscreen = true" :disable="isDisabledTicket"
-      ).col
-        q-tooltip.text-body2 Envoyer par mail
-      q-separator
-      q-btn(
-        icon="mdi-send" size="md" text-color="primary" color="grey-2" square unelevated
-        @click="noteModale" :disable="isDisabledTicket || message === ''"
-      ).col
-        q-tooltip.text-body2(v-html="message === '' ? 'Veuillez entrer un message' : 'Envoyer une note'")
-  tk-threads-mail-dialog( 
-    :isOpened="isFullscreen" :thread-id="currentThreadId"
-    @closeDialog="isFullscreen = false" @clear="clear"
-    :mailInfo="mailInfo" :message="message" :attachements="attachements"
-    :isDisabledTicket="isDisabledTicket" :editor="{definitions: editorDefinitions, toolbar: editorToolbar}"
-  )
+    //- tk-threads-attachment-dialog(
+    //-   v-model="attachmentDialog" :thread-id="currentThreadId" @clear="clear"
+    //-   :attachements="attachements" :isDisabledTicket="isDisabledTicket"
+    //- )
 </template>
 
 <script lang="ts" setup>
@@ -59,40 +69,14 @@ onMounted(() => {
   currentThreadId.value = generateMongoId()
 })
 
-const {
-  data: entities,
-  pending: entitiesPending,
-  refresh: entitiesRefresh,
-  error: entitiesError,
-} = await useHttpApi('/core/entities', {
-  method: 'get',
-})
-if (entitiesError.value) {
-  $q.notify({
-    message: 'Erreur lors de la recupération des entités',
-    color: 'negative',
-  })
-}
-
-const observers = computed(() => {
-  return entities.value?.data.reduce((acc: { id: string; name: string; type: number }[], entity: Entity) => {
-    if (entity.type <= EntityType.OTHER) {
-      acc.push({
-        id: entity._id,
-        name: entity.profile.commonName,
-        type: entity.type,
-      })
-    }
-    return acc
-  }, [])
-})
-const { onDrop, removeAttachment } = useUploadFile(isDisabledTicket)
+const attachmentDialog = ref(false)
+const { onDrop, removeAttachment, attachments } = useUploadFile(isDisabledTicket)
 
 const attachements = ref<FsPart[]>([])
 const dropZoneRef = ref<HTMLDivElement>()
-const dropZoneDialogRef = ref<HTMLDivElement>()
+const dropZoneScrollRef = ref<HTMLDivElement>()
 const { isOverDropZone } = useDropZone(dropZoneRef, onDropAction)
-const { isOverDropZone: isOverDropZoneDialog } = useDropZone(dropZoneDialogRef, onDropAction)
+const { isOverDropZone: isOverDropZoneScroll } = useDropZone(dropZoneScrollRef, onDropAction)
 const currentThreadId = ref<ObjectID | null>(null)
 
 async function onDropAction(file: File[] | null) {
@@ -101,7 +85,7 @@ async function onDropAction(file: File[] | null) {
   attachements.value = [...attachements.value, ...newAttachments]
 }
 
-const isFullscreen = ref(false)
+const mailDialog = ref(false)
 const mailInfo = ref({
   // from: '',
   to: [],
@@ -113,7 +97,7 @@ const emailReponse = (data: MailinfoPartDto & { message?: string }) => {
   mailInfo.value.to = [data.from.address]
   // mailInfo.value.from = data.to[0].address
   mailInfo.value.subject = data.subject.startsWith('Re:') ? data.subject : `Re:${data.subject}`
-  isFullscreen.value = true
+  mailDialog.value = true
   if (data.message) message.value = data.message
 }
 
@@ -190,7 +174,7 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
   message.value = ''
   attachements.value = []
   currentThreadId.value = generateMongoId()
-  isFullscreen.value = false
+  mailDialog.value = false
   $q.notify({
     message: 'Message envoyé',
     type: 'positive',
@@ -200,10 +184,10 @@ async function sendMessage(type: ThreadType = ThreadType.OUTGOING) {
 const editorDefinitions = computed(() => ({
   fullscreen: {
     tip: 'Plein écran',
-    icon: isFullscreen.value ? 'mdi-fullscreen-exit' : 'mdi-fullscreen',
-    label: isFullscreen.value ? 'Quitter le plein écran' : 'Plein écran',
+    icon: mailDialog.value ? 'mdi-fullscreen-exit' : 'mdi-fullscreen',
+    label: mailDialog.value ? 'Quitter le plein écran' : 'Plein écran',
     handler: () => {
-      isFullscreen.value = !isFullscreen.value
+      mailDialog.value = !mailDialog.value
     },
   },
 }))
