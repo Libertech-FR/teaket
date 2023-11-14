@@ -1,8 +1,15 @@
 <template lang="pug">
-q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color="primary" class="full-height"  :limits="[20,80]")
+q-splitter(
+  v-model="splitterModel"
+  separator-style="width: 8px"
+  background-color="primary"
+  class="full-height"
+  :limits="!$q.platform.is.mobile ? [20,80] : [0,100]"
+  :horizontal='$q.platform.is.mobile'
+  :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
+)
   template(#before)
-    q-card.full-height.q-pa-sm(bordered)
-      span {{ text }}
+    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": target}')
       q-table.tk-sticky-last-column-table.full-height(
         v-bind="$attrs"
         selection="multiple"
@@ -44,22 +51,22 @@ q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color
                 slot(name="body-cell-actions-content-after")
 
   template(#separator)
-    q-avatar(size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
+    q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
 
   template(#after)
-    q-card.full-height.q-pa-sm(bordered)
+    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": !target}')
       q-card-section.q-pa-none.flex.items-center.full-height.justify-center(v-if='!target')
         slot(name="right-panel-empty")
           slot(name="right-panel-empty-content-before")
           p Selectionnez une entrée pour afficher son contenu...
           slot(name="right-panel-empty-content-after")
-      q-card-section.q-pa-none(v-else)
+      div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
         q-card-actions
           q-toolbar-title(v-text='target?.subject' style='flex: 100 1 0%')
           q-space
           slot(name="right-panel-actions")
             slot(name="right-panel-actions-content-before")
-            q-btn(color="primary", icon="mdi-chevron-left" @click="target = null" tooltip="Retour")
+            q-btn(color="primary", icon="mdi-chevron-left" @click="cancel" tooltip="Retour")
               q-tooltip.text-body2 Retour
             q-btn(color="positive" icon='mdi-content-save-plus' @click="create(target)" v-if="crud.create")
               q-tooltip.text-body2 Enregistrer
@@ -68,7 +75,7 @@ q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color
             q-btn(color="negative" icon='mdi-delete' @click="remove(target)" v-if="crud.delete")
               q-tooltip.text-body2 Supprimer
             slot(name="right-panel-actions-content-after")
-        q-card-section.q-pa-none
+        q-card-section.q-pa-none.fit.flex(style='flex-flow: column; overflow: hidden;')
           slot(name="right-panel-content" :target="target")
             slot(name="right-panel-content-before")
             slot(name="right-panel-content-after")
@@ -77,15 +84,13 @@ q-splitter(v-model="splitterModel" separator-style="width: 8px" background-color
 <script lang="ts" setup>
 import { computed, useDayjs } from '#imports'
 import { useRoute, useRouter } from 'nuxt/app'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { QTableProps } from 'quasar'
-import { useResizeObserver } from '@vueuse/core';
+import { useResizeObserver } from '@vueuse/core'
 // import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
-
-const splitterModel = ref(50)
-
-
+const $q = useQuasar()
+const splitterModel = ref($q.screen.xs ? 100 : 50)
 
 const props = defineProps({
   data: {
@@ -102,7 +107,7 @@ const props = defineProps({
   },
   refresh: {
     type: Function,
-    default: () => { },
+    default: () => {},
   },
   total: {
     type: Number,
@@ -114,10 +119,10 @@ const props = defineProps({
   },
   crud: {
     type: Object as PropType<{
-      create: boolean,
-      read: boolean,
-      update: boolean,
-      delete: boolean,
+      create: boolean
+      read: boolean
+      update: boolean
+      delete: boolean
     }>,
     default: () => ({
       create: false,
@@ -128,22 +133,35 @@ const props = defineProps({
   },
   actions: {
     type: Object as PropType<{
-      create: Function,
-      read: Function,
-      update: Function,
-      delete: Function,
+      create: <T>(r: T) => Promise<T>
+      read: <T>(r: T) => Promise<T>
+      update: <T>(r: T) => Promise<T>
+      delete: <T>(r: T) => Promise<T>
+
+      cancel: () => Promise<void>
+      onMounted: <T = object>() => Promise<T | null>
     }>,
     default: {
-      create: async (row) => { return row },
-      read: async (row) => { return row },
-      update: async (row) => { return row },
-      delete: async (row) => { return row },
+      create: async <T,>(row: T) => {
+        return row
+      },
+      read: async <T,>(row: T) => {
+        return row
+      },
+      update: async <T,>(row: T) => {
+        return row
+      },
+      delete: async <T,>(row: T) => {
+        return row
+      },
+
+      cancel: async () => {},
+      onMounted: async () => {},
     },
   },
 })
 
 const route = useRoute()
-const $q = useQuasar()
 const { pagination, onRequest, initializePagination } = usePagination()
 initializePagination(props.total)
 
@@ -151,9 +169,21 @@ const emit = defineEmits(['add', 'refresh', 'read'])
 
 const selected = ref([])
 const tab = ref('')
-const target = ref(null)
+const target = ref<null | object>(null)
 const daysjs = useDayjs()
 
+watch(target, (t) => {
+  if (t) selected.value = [t]
+  if ($q.platform.is.mobile) {
+    splitterModel.value = !t ? 100 : 0
+  }
+})
+
+async function cancel() {
+  await props.actions.cancel()
+  target.value = null
+  selected.value = []
+}
 async function read(row) {
   const response = await props.actions.read(row)
   target.value = response
@@ -171,6 +201,14 @@ async function update(row) {
 
 async function remove(row) {
   const response = await props.actions.delete(row)
+  debugger
   target.value = response
 }
+
+onMounted(async () => {
+  const newTarget = await props.actions.onMounted()
+  if (newTarget) {
+    target.value = newTarget
+  }
+})
 </script>
