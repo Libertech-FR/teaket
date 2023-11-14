@@ -89,7 +89,6 @@ import type { QTableProps } from 'quasar'
 import { useResizeObserver } from '@vueuse/core'
 // import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
-
 const $q = useQuasar()
 const splitterModel = ref($q.screen.xs ? 100 : 50)
 
@@ -185,7 +184,6 @@ async function cancel() {
   target.value = null
   selected.value = []
 }
-
 async function read(row) {
   const response = await props.actions.read(row)
   target.value = response
