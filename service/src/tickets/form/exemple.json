@@ -1,0 +1,67 @@
+{
+    "title": "Creation de ticket",
+    "description": "Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.",
+    "type": 2,
+    "sections": {
+        "infos": {
+            "label": "Informations",
+            "fields": {
+                "enveloppe.senders": {
+                    "component": "tk-autocomplete",
+                    "label": "Demandeur",
+                    "model-value": "enveloppe.senders",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez votre nom"
+                    },
+                    "row": 1,
+                    "col": 4,
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                },
+                "enveloppe.observers": {
+                    "component": "tk-autocomplete",
+                    "label": "Observateurs",
+                    "model-value": "enveloppe.observers",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez votre email"
+                    },
+                    "row": 1,
+                    "col": 4,
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                },
+                "enveloppe.assigned": {
+                    "component": "tk-autocomplete",
+                    "label": "Assignés",
+                    "model-value": "enveloppe.assigned",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez les assignés"
+                    },
+                    "row": 1,
+                    "col": 4,
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                }
+            }
+        }
+    },
+    "submitButtonText": "Soumettre le formulaire"
+}
