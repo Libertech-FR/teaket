@@ -8,15 +8,6 @@ q-splitter(
   :horizontal='$q.platform.is.mobile'
   :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
 )
-q-splitter(
-  v-model="splitterModel"
-  separator-style="width: 8px"
-  background-color="primary"
-  class="full-height"
-  :limits="!$q.platform.is.mobile ? [20,80] : [0,100]"
-  :horizontal='$q.platform.is.mobile'
-  :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
-)
   template(#before)
     q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": target}')
       q-table.tk-sticky-last-column-table.full-height(
@@ -70,7 +61,6 @@ q-splitter(
 
   template(#separator)
     q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
-    q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
 
   template(#after)
     q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": !target}')
@@ -79,7 +69,6 @@ q-splitter(
           slot(name="right-panel-empty-content-before")
           p Selectionnez une entrée pour afficher son contenu...
           slot(name="right-panel-empty-content-after")
-      div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
       div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
         q-card-actions
           slot(name="right-panel-title" :target="target")
@@ -149,7 +138,6 @@ const props = defineProps({
   refresh: {
     type: Function,
     default: () => { },
-    default: () => { },
   },
   total: {
     type: Number,
@@ -165,10 +153,6 @@ const props = defineProps({
   },
   crud: {
     type: Object as PropType<{
-      create: boolean
-      read: boolean
-      update: boolean
-      delete: boolean
       create: boolean
       read: boolean
       update: boolean
@@ -190,30 +174,8 @@ const props = defineProps({
 
       cancel: () => Promise<void>
       onMounted: <T = object>() => Promise<T | null>
-      create: <T>(r: T) => Promise<T>
-      read: <T>(r: T) => Promise<T>
-      update: <T>(r: T) => Promise<T>
-      delete: <T>(r: T) => Promise<T>
-
-      cancel: () => Promise<void>
-      onMounted: <T = object>() => Promise<T | null>
     }>,
     default: {
-      create: async <T,>(row: T) => {
-        return row
-      },
-      read: async <T,>(row: T) => {
-        return row
-      },
-      update: async <T,>(row: T) => {
-        return row
-      },
-      delete: async <T,>(row: T) => {
-        return row
-      },
-
-      cancel: async () => { },
-      onMounted: async () => { },
       create: async <T,>(row: T) => {
         return row
       },
@@ -253,8 +215,21 @@ const debug = process.env.NODE_ENV === 'development'
 const selected = ref([])
 const tab = ref('')
 const target = ref<null | object>(null)
+const target = ref<null | object>(null)
 const daysjs = useDayjs()
 
+watch(target, (t) => {
+  if (t) selected.value = [t]
+  if ($q.platform.is.mobile) {
+    splitterModel.value = !t ? 100 : 0
+  }
+})
+
+async function cancel() {
+  await props.actions.cancel()
+  target.value = null
+  selected.value = []
+}
 watch(target, (t) => {
   if (t) selected.value = [t]
   if ($q.platform.is.mobile) {
@@ -285,8 +260,16 @@ async function update(row) {
 async function remove(row) {
   const response = await props.actions.delete(row)
   debugger
+  debugger
   target.value = response
 }
+
+onMounted(async () => {
+  const newTarget = await props.actions.onMounted()
+  if (newTarget) {
+    target.value = newTarget
+  }
+})
 
 onMounted(async () => {
   const newTarget = await props.actions.onMounted()
