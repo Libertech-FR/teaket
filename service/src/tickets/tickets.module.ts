@@ -8,9 +8,10 @@ import { TicketModule } from '~/tickets/ticket/ticket.module'
 import { SourceRequestModule } from '~/tickets/source-request/source-request.module'
 import { ThreadModule } from './thread/thread.module'
 import { MailsModule } from '~/tickets/mails/mails.module'
+import { FormModule } from './form/form.module';
 
 @Module({
-  imports: [SlaModule, StateModule, TicketModule, SourceRequestModule, ThreadModule, MailsModule],
+  imports: [SlaModule, StateModule, TicketModule, SourceRequestModule, ThreadModule, MailsModule, FormModule],
   providers: [TicketsService],
   controllers: [TicketsController],
 })
