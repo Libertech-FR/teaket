@@ -6,12 +6,13 @@ tk-2pan(
   :refresh="refresh"
   :columns="columns"
   :crud="crud"
-  row-key="uid"
-  title-key="subject"
   :actions="actions"
   title="Mails"
-  :rightPanelStyle='{overflowY: "hidden", padding: "0"}'
 )
+  template(#top-left-btn-grp="{selected}")
+    q-btn-group(rounded flat)
+      tk-2pan-btns-add(:disabled="selected.length === 0" tooltip="Importer")
+      tk-2pan-btns-remove(:disabled="selected.length === 0" tooltip="Rejeter")
   template(#top-left-btn-grp="{selected}")
     q-btn-group(rounded flat)
       tk-2pan-btns-add(:disabled="selected.length === 0" tooltip="Importer")
@@ -40,14 +41,6 @@ tk-2pan(
           loading-label="Chargement..."
           no-results-label="Aucun résultat"
           flat
-        )
-          template(v-slot:body="props")
-            q-tr(:props="props")
-              q-td(key="key" :props="props" v-text='props.row.key')
-              q-td(key="value" auto-width :props="props" v-text='props.row.value')
-      q-tab-panel.no-padding.overflow-hidden(name="raw")
-        object.bg-white.fit(
-          :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature'
         )
           template(v-slot:body="props")
             q-tr(:props="props")
@@ -172,21 +165,19 @@ const columns = ref<QTableProps['columns']>([
     field: 'actions',
     align: 'left',
   },
-  align: 'left',
-  },
-{
-  name: 'envelope.date',
+  {
+    name: 'envelope.date',
     label: 'Date de réception',
-      field: (row: Mail) => row.envelope.date,
-        format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
-          align: 'left',
+    field: (row: Mail) => row.envelope.date,
+    format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
+    align: 'left',
   },
-{
-  name: 'actions',
+  {
+    name: 'actions',
     label: 'Actions',
-      field: 'actions',
-        align: 'left',
-  },
+    field: 'actions',
+    align: 'left',
+  }
 ])
 const tab = ref('email')
 const goToMail = async (mail: Mail) => {
@@ -281,33 +272,26 @@ const importMail = async (mail: any) => {
     })
     return mail
   }
-  $q.notify({
-    color: 'positive',
-    message: 'Email importé avec succès',
-  })
-  await refresh()
-  return null
-}
 
-const save = async (mail: Mail) => {
-  return null
-}
+  const save = async (mail: Mail) => {
+    return null
+  }
 
-const actions = {
-  create: importMail,
-  read: goToMail,
-  update: importMail,
-  delete: deleteMail,
+  const actions = {
+    create: importMail,
+    read: goToMail,
+    update: importMail,
+    delete: deleteMail,
 
-  cancel: async () => {
-    await router.replace({
-      query: omit(route.query, ['accountId', 'seq']),
-    })
-  },
-  onMounted: async () => {
-    if (route.query.accountId && route.query.seq) {
-      return await goToMail(route.query)
-    }
-  },
-}
+    cancel: async () => {
+      await router.replace({
+        query: omit(route.query, ['accountId', 'seq']),
+      })
+    },
+    onMounted: async () => {
+      if (route.query.accountId && route.query.seq) {
+        return await goToMail(route.query)
+      }
+    },
+  }
 </script>
