@@ -119,7 +119,6 @@ async function filterOptions(val, update) {
 }
 
 function createValue(val, done) {
-  console.log('createValue', val)
   if (!props.addManualValue) {
     return
   }
