@@ -8,8 +8,17 @@ q-splitter(
   :horizontal='$q.platform.is.mobile'
   :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
 )
+q-splitter(
+  v-model="splitterModel"
+  separator-style="width: 8px"
+  background-color="primary"
+  class="full-height"
+  :limits="!$q.platform.is.mobile ? [20,80] : [0,100]"
+  :horizontal='$q.platform.is.mobile'
+  :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
+)
   template(#before)
-    q-card.full-height.q-pa-sm(:class='{"desktop-only": target}')
+    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": target}')
       q-table.tk-sticky-last-column-table.full-height(
         v-bind="$attrs"
         selection="multiple"
@@ -61,14 +70,16 @@ q-splitter(
 
   template(#separator)
     q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
+    q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
 
   template(#after)
-    q-card.full-height(:class='{"desktop-only": !target}')
+    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": !target}')
       q-card-section.q-pa-none.flex.items-center.full-height.justify-center(v-if='!target')
         slot(name="right-panel-empty")
           slot(name="right-panel-empty-content-before")
           p Selectionnez une entrée pour afficher son contenu...
           slot(name="right-panel-empty-content-after")
+      div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
       div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
         q-card-actions
           slot(name="right-panel-title" :target="target")
@@ -77,6 +88,7 @@ q-splitter(
             slot(name="right-panel-title-after" :target="target")
           q-space
           slot(name="right-panel-actions")
+            slot(name="right-panel-actions-content-before")
             q-btn(color="primary", icon="mdi-chevron-left" @click="cancel" tooltip="Retour")
               q-tooltip.text-body2 Retour
             q-separator.q-mx-sm(vertical)
@@ -87,9 +99,8 @@ q-splitter(
               q-tooltip.text-body2 Enregistrer
             q-btn(color="negative" icon='mdi-delete' @click="remove(target)" v-if="crud.delete")
               q-tooltip.text-body2 Supprimer
-            slot(name="right-panel-actions-content-after" :target="target")
-        q-separator
-        q-card-section.fit.flex.q-pa-sm(style='flex-flow: column; overflow-y: auto;' :style='rightPanelStyle')
+            slot(name="right-panel-actions-content-after")
+        q-card-section.q-pa-none.fit.flex(style='flex-flow: column; overflow: hidden;')
           slot(name="right-panel-content" :target="target")
             slot(name="right-panel-content-before")
             slot(name="right-panel-content-after")
@@ -107,9 +118,6 @@ import type { QTableProps } from 'quasar'
 import { useResizeObserver } from '@vueuse/core'
 // import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
-import { get } from 'radash'
-import * as process from 'process'
-
 const $q = useQuasar()
 const splitterModel = ref($q.screen.xs ? 100 : 50)
 
@@ -140,7 +148,8 @@ const props = defineProps({
   },
   refresh: {
     type: Function,
-    default: () => {},
+    default: () => { },
+    default: () => { },
   },
   total: {
     type: Number,
@@ -160,6 +169,10 @@ const props = defineProps({
       read: boolean
       update: boolean
       delete: boolean
+      create: boolean
+      read: boolean
+      update: boolean
+      delete: boolean
     }>,
     default: () => ({
       create: false,
@@ -170,6 +183,13 @@ const props = defineProps({
   },
   actions: {
     type: Object as PropType<{
+      create: <T>(r: T) => Promise<T>
+      read: <T>(r: T) => Promise<T>
+      update: <T>(r: T) => Promise<T>
+      delete: <T>(r: T) => Promise<T>
+
+      cancel: () => Promise<void>
+      onMounted: <T = object>() => Promise<T | null>
       create: <T>(r: T) => Promise<T>
       read: <T>(r: T) => Promise<T>
       update: <T>(r: T) => Promise<T>
@@ -192,8 +212,23 @@ const props = defineProps({
         return row
       },
 
-      cancel: async () => {},
-      onMounted: async () => {},
+      cancel: async () => { },
+      onMounted: async () => { },
+      create: async <T,>(row: T) => {
+        return row
+      },
+      read: async <T,>(row: T) => {
+        return row
+      },
+      update: async <T,>(row: T) => {
+        return row
+      },
+      delete: async <T,>(row: T) => {
+        return row
+      },
+
+      cancel: async () => { },
+      onMounted: async () => { },
     },
   },
 })
@@ -219,8 +254,6 @@ const selected = ref([])
 const tab = ref('')
 const target = ref<null | object>(null)
 const daysjs = useDayjs()
-
-const getTitle = computed(() => get(target.value, props.titleKey, ''))
 
 watch(target, (t) => {
   if (t) selected.value = [t]
@@ -251,6 +284,7 @@ async function update(row) {
 
 async function remove(row) {
   const response = await props.actions.delete(row)
+  debugger
   target.value = response
 }
 
@@ -259,13 +293,5 @@ onMounted(async () => {
   if (newTarget) {
     target.value = newTarget
   }
-})
-
-defineExpose({
-  cancel,
-  read,
-  create,
-  update,
-  remove,
 })
 </script>
