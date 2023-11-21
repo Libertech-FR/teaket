@@ -17,7 +17,7 @@ export class Form extends AbstractSchema {
   @Prop({
     type: Number,
     enum: FormTypes,
-    default: FormTypes.SIMPLE,
+    default: FormTypes.BASE,
   })
   type: FormTypes
 
@@ -26,6 +26,9 @@ export class Form extends AbstractSchema {
 
   @Prop()
   submitButtonText: string
+
+  @Prop()
+  submitApiUrl: string
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form)
