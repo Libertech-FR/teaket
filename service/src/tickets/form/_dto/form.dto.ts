@@ -24,18 +24,18 @@ export class FormCreateDto extends MetadataDto {
 
   @ValidateNested({ each: true })
   @Type(() => FormSectionDto)
-  //@ApiProperty({ type: () => FormSectionDto })
-  sections: { [sectionName: string]: FormSectionDto }
+  // @ApiProperty({ type: () => FormSectionDto, isArray: true })
+  sections: { [key: string]: FormSectionDto }
 
   @IsString()
   @ApiProperty()
   submitButtonText: string
+
+  @IsString()
+  @ApiProperty()
+  submitApiUrl: string
 }
 
-export class FormDto extends FormCreateDto {
-  @IsMongoId()
-  @ApiProperty({ type: String })
-  _id: ObjectId
-}
+export class FormDto extends FormCreateDto {}
 
 export class FormUpdateDto extends PartialType(FormDto) {}

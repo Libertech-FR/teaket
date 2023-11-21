@@ -19,28 +19,33 @@ export class FormFieldPart {
 
   @Prop({
     type: Object,
+    default: {},
   })
-  attrsOnDefault: { [attr: string]: MixedValue }
+  attrsOnDefault: { [attr: string]: MixedValue } | object
 
   @Prop({
     type: Object,
+    default: {},
   })
-  attrsOnCreate: { [attr: string]: MixedValue }
+  attrsOnCreate: { [attr: string]: MixedValue } | object
 
   @Prop({
     type: Object,
+    default: {},
   })
-  attrsOnRead: { [attr: string]: MixedValue }
+  attrsOnRead: { [attr: string]: MixedValue } | object
 
   @Prop({
     type: Object,
+    default: {},
   })
-  attrsOnUpdate: { [attr: string]: MixedValue }
+  attrsOnUpdate: { [attr: string]: MixedValue } | object
 
   @Prop({
     type: Object,
+    default: {},
   })
-  attrsOnDelete: { [attr: string]: MixedValue }
+  attrsOnDelete: { [attr: string]: MixedValue } | object
 }
 
 export const FormFieldPartSchema = SchemaFactory.createForClass(FormFieldPart)
