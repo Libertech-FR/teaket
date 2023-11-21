@@ -63,5 +63,227 @@
             }
         }
     },
+    "submitButtonText": "Soumettre le formulaire",
+    "submitButtonApi": "Soumettre le formulaire"
+}
+
+{
+    "_id": ObjectId("65539756ed13b613ad02aa56"),
+    "metadata": {
+        "createdBy": "user1",
+        "createdAt": ISODate("2023-11-14T15:50:46.791+0000"),
+        "lastUpdatedBy": "user1",
+        "lastUpdatedAt": ISODate("2023-11-14T15:59:11.241+0000")
+    },
+    "title": "Creation de ticket",
+    "description": "Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.",
+    "type": NumberInt(2),
+    "sections": {
+        "enveloppe": {
+            "label": "Enveloppe",
+            "type": NumberInt(0),
+            "fields": {
+                "senders": {
+                    "component": "tk-form-autocomplete",
+                    "label": "Demandeur",
+                    "model-value": "enveloppe.senders",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez votre nom"
+                    },
+                    "row": NumberInt(1),
+                    "col": NumberInt(4),
+                    "attrsOnCreate": {
+                        "disabled": false
+                    },
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {
+                        "disabled": false
+                    },
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                },
+                "observers": {
+                    "component": "tk-form-autocomplete",
+                    "label": "Observateurs",
+                    "model-value": "enveloppe.observers",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez votre email"
+                    },
+                    "row": NumberInt(1),
+                    "col": NumberInt(4),
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                },
+                "assigned": {
+                    "component": "tk-form-autocomplete",
+                    "label": "Assignés",
+                    "model-value": "enveloppe.assigned",
+                    "attrsOnDefault": {
+                        "placeholder": "Entrez les assignés"
+                    },
+                    "row": NumberInt(1),
+                    "col": NumberInt(4),
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disabled": true
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disabled": true
+                    }
+                }
+            }
+        },
+        "infos": {
+            "label": "Informations",
+            "type": NumberInt(0),
+            "fields": {
+                "typeOfTicket": {
+                    "component": "q-chip",
+                    "label": "Type de ticket",
+                    "model-value": "props.modelValue.typeOfTicket",
+                    "row": NumberInt(1),
+                    "col": NumberInt(6),
+                    "attrsOnDefault": {},
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {},
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {}
+                },
+                "project": {
+                    "component": "q-select",
+                    "label": "Projet(s)",
+                    "model-value": "props.modelValue.project",
+                    "row": NumberInt(2),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "Projet(s)",
+                        "filled": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                },
+                "priority": {
+                    "component": "q-select",
+                    "label": "Priorité",
+                    "model-value": "props.modelValue.priority",
+                    "row": NumberInt(3),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "Priorité",
+                        "filled": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                },
+                "impact": {
+                    "component": "q-select",
+                    "label": "Impact",
+                    "model-value": "props.modelValue.impact",
+                    "row": NumberInt(4),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "Impact",
+                        "filled": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                },
+                "sla": {
+                    "component": "q-select",
+                    "label": "SLA",
+                    "model-value": "props.modelValue.sla",
+                    "row": NumberInt(5),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "SLA",
+                        "filled": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                },
+                "dueDate": {
+                    "component": "q-input",
+                    "label": "Due date",
+                    "model-value": "dueDate",
+                    "row": NumberInt(6),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "Due date",
+                        "type": "date",
+                        "filled": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                },
+                "totalTime": {
+                    "component": "q-input",
+                    "label": "Temps total",
+                    "model-value": "totalTime",
+                    "row": NumberInt(7),
+                    "col": NumberInt(1),
+                    "attrsOnDefault": {
+                        "dense": true,
+                        "label": "Temps total",
+                        "type": "time",
+                        "filled": true,
+                        "readonly": true
+                    },
+                    "attrsOnCreate": {},
+                    "attrsOnRead": {
+                        "disable": "isDisabledTicket"
+                    },
+                    "attrsOnUpdate": {},
+                    "attrsOnDelete": {
+                        "disable": "isDisabledTicket"
+                    }
+                }
+            }
+        }
+    },
     "submitButtonText": "Soumettre le formulaire"
 }
