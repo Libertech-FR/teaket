@@ -56,7 +56,7 @@ tk-2pan(
 </template>
 
 <script lang="ts" setup>
-import { useHttpApi } from '../composables'
+import { useHttpApi } from '~/composables'
 import { omit } from 'radash'
 import type { QTableProps } from 'quasar'
 type Mail = any
@@ -90,48 +90,46 @@ const crud = {
 }
 
 const columns = ref<QTableProps['columns']>([
-    {
-        name: 'uid',
-        label: 'ID',
-        field: 'uid',
-        align: 'left',
+  {
+    name: 'uid',
+    label: 'ID',
+    field: 'uid',
+    align: 'left',
+  },
+  {
+    name: 'accountName',
+    label: 'Compte',
+    field: 'accountName',
+    align: 'left',
+  },
+  {
+    name: 'envelope.subject',
+    label: 'Sujet',
+    field: (row: Mail) => {
+      const $q = useQuasar()
+      const maxLength = $q.screen.width / 2 / 10 - 30
+      if (row.envelope.subject.length <= maxLength) {
+        return row.envelope.subject
+      }
+      let truncated = row.envelope.subject.substring(0, maxLength)
+      const re = new RegExp(/\s+\S*$/)
+      const match = re.exec(truncated)
+      truncated = truncated.substring(0, match?.index!)
+      return `${truncated} ...`
     },
-    {
-        name: 'accountName',
-        label: 'Compte',
-        field: 'accountName',
-        align: 'left',
-    },
-    {
-        name: 'envelope.subject',
-        label: 'Sujet',
-        field: (row: Mail) => {
-            const $q = useQuasar()
-            const maxLength = $q.screen.width / 2 / 10 - 30
-            if (row.envelope.subject.length <= maxLength) {
-                return row.envelope.subject
-            }
-            let truncated = row.envelope.subject.substring(0, maxLength)
-            const re = new RegExp(/\s+\S*$/)
-            const match = re.exec(truncated)
-            truncated = truncated.substring(0, match?.index!)
-            return `${truncated} ...`
-        },
-        align: 'left',
-    },
-    {
-        name: 'envelope.date',
-        label: 'Date de réception',
-        field: (row: Mail) => row.envelope.date,
-        format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
-        align: 'left',
-    },
-    {
-        name: 'actions',
-        label: 'Actions',
-        field: 'actions',
-        align: 'left',
-    },
+    align: 'left',
+  },
+  {
+    name: 'envelope.date',
+    label: 'Date de réception',
+    field: (row: Mail) => row.envelope.date,
+    format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
+    align: 'left',
+  },
+  {
+    name: 'actions',
+    label: 'Actions',
+    field: 'actions',
     align: 'left',
   },
   {
@@ -202,25 +200,19 @@ const deleteMail = async (mail: Mail) => {
 }
 
 const importMail = async (mail: any) => {
-    const { data, error } = await useHttpApi(`/tickets/mails/import`, {
-        method: 'post',
-        body: {
-            account: mail.accountId,
-            seq: mail.seq,
-            uid: mail.uid,
-            id: mail.id,
-        },
-    })
-    if (error.value) {
-        $q.notify({
-            color: 'negative',
-            message: `Impossible d\'importer l'email <${mail.uid}> ${error.value?.data?.message || error.value?.message}`,
-        })
-        return mail
-    }
+  const { data, error } = await useHttpApi(`/tickets/mails/import`, {
+    method: 'post',
+    body: {
+      account: mail.accountId,
+      seq: mail.seq,
+      uid: mail.uid,
+      id: mail.id,
+    },
+  })
+  if (error.value) {
     $q.notify({
-        color: 'positive',
-        message: 'Email importé avec succès',
+      color: 'negative',
+      message: `Impossible d\'importer l'email <${mail.uid}> ${error.value?.data?.message || error.value?.message}`,
     })
     return mail
   }
