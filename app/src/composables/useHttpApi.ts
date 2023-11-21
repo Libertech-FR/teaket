@@ -1,3 +1,4 @@
+/* eslint-disable */
 // noinspection JSUnusedGlobalSymbols
 
 // @ts-ignore
@@ -101,10 +102,11 @@ export async function useHttpApi<
   path: MaybeRefOrGetter2<ResT>,
   opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method> & {
     method: Method
-    body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']
-    pathParams?: Record<string, string>
+    body?: Partial<Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']>
+    pathParams?: Record<string, any>
   },
   errorParams?: {
+    silent?: boolean
     redirect?: boolean
     message?: string
     color?: string
@@ -120,10 +122,12 @@ export async function useHttpApi<
     if (errorParams?.redirect) {
       return showError({ statusCode: response.error.value.statusCode, statusMessage: response.error.value.statusMessage })
     }
-    Notify.create({
-      message: errorParams?.message ?? 'Une erreur est survenue',
-      type: errorParams?.color ?? 'negative',
-    })
+    if (!errorParams?.silent) {
+      Notify.create({
+        message: errorParams?.message ?? 'Une erreur est survenue',
+        type: errorParams?.color ?? 'negative',
+      })
+    }
   }
 
   return response

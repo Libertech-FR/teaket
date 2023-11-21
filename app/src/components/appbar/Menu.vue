@@ -1,10 +1,10 @@
 <template lang="pug">
-q-btn(flat icon="mdi-dots-grid" size="xl")
+q-btn(flat icon="mdi-dots-grid" size="20px" square)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Apps
-    q-menu(max-width="350px" max-height="350px").q-pa-md
+    q-menu(max-height="280px" auto-close fit).q-pa-sm
         .row
             .col-4(v-for="(app, key) in apps" :key="key")
-                q-btn(flat stack dense :to="app.to" rounded).full-width
+                q-btn(flat stack dense :to="app.to" stretch).full-width.q-pa-sm
                     q-icon(:name="app.icon.name" :color="app.icon.color" size="xl")
                     q-badge(v-if="app.badge" :color="app.badge.color" floating) {{ app.badge.value }}
                     div.text-center(:class="`text-${app.title.color}`") {{ app.title.name }}
@@ -89,6 +89,28 @@ const apps: {
       color: 'primary',
     },
     to: `/mails`,
+  },
+  {
+    title: {
+      name: 'Clients',
+      color: 'secondary',
+    },
+    icon: {
+      name: 'mdi-card-account-details-outline',
+      color: 'primary',
+    },
+    to: `/entities`,
+  },
+  {
+    title: {
+      name: 'Comptes',
+      color: 'secondary',
+    },
+    icon: {
+      name: 'mdi-account-group',
+      color: 'primary',
+    },
+    to: `/identities`,
   },
   // {
   //     title: {

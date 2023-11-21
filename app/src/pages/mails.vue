@@ -6,8 +6,11 @@ tk-2pan(
     :refresh="refresh"
     :columns="columns"
     :crud="crud"
+    row-key="uid"
+    title-key="subject"
     :actions="actions"
     title="Mails"
+    :rightPanelStyle='{overflowY: "hidden", padding: "0"}'
 )
     template(#top-left-btn-grp="{selected}")
         q-btn-group(rounded flat)
@@ -19,7 +22,6 @@ tk-2pan(
             q-tab(name="email" icon="mdi-mail" label="Email")
             q-tab(name="headers" icon="mdi-format-list-text" label="Headers")
             q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
-            q-tab(name="raaw" icon="mdi-email-newsletter" label="Contenu")
         q-tab-panels.fit(v-model="tab")
             q-tab-panel.no-padding.overflow-hidden(name="email")
                 object.bg-white.fit(
@@ -47,24 +49,10 @@ tk-2pan(
                   :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature'
                 )
                     p Impossible de charger le contenu du mail
-                    a(:href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
-            q-tab-panel.no-padding(name="raaw")
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
-                q-input(label='username')
+                    a(
+                      :href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature'
+                      target='_blank'
+                    ) Lien direct
 </template>
 
 <script lang="ts" setup>

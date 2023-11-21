@@ -9,14 +9,15 @@ q-splitter(
   :style='{ "padding": $q.platform.is.mobile ? "6px 0" : "0" }'
 )
   template(#before)
-    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": target}')
+    q-card.full-height.q-pa-sm(:class='{"desktop-only": target}')
       q-table.tk-sticky-last-column-table.full-height(
         v-bind="$attrs"
         selection="multiple"
         v-model:selected="selected"
         v-model:pagination="pagination"
         :rows="data"
-        row-key="uid"
+        :visible-columns="visibleColumnsInternal"
+        :row-key="rowKey"
         @request="onRequest($event, props.total)"
         :rows-per-page-options="[6, 12, 18]"
         :columns="columns"
@@ -29,6 +30,8 @@ q-splitter(
         :selected-rows-label="(numberOfRows) => `${numberOfRows} entrée(s) sélectionnée(s)`"
         flat
       )
+        template(v-for="(_, name) in $slots" v-slot:[name]="slotData")
+          slot(:name="name" v-bind="slotData")
         template(v-slot:top-left)
           q-btn-group(rounded flat)
             slot(name="top-left-btn-grp" :selected="selected")
@@ -39,6 +42,12 @@ q-splitter(
             slot(name="top-right-btn-grp")
               slot(name="top-right-btn-grp-content-before")
               tk-2pan-btns-add(@add="create" v-if="crud.create")
+              q-btn(flat icon="mdi-table-headers-eye" color="primary")
+                q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Afficher/cacher des colones
+                q-menu(max-width="350px" max-height="350px").q-pa-md
+                  .row
+                    .col-6(v-for="column in columns" :key="column.value")
+                      q-toggle(v-model='visibleColumnsComputed' :label="column.label" :val="column.name")
               tk-2pan-btns-refresh(@refresh="refresh")
               slot(name="top-right-btn-grp-content-after")
         template(v-slot:body-cell-actions="props")
@@ -54,7 +63,7 @@ q-splitter(
     q-avatar(v-if='!$q.platform.is.mobile' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
 
   template(#after)
-    q-card.full-height.q-pa-sm(bordered :class='{"desktop-only": !target}')
+    q-card.full-height(:class='{"desktop-only": !target}')
       q-card-section.q-pa-none.flex.items-center.full-height.justify-center(v-if='!target')
         slot(name="right-panel-empty")
           slot(name="right-panel-empty-content-before")
@@ -62,23 +71,32 @@ q-splitter(
           slot(name="right-panel-empty-content-after")
       div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
         q-card-actions
-          q-toolbar-title(v-text='target?.subject' style='flex: 100 1 0%')
+          slot(name="right-panel-title" :target="target")
+            slot(name="right-panel-title-before" :target="target")
+            q-toolbar-title(v-text='getTitle' style='flex: 100 1 0%')
+            slot(name="right-panel-title-after" :target="target")
           q-space
           slot(name="right-panel-actions")
-            slot(name="right-panel-actions-content-before")
             q-btn(color="primary", icon="mdi-chevron-left" @click="cancel" tooltip="Retour")
               q-tooltip.text-body2 Retour
+            q-separator.q-mx-sm(vertical)
+            slot(name="right-panel-actions-content-before" :target="target")
             q-btn(color="positive" icon='mdi-content-save-plus' @click="create(target)" v-if="crud.create")
               q-tooltip.text-body2 Enregistrer
             q-btn(color="positive" icon='mdi-content-save' @click="update(target)" v-if="crud.update")
               q-tooltip.text-body2 Enregistrer
             q-btn(color="negative" icon='mdi-delete' @click="remove(target)" v-if="crud.delete")
               q-tooltip.text-body2 Supprimer
-            slot(name="right-panel-actions-content-after")
-        q-card-section.q-pa-none.fit.flex(style='flex-flow: column; overflow: hidden;')
+            slot(name="right-panel-actions-content-after" :target="target")
+        q-separator
+        q-card-section.fit.flex.q-pa-sm(style='flex-flow: column; overflow-y: auto;' :style='rightPanelStyle')
           slot(name="right-panel-content" :target="target")
             slot(name="right-panel-content-before")
             slot(name="right-panel-content-after")
+        q-expansion-item.bg-blue-grey-10(v-if='debug' label='Debug' icon='mdi-bug' dense)
+          q-card.overflow-auto.bg-blue-grey-8(:style='{maxHeight: "250px", height: "250px"}')
+            q-card-section.q-pa-xs
+              pre.q-ma-none(v-html='JSON.stringify(target, null, 2)')
 </template>
 
 <script lang="ts" setup>
@@ -89,10 +107,25 @@ import type { QTableProps } from 'quasar'
 import { useResizeObserver } from '@vueuse/core'
 // import type { components } from '#build/types/service-api'
 import type { PropType } from 'vue'
+import { get } from 'radash'
+import * as process from 'process'
+
 const $q = useQuasar()
 const splitterModel = ref($q.screen.xs ? 100 : 50)
 
 const props = defineProps({
+  rowKey: {
+    type: String,
+    default: '_id',
+  },
+  visibleColumns: {
+    type: Array as PropType<QTableProps['visibleColumns']>,
+    default: () => [],
+  },
+  titleKey: {
+    type: String,
+    default: 'name',
+  },
   data: {
     type: Array as PropType<any[]>,
     default: () => [],
@@ -116,6 +149,10 @@ const props = defineProps({
   defaultRightPanel: {
     type: Boolean,
     default: true,
+  },
+  rightPanelStyle: {
+    type: Object as PropType<Partial<CSSStyleDeclaration>>,
+    default: () => ({}),
   },
   crud: {
     type: Object as PropType<{
@@ -161,16 +198,29 @@ const props = defineProps({
   },
 })
 
+const visibleColumnsInternal = ref(props.visibleColumns)
+const visibleColumnsComputed = computed({
+  get() {
+    return visibleColumnsInternal.value
+  },
+  set(value) {
+    visibleColumnsInternal.value = value
+  },
+})
+
 const route = useRoute()
 const { pagination, onRequest, initializePagination } = usePagination()
 initializePagination(props.total)
 
 const emit = defineEmits(['add', 'refresh', 'read'])
+const debug = process.env.NODE_ENV === 'development'
 
 const selected = ref([])
 const tab = ref('')
 const target = ref<null | object>(null)
 const daysjs = useDayjs()
+
+const getTitle = computed(() => get(target.value, props.titleKey, ''))
 
 watch(target, (t) => {
   if (t) selected.value = [t]
@@ -201,7 +251,6 @@ async function update(row) {
 
 async function remove(row) {
   const response = await props.actions.delete(row)
-  debugger
   target.value = response
 }
 
@@ -210,5 +259,13 @@ onMounted(async () => {
   if (newTarget) {
     target.value = newTarget
   }
+})
+
+defineExpose({
+  cancel,
+  read,
+  create,
+  update,
+  remove,
 })
 </script>
