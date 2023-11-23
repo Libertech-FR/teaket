@@ -229,7 +229,6 @@ async function cancel() {
   target.value = null
   selected.value = []
 }
-
 async function read(row) {
   const response = await props.actions.read(row)
   target.value = response
@@ -249,15 +248,9 @@ async function remove(row) {
   const response = await props.actions.delete(row)
   debugger
   debugger
+  debugger
   target.value = response
 }
-
-onMounted(async () => {
-  const newTarget = await props.actions.onMounted()
-  if (newTarget) {
-    target.value = newTarget
-  }
-})
 
 onMounted(async () => {
   const newTarget = await props.actions.onMounted()

@@ -13,62 +13,58 @@ tk-2pan(
     q-btn-group(rounded flat)
       tk-2pan-btns-add(:disabled="selected.length === 0" tooltip="Importer")
       tk-2pan-btns-remove(:disabled="selected.length === 0" tooltip="Rejeter")
-  template(#top-left-btn-grp="{selected}")
-    q-btn-group(rounded flat)
-      tk-2pan-btns-add(:disabled="selected.length === 0" tooltip="Importer")
-      tk-2pan-btns-remove(:disabled="selected.length === 0" tooltip="Rejeter")
 
-    template(#right-panel-content="{target}")
-      q-tabs(v-model="tab" dense)
-        q-tab(name="email" icon="mdi-mail" label="Email")
-        q-tab(name="headers" icon="mdi-format-list-text" label="Headers")
-        q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
-        q-tab(name="raaw" icon="mdi-email-newsletter" label="Contenu")
-      q-tab-panels.fit(v-model="tab")
-        q-tab-panel.no-padding.overflow-hidden(name="email")
-          object.bg-white.fit(
-            :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature'
-          )
-            p Impossible de charger le contenu du mail
-            a(:href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' target='_blank') Lien direct
-        q-tab-panel.no-padding(name="headers")
-          q-table(
-            :rows="target.headers"
-            :pagination='{rowsPerPage: 12}'
-            :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
-            rows-per-page-label="Lignes par page"
-            no-data-label="Aucune donnée"
-            loading-label="Chargement..."
-            no-results-label="Aucun résultat"
-            flat
-          )
-            template(v-slot:body="props")
-              q-tr(:props="props")
-                q-td(key="key" :props="props" v-text='props.row.key')
-                q-td(key="value" auto-width :props="props" v-text='props.row.value')
-        q-tab-panel.no-padding.overflow-hidden(name="raw")
-          object.bg-white.fit(
-            :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature'
-          )
-            p Impossible de charger le contenu du mail
-            a(:href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
-        q-tab-panel.no-padding(name="raaw")
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
-          q-input(label='username')
+  template(#right-panel-content="{target}")
+    q-tabs(v-model="tab" dense)
+      q-tab(name="email" icon="mdi-mail" label="Email")
+      q-tab(name="headers" icon="mdi-format-list-text" label="Headers")
+      q-tab(name="raw" icon="mdi-email-newsletter" label="Contenu")
+      q-tab(name="raaw" icon="mdi-email-newsletter" label="Contenu")
+    q-tab-panels.fit(v-model="tab")
+      q-tab-panel.no-padding.overflow-hidden(name="email")
+        object.bg-white.fit(
+          :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature'
+        )
+          p Impossible de charger le contenu du mail
+          a(:href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/render?signature=" + target?.signature' target='_blank') Lien direct
+      q-tab-panel.no-padding(name="headers")
+        q-table(
+          :rows="target.headers"
+          :pagination='{rowsPerPage: 12}'
+          :pagination-label="(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`"
+          rows-per-page-label="Lignes par page"
+          no-data-label="Aucune donnée"
+          loading-label="Chargement..."
+          no-results-label="Aucun résultat"
+          flat
+        )
+          template(v-slot:body="props")
+            q-tr(:props="props")
+              q-td(key="key" :props="props" v-text='props.row.key')
+              q-td(key="value" auto-width :props="props" v-text='props.row.value')
+      q-tab-panel.no-padding.overflow-hidden(name="raw")
+        object.bg-white.fit(
+          :data='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature'
+        )
+          p Impossible de charger le contenu du mail
+          a(:href='"http://host.docker.internal:7100/tickets/mails/" + target?.accountId + "/" + target?.seq + "/source?signature=" + target?.signature' target='_blank') Lien direct
+      q-tab-panel.no-padding(name="raaw")
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
+        q-input(label='username')
 </template>
 
 <script lang="ts" setup>
