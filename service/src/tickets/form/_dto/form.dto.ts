@@ -22,6 +22,8 @@ export class FormCreateDto extends MetadataDto {
   @ApiProperty({ enum: FormTypeList })
   type: FormTypes
 
+  defaultValues: any
+
   @ValidateNested({ each: true })
   @Type(() => FormSectionDto)
   // @ApiProperty({ type: () => FormSectionDto, isArray: true })

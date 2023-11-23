@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import { Document, Mixed } from 'mongoose'
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
 import { FormTypes } from '../_enum/types'
 import { FormSectionPart, FormSectionPartSchema } from './parts/section.part.schema'
+import { MixedValue } from '~/_common/types/mixed-value.type'
 @Schema({
   collection: 'forms',
   versionKey: false,
@@ -13,6 +14,12 @@ export class Form extends AbstractSchema {
 
   @Prop()
   description: string
+
+  @Prop({
+    type: Object,
+    default: {},
+  })
+  defaultValues: { [key: string]: MixedValue }
 
   @Prop({
     type: Number,
