@@ -1,7 +1,7 @@
 <template lang="pug">
 div
     tk-form-builder(:json="data.data")
-    tk-form-builder(:json="data2.data")
+    //tk-form-builder(:json="data2.data")
 </template>
 
 <script lang="ts" setup>

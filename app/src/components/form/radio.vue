@@ -1,15 +1,8 @@
 <template lang="pug">
 q-radio(v-bind="attrs" v-on="listeners")
+    template(v-for="(_, name) in $slots" v-slot:[name]="slotData")
+        slot(:name="name" v-bind="slotData")
 </template>
     
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue';
-
-const { emit } = defineEmits();
-
-const selectedValue = ref('');
-
-const emitCustomEvent = (value: string) => {
-    emit('custom-event', value);
-};
 </script>

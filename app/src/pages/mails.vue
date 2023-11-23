@@ -75,12 +75,8 @@ tk-2pan(
 import { useHttpApi } from '../composables'
 import { omit } from 'radash'
 import type { QTableProps } from 'quasar'
-import { useHttpApi } from '../composables'
-import { omit } from 'radash'
-import type { QTableProps } from 'quasar'
 type Mail = any
 const route = useRoute()
-const router = useRouter()
 const router = useRouter()
 const dayjs = useDayjs()
 const $q = useQuasar()
@@ -152,20 +148,18 @@ const columns = ref<QTableProps['columns']>([
     field: 'actions',
     align: 'left',
   },
-  align: 'left',
-  },
-{
-  name: 'envelope.date',
+  {
+    name: 'envelope.date',
     label: 'Date de réception',
-      field: (row: Mail) => row.envelope.date,
-        format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
-          align: 'left',
+    field: (row: Mail) => row.envelope.date,
+    format: (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm'),
+    align: 'left',
   },
-{
-  name: 'actions',
+  {
+    name: 'actions',
     label: 'Actions',
-      field: 'actions',
-        align: 'left',
+    field: 'actions',
+    align: 'left',
   },
 ])
 const tab = ref('email')
@@ -242,14 +236,8 @@ const importMail = async (mail: any) => {
     color: 'positive',
     message: 'Email importé avec succès',
   })
-  return mail
-}
-$q.notify({
-  color: 'positive',
-  message: 'Email importé avec succès',
-})
-await refresh()
-return null
+  await refresh()
+  return null
 }
 
 const save = async (mail: Mail) => {

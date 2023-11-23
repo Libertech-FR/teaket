@@ -66,10 +66,10 @@ const props = defineProps({
     type: String,
     description: 'The field to use as value',
   },
-  transform: {
-    type: Function,
-    default: (item) => item,
-    description: 'Transform the item before emit',
+  transformKeys: {
+    type: Object as PropType<{ [key: string]: string }>,
+    default: {},
+    description: 'The keys to transform, ex: [{ "keyToChange": "newKey"}]',
   },
   additionalFilters: {
     type: Object as PropType<Filter[]>,
@@ -145,7 +145,7 @@ onMounted(async () => {
       color: 'negative',
     })
   }
-  filteredOptions.value = data.value.data.map((item) => props.transform(item))
+  filteredOptions.value = data.value.data.map((item) => transform(item))
 })
 
 async function filterOptions(val, update) {
@@ -162,7 +162,7 @@ async function filterOptions(val, update) {
   const response = await useHttpApi(props.apiUrl, { method: 'get', params })
 
   update(() => {
-    filteredOptions.value = response.data.value.data.map((item) => props.transform(item))
+    filteredOptions.value = response.data.value.data.map((item) => transform(item))
   })
 }
 
@@ -192,6 +192,17 @@ function getValue(item, value) {
   if (!getValue) return item
   return getValue
 }
+
+function transform(item) {
+  const keys = Object.keys(props.transformKeys)
+  if (!keys.length) return item
+  return keys.reduce((newItem, key) => {
+    const newKey = props.transformKeys[key]
+    newItem[newKey] = get(item, key)
+    return newItem
+  }, {})
+}
+
 </script>
 
 <style scoped></style>

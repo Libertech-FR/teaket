@@ -53,7 +53,7 @@ q-card(style="height: 100%" flat).column.q-col-gutter-none
                   :model-value="props.modelValue.envelope.observers"
                   multiple
                   :disable="isDisabledTicket"
-                  :transform="transform"
+                  :transformKeys="transform"
                 )
                 tk-form-autocomplete.q-my-xs(
                   apiUrl="/core/entities"
@@ -66,7 +66,7 @@ q-card(style="height: 100%" flat).column.q-col-gutter-none
                   multiple
                   :disable="isDisabledTicket"
                   :additionalFilters="assignedFilters"
-                  :transform="transform"
+                  :transformKeys="transform"
                 )
           q-expansion-item(label="Informations" dense).bg-gray-4
             q-card
@@ -229,13 +229,12 @@ if (entitiesError.value) {
   })
 }
 
-function transform(item: Entity) {
-  return {
-    id: item._id,
-    name: item.profile.commonName,
-    type: item.type,
-  }
+const transform = {
+  "_id": "id",
+  "profile.commonName": "name",
+  "type": "type"
 }
+
 
 const assignedFilters = [{ field: 'type', value: EntityType.AGENT, operator: "<=#" }]
 

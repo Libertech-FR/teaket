@@ -215,7 +215,6 @@ const debug = process.env.NODE_ENV === 'development'
 const selected = ref([])
 const tab = ref('')
 const target = ref<null | object>(null)
-const target = ref<null | object>(null)
 const daysjs = useDayjs()
 
 watch(target, (t) => {
@@ -230,18 +229,7 @@ async function cancel() {
   target.value = null
   selected.value = []
 }
-watch(target, (t) => {
-  if (t) selected.value = [t]
-  if ($q.platform.is.mobile) {
-    splitterModel.value = !t ? 100 : 0
-  }
-})
 
-async function cancel() {
-  await props.actions.cancel()
-  target.value = null
-  selected.value = []
-}
 async function read(row) {
   const response = await props.actions.read(row)
   target.value = response
