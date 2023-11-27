@@ -30,7 +30,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -64,7 +63,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -94,7 +92,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "additionalFilters": [
               {
@@ -136,8 +133,7 @@
           "col": NumberInt(12),
           "attrsOnDefault": {
             "dense": true,
-            "filled": true,
-            "disable": true
+            "filled": true
           },
           "attrsOnCreate": {},
           "attrsOnRead": {
@@ -161,7 +157,6 @@
             "searchField": "name",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -266,7 +261,6 @@
             "searchField": "name",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -300,6 +294,8 @@
               }
             ],
             "option-label": "name",
+            "emit-value": true,
+            "options-map": true,
             "dense": true,
             "filled": true
           },
@@ -344,7 +340,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -378,7 +373,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -408,7 +402,6 @@
             "searchField": "profile.commonName",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -468,7 +461,6 @@
             "searchField": "name",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",
@@ -573,7 +565,6 @@
             "searchField": "name",
             "dense": true,
             "multiple": true,
-            "disable": true,
             "filled": true,
             "transformKeys": {
               "_id": "id",

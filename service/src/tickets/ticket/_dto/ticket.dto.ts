@@ -66,6 +66,7 @@ export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @ApiProperty({ type: IdnamePartDto })
   public project?: IdnamePartDto
 
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => IdnamePartDto)
