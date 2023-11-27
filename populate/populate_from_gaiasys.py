@@ -464,58 +464,58 @@ async def populate_collection_filestorage(collection, headers):
             logger.warning(f"Failed to insert {collection.get('name')}: {e} \n {e.response.text}")
 
 collections = [
-    # {
-    #     "name": "sla",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_sla",
-    #     "endpoint": "tickets/sla",
-    #     "method": populate_collection_sla
-    # },
-    # {
-    #     "name": "entities",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "peoples",
-    #     "endpoint": "core/entities",
-    #     "method": populate_collection_entities
-    # },
-    # {
-    #     "name": "categories",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_category",
-    #     "endpoint": "core/categories",
-    #     "method": populate_collection_categories
-    # },
-    # {
-    #     "name": "source-requests",
-    #     "import_db": "libertech-data",
-    #     "import_collection": "tickets_sourcetype",
-    #     "endpoint": "tickets/source-request",
-    #     "method": populate_collection_source_requests
-    # },
     {
-        "name": "ticket",
-        "nameThread": "thread",
-        "import_db_mail": "mails",
+        "name": "sla",
         "import_db": "libertech-data",
-        "import_db_fs": "libertech-sys",
-        "import_collection": "tickets",
-        "import_collection_fs": "userstorage",
-        "import_collection_mail": "mailsStore",
-        "endpoint": "tickets/ticket",
-        "endpointThread": "tickets/thread",
-        "method": populate_collection_source_ticket
+        "import_collection": "tickets_sla",
+        "endpoint": "tickets/sla",
+        "method": populate_collection_sla
     },
     {
-        "name": "filestorage",
-        "import_db": "libertech-sys",
-        "import_db_ticket": "libertech-data",
-        "import_db_mail": "mails",
-        "import_collection": "userstorage",
-        "import_collection_ticket": "tickets",
-        "import_collection_mail": "mailsStore",
-        "endpoint": "core/filestorage",
-        "method": populate_collection_filestorage,
+        "name": "entities",
+        "import_db": "libertech-data",
+        "import_collection": "peoples",
+        "endpoint": "core/entities",
+        "method": populate_collection_entities
     },
+    {
+        "name": "categories",
+        "import_db": "libertech-data",
+        "import_collection": "tickets_category",
+        "endpoint": "core/categories",
+        "method": populate_collection_categories
+    },
+    {
+        "name": "source-requests",
+        "import_db": "libertech-data",
+        "import_collection": "tickets_sourcetype",
+        "endpoint": "tickets/source-request",
+        "method": populate_collection_source_requests
+    },
+    # {
+    #     "name": "ticket",
+    #     "nameThread": "thread",
+    #     "import_db_mail": "mails",
+    #     "import_db": "libertech-data",
+    #     "import_db_fs": "libertech-sys",
+    #     "import_collection": "tickets",
+    #     "import_collection_fs": "userstorage",
+    #     "import_collection_mail": "mailsStore",
+    #     "endpoint": "tickets/ticket",
+    #     "endpointThread": "tickets/thread",
+    #     "method": populate_collection_source_ticket
+    # },
+    # {
+    #     "name": "filestorage",
+    #     "import_db": "libertech-sys",
+    #     "import_db_ticket": "libertech-data",
+    #     "import_db_mail": "mails",
+    #     "import_collection": "userstorage",
+    #     "import_collection_ticket": "tickets",
+    #     "import_collection_mail": "mailsStore",
+    #     "endpoint": "core/filestorage",
+    #     "method": populate_collection_filestorage,
+    # },
 ]
 
 
