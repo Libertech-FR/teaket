@@ -8,6 +8,7 @@ q-card(flat)
         v-bind="getAttrs(field, 'Create')"
         :error-message="validations[field['model-value']]"
         :error="validations.hasOwnProperty(field['model-value'])"
+        @update:model-value="resetValidation(field['model-value'])"
         v-model="data[field['model-value']]"
       )
 </template>
@@ -73,6 +74,10 @@ const rows = computed(() => {
     return acc
   }, {})
 })
+
+function resetValidation(field: string) {
+  delete validations.value[field]
+}
 
 function getAttrs(field: TicketFormField, mode: string) {
   return {

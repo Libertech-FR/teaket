@@ -141,7 +141,7 @@ onMounted(async () => {
 
   if (error.value) {
     $q.notify({
-      message: 'Erreur lors de la recupération des entités',
+      message: 'Erreur lors de la recupération des données',
       color: 'negative',
     })
   }
@@ -149,7 +149,7 @@ onMounted(async () => {
 })
 
 async function filterOptions(val, update) {
-  if (val.length < 3) {
+  if (filteredOptions.value.length > 8 && val.length < 3) {
     return
   }
 

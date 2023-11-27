@@ -3,30 +3,37 @@ q-card.q-ma-sm
   q-card-section
     q-toolbar
       q-toolbar-title {{ json.title }}
+      q-space
+      slot(name="top-actions")
+        slot(name="before-top-actions")
+        slot(name="after-top-actions")
     q-toolbar(inset)
       span {{ json.description }}
   q-card-section
     tk-form-type(:type="json.type" :sections="json.sections")
   q-card-actions
-    q-space
-    q-btn(
-      @click="reset"
-      label="Vider les champs"
-      color="info"
-      flat
-    )
-    q-btn(
-      @click="resetValidation"
-      label="Vider les erreurs"
-      color="negative"
-      flat
+    slot(name="actions")
+      slot(name="before-actions")
+      q-space
+      q-btn(
+        @click="reset"
+        label="Vider les champs"
+        color="info"
+        flat
       )
-    q-btn(
-      @click="submit"
-      label="Envoyer"
-      color="primary"
-      flat
-    )
+      q-btn(
+        @click="resetValidation"
+        label="Vider les erreurs"
+        color="negative"
+        flat
+        )
+      q-btn(
+        @click="submit"
+        label="Envoyer"
+        color="primary"
+        flat
+      )
+      slot(name="after-actions")
 </template>
 
 <script lang="ts" setup>
@@ -53,7 +60,7 @@ function resetValidation() {
 
 let data = ref({})
 const form = computed(() => {
-  return { ...construct(data) }
+  return construct(data.value)
 })
 
 function reset() {
@@ -62,13 +69,12 @@ function reset() {
 
 let validations = ref({})
 async function submit() {
-  const body = {
-    ...form.value,
-    ...props.json.defaultValues
-  }
-  const response = await useHttpApi(props.json.submitApiUrl + '?debug=1', {
+  const response = await useHttpApi(props.json.submitApiUrl, {
     method: 'post',
-    body
+    body: {
+      ...form.value,
+      ...props.json.defaultValues
+    }
   }, {
     message: 'La création a échoué',
     color: 'negative'

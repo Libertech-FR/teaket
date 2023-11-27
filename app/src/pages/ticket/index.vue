@@ -1,7 +1,7 @@
 <template lang="pug">
-div
-  tk-form-builder(:json="data.data")
-  //tk-form-builder(:json="data2.data")
+tk-form-builder(:json="data.data")
+  template(#top-actions)
+    q-btn(@click="refresh" label="refresh" icon="mdi-refresh" flat)
 </template>
 
 <script lang="ts" setup>
@@ -16,14 +16,4 @@ const {
   },
 })
 
-const {
-  data: data2,
-  refresh: refresh2,
-  error: error2,
-} = await useHttpApi(`/tickets/form/{_id}`, {
-  method: 'get',
-  pathParams: {
-    _id: `65548e6982b5055708b80f38`,
-  },
-})
 </script>

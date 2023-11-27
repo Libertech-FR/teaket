@@ -4,8 +4,6 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "types": [
-      "./types/auth.d.ts",
-    ]
+    "types": ["./types/auth.d.ts", ".nuxt/types/service-api.d.ts"]
   }
 }
