@@ -1,11 +1,4 @@
 {
-  "_id": "65539756ed13b613ad02aa56",
-  "metadata": {
-    "createdBy": "user1",
-    "createdAt": "2023-11-14T15:50:46.791+0000",
-    "lastUpdatedBy": "user1",
-    "lastUpdatedAt": "2023-11-16T15:02:58.717+0000"
-  },
   "title": "Creation de ticket",
   "description": "Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.",
   "type": 1,
