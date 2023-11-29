@@ -6,4 +6,4 @@
   - [2pan](https://libertech-fr.github.io/teaket/app/2pan)
   - [NUXTAPIPARTY](https://libertech-fr.github.io/teaket/app/NUXTAPIPARTY)
 - Service
-  - [NEWDTO](https://libertech-fr.github.io/teaket/service/NEWDTO)
+  - [NEW_DTO](https://libertech-fr.github.io/teaket/service/NEW_DTO)
