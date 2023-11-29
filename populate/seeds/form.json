@@ -1,0 +1,313 @@
+[
+    {
+        "_id": "65539756ed13b613ad02aa56",
+        "title": "Creation de ticket",
+        "description": "Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.",
+        "type": 1,
+        "defaultValues": {
+            "lifestep": 1
+        },
+        "sections": {
+            "envelope": {
+                "label": "Enveloppe",
+                "type": 0,
+                "description": "Veuillez remplir les champs ci-dessous pour créer une nouvelle enveloppe.",
+                "icon": "mdi-email",
+                "fields": {
+                    "senders": {
+                        "component": "autocomplete",
+                        "label": "Appelant",
+                        "model-value": "envelope.senders",
+                        "attrsOnDefault": {
+                            "apiUrl": "/core/entities",
+                            "optionLabel": "name",
+                            "modelLabel": "name",
+                            "searchField": "profile.commonName",
+                            "dense": true,
+                            "multiple": true,
+                            "filled": true,
+                            "transformKeys": {
+                                "_id": "id",
+                                "profile.commonName": "name",
+                                "type": "type"
+                            }
+                        },
+                        "row": 1,
+                        "col": 4,
+                        "attrsOnCreate": {
+                            "disable": false
+                        },
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {
+                            "disable": false
+                        },
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "observers": {
+                        "component": "autocomplete",
+                        "label": "Concernés",
+                        "model-value": "envelope.observers",
+                        "attrsOnDefault": {
+                            "apiUrl": "/core/entities",
+                            "optionLabel": "name",
+                            "modelLabel": "name",
+                            "searchField": "profile.commonName",
+                            "dense": true,
+                            "multiple": true,
+                            "filled": true,
+                            "transformKeys": {
+                                "_id": "id",
+                                "profile.commonName": "name",
+                                "type": "type"
+                            }
+                        },
+                        "row": 1,
+                        "col": 4,
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "assigned": {
+                        "component": "autocomplete",
+                        "label": "Assignés",
+                        "model-value": "envelope.assigned",
+                        "attrsOnDefault": {
+                            "apiUrl": "/core/entities",
+                            "optionLabel": "name",
+                            "searchField": "profile.commonName",
+                            "modelLabel": "name",
+                            "dense": true,
+                            "multiple": true,
+                            "filled": true,
+                            "additionalFilters": [
+                                {
+                                    "field": "type",
+                                    "value": 2,
+                                    "operator": "<=#"
+                                }
+                            ],
+                            "transformKeys": {
+                                "_id": "id",
+                                "profile.commonName": "name",
+                                "type": "type"
+                            }
+                        },
+                        "row": 1,
+                        "col": 4,
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    }
+                }
+            },
+            "infos": {
+                "label": "Informations",
+                "type": 0,
+                "description": "Veuillez remplir les champs ci-dessous pour renseigner les informations du ticket.",
+                "icon": "mdi-information",
+                "fields": {
+                    "subject": {
+                        "component": "input",
+                        "label": "Sujet",
+                        "model-value": "subject",
+                        "row": 1,
+                        "col": 12,
+                        "attrsOnDefault": {
+                            "dense": true,
+                            "filled": true
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "project": {
+                        "component": "autocomplete",
+                        "label": "Projet(s)",
+                        "model-value": "project",
+                        "row": 2,
+                        "col": 6,
+                        "attrsOnDefault": {
+                            "apiUrl": "/core/project",
+                            "optionLabel": "name",
+                            "modelLabel": "name",
+                            "searchField": "name",
+                            "dense": true,
+                            "multiple": true,
+                            "filled": true,
+                            "transformKeys": {
+                                "_id": "id",
+                                "name": "name"
+                            }
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "priority": {
+                        "component": "select",
+                        "label": "Priorité",
+                        "model-value": "priority",
+                        "row": 3,
+                        "col": 6,
+                        "attrsOnDefault": {
+                            "options": [
+                                {
+                                    "id": "612345678901234567890123",
+                                    "name": "Low"
+                                },
+                                {
+                                    "id": "712345678901234567890123",
+                                    "name": "Normal"
+                                },
+                                {
+                                    "id": "812345678901234567890123",
+                                    "name": "High"
+                                },
+                                {
+                                    "id": "912345678901234567890123",
+                                    "name": "Urgent"
+                                }
+                            ],
+                            "option-label": "name",
+                            "dense": true,
+                            "filled": true
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "impact": {
+                        "component": "select",
+                        "label": "Impact",
+                        "model-value": "impact",
+                        "row": 3,
+                        "col": 6,
+                        "attrsOnDefault": {
+                            "options": [
+                                {
+                                    "id": "612345678901234567890123",
+                                    "name": "Low"
+                                },
+                                {
+                                    "id": "712345678901234567890123",
+                                    "name": "Medium"
+                                },
+                                {
+                                    "id": "812345678901234567890123",
+                                    "name": "High"
+                                },
+                                {
+                                    "id": "912345678901234567890123",
+                                    "name": "Critical"
+                                }
+                            ],
+                            "option-label": "name",
+                            "dense": true,
+                            "filled": true
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "sla": {
+                        "component": "autocomplete",
+                        "label": "SLA",
+                        "model-value": "sla",
+                        "row": 2,
+                        "col": 6,
+                        "attrsOnDefault": {
+                            "apiUrl": "/tickets/sla",
+                            "optionLabel": "name",
+                            "modelLabel": "name",
+                            "searchField": "name",
+                            "dense": true,
+                            "multiple": true,
+                            "filled": true,
+                            "transformKeys": {
+                                "_id": "id",
+                                "name": "name"
+                            }
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    },
+                    "type": {
+                        "component": "select",
+                        "label": "Type",
+                        "model-value": "type",
+                        "row": 3,
+                        "col": 6,
+                        "attrsOnDefault": {
+                            "options": [
+                                {
+                                    "value": 1,
+                                    "name": "Incident"
+                                },
+                                {
+                                    "value": 2,
+                                    "name": "Demande"
+                                }
+                            ],
+                            "option-label": "name",
+                            "emit-value": true,
+                            "options-map": true,
+                            "dense": true,
+                            "filled": true
+                        },
+                        "attrsOnCreate": {},
+                        "attrsOnRead": {
+                            "disable": true
+                        },
+                        "attrsOnUpdate": {},
+                        "attrsOnDelete": {
+                            "disable": true
+                        }
+                    }
+                }
+            }
+        },
+        "submitButtonText": "Soumettre le formulaire",
+        "submitApiUrl": "/tickets/ticket",
+        "redirectUrl": "/ticket"
+    }
+]

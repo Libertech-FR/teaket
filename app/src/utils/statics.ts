@@ -17,6 +17,30 @@ export const lifeSteps: {
   { label: 'Fusionné', value: -2, group: 'lifestep', icon: 'mdi-merge', color: 'primary' },
 ]
 
+export const entityTypes: {
+  label: string
+  value?: number
+  icon?: string
+  color?: string
+}[] = [
+  { label: 'Opérateur', value: 1, icon: 'mdi-circle', color: 'green' },
+  { label: 'Agent', value: 2, icon: 'mdi-circle', color: 'red' },
+  { label: 'Client', value: 3, icon: 'mdi-archive', color: 'grey' },
+  { label: 'Entreprise', value: 4, icon: 'mdi-merge', color: 'primary' },
+  { label: 'Autre', value: 99, icon: 'mdi-merge', color: 'primary' },
+]
+
+export const entityStates: {
+  label: string
+  value?: number
+  icon?: string
+  color?: string
+}[] = [
+  { label: 'Archivé', value: -1, icon: 'mdi-circle', color: 'green' },
+  { label: 'Inactif', value: 0, icon: 'mdi-circle', color: 'red' },
+  { label: 'Actif', value: 1, icon: 'mdi-archive', color: 'grey' },
+]
+
 export enum TicketType {
   INCIDENT = 1,
   DEMANDE = 2,

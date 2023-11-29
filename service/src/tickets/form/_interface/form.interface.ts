@@ -44,4 +44,5 @@ interface TicketForm {
     [sectionName: string]: TicketFormSection
   }
   submitButtonText: string
+  submitApiUrl: string
 }

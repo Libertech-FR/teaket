@@ -17,12 +17,24 @@ export class FormSectionDto {
   @ApiProperty()
   type: FormTypes
 
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  icon?: string
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  description?: string
+
+  @IsObject()
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => FormSectionDto)
   @ApiProperty({ type: () => FormSectionDto, required: false })
   sections?: { [sectionName: string]: FormSectionDto }
 
+  @IsObject()
   @ValidateNested({ each: true })
   @Type(() => FormFieldDto)
   @ApiProperty({ type: FormFieldDto })

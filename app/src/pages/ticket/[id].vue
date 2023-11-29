@@ -34,10 +34,11 @@ const {
 
 const mainPanelRef = ref<InstanceType<typeof TkTicketMainPanel> | null>(null)
 const refreshThreadsList = () => {
-  mainPanelRef.value.$.exposed.refreshThreadsList()
+  mainPanelRef.value?.$.exposed?.refreshThreadsList()
 }
 
 const isDisabledTicket = computed(() => {
+  if (!ticketData.value.data?.lifestep) return true
   return ticketData.value?.data?.lifestep <= LifeStep.CLOSED
 })
 

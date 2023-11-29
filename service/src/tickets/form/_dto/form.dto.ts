@@ -1,3 +1,5 @@
+import { MixedValue } from './../../../_common/types/mixed-value.type'
+import { Mixed } from 'mongoose'
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { IsString, IsEnum, IsObject, ValidateNested, IsOptional, IsMongoId } from 'class-validator'
 import { ObjectId } from 'mongodb'
@@ -22,20 +24,31 @@ export class FormCreateDto extends MetadataDto {
   @ApiProperty({ enum: FormTypeList })
   type: FormTypes
 
+  @IsObject()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  defaultValues: { [key: string]: MixedValue }
+
   @ValidateNested({ each: true })
   @Type(() => FormSectionDto)
-  //@ApiProperty({ type: () => FormSectionDto })
-  sections: { [sectionName: string]: FormSectionDto }
+  // @ApiProperty({ type: () => FormSectionDto, isArray: true })
+  sections: { [key: string]: FormSectionDto }
 
   @IsString()
   @ApiProperty()
   submitButtonText: string
+
+  @IsString()
+  @ApiProperty()
+  submitApiUrl: string
+
+  @IsObject()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  redirectUrl?: string
 }
 
-export class FormDto extends FormCreateDto {
-  @IsMongoId()
-  @ApiProperty({ type: String })
-  _id: ObjectId
-}
+export class FormDto extends FormCreateDto {}
+
 
 export class FormUpdateDto extends PartialType(FormDto) {}

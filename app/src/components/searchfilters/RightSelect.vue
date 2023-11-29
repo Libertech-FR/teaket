@@ -28,19 +28,12 @@ import { useHttpApi, pushQuery } from '~/composables'
 import type { components } from '#build/types/service-api'
 import { useRoute, useRouter } from 'nuxt/app'
 import { ticketType, lifeSteps } from '#imports'
+import type { FilterOption } from '~/types'
 type Category = components['schemas']['CategoriesDto']
 type State = components['schemas']['StatesDto']
 type CateforyFetch = components['schemas']['PaginatedResponseDto'] & { data: Category[] }
 type StateFetch = components['schemas']['PaginatedResponseDto'] & { data: State[] }
 
-type Option = {
-  label: string
-  value?: string
-  group?: string
-  header?: boolean
-  icon?: string
-  color?: string
-}
 const route = useRoute()
 const router = useRouter()
 
@@ -58,7 +51,7 @@ watch(
   },
 )
 
-const filters = ref<Option[]>([])
+const filters = ref<FilterOption[]>([])
 const getFilters = () => {
   filters.value = []
 
@@ -92,7 +85,7 @@ const getFilters = () => {
 }
 
 const options = computed(() => {
-  const ticketTypeOptions: Option[] = ticketType.map((type) => {
+  const ticketTypeOptions: FilterOption[] = ticketType.map((type) => {
     return {
       label: type.label,
       value: type.value.toString(),
@@ -102,7 +95,7 @@ const options = computed(() => {
     }
   })
   ticketTypeOptions.unshift({ label: 'Types', header: true })
-  const states: Option[] =
+  const states: FilterOption[] =
     statesData.value.data.map((state: State) => {
       return {
         label: state.name,
@@ -112,7 +105,7 @@ const options = computed(() => {
         color: state.color ?? '',
       }
     }) ?? []
-  const categories: Option[] =
+  const categories: FilterOption[] =
     categoriesData.value.data.map((category: Category) => {
       return {
         label: category.name,
@@ -133,7 +126,7 @@ const options = computed(() => {
 
 // Regroup the filters by key
 const regroupFilters = async () => {
-  return filters.value.reduce((acc: any, filter: Option) => {
+  return filters.value.reduce((acc: any, filter: FilterOption) => {
     const key = `filters[@${filter.group}]`
     if (!acc[key]) {
       acc[key] = []
@@ -156,7 +149,7 @@ const pushQueries = async () => {
   }
 }
 
-const addFilter = (option: Option) => {
+const addFilter = (option: FilterOption) => {
   // Find the index of the option in the filters array
   const index = filters.value.findIndex((filter) => {
     return filter.group === option.group && filter.value === option.value

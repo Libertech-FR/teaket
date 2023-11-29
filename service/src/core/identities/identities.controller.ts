@@ -55,7 +55,9 @@ export class IdentitiesController extends AbstractController {
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(IdentitiesDto)
   public async read(@Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response): Promise<Response> {
-    const data = await this._service.findById(_id)
+    const data = await this._service.findById(_id, {
+      password: 0,
+    })
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

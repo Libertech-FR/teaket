@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, ValidateNested } from 'class-validator'
+import { IsString, IsNumber, ValidateNested } from 'class-validator'
 import { MixedValue } from '~/_common/types/mixed-value.type'
 export class FormFieldDto {
   @IsString()
@@ -14,11 +14,11 @@ export class FormFieldDto {
   @ApiProperty()
   'model-value': string
 
-  @IsString()
+  @IsNumber()
   @ApiProperty()
   row: number
 
-  @IsString()
+  @IsNumber()
   @ApiProperty()
   col: number
 

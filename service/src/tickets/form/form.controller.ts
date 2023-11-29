@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } fr
 import { FormDto, FormUpdateDto } from './_dto/form.dto'
 import { FormService } from './form.service'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from '@streamkits/nestjs_module_scrud'
 import { Types } from 'mongoose'
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator'
@@ -29,6 +29,7 @@ export class FormController extends AbstractController {
   }
   @Post()
   @ApiCreateDecorator(FormDto, FormDto)
+  @ApiResponse({ type: FormDto })
   public async create(@Res() res: Response, @Body() body: FormDto) {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({

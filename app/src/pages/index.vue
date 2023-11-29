@@ -7,7 +7,7 @@ q-page
 </template>
 
 <script lang="ts" setup>
-const call = () => {
-  const { data } = useHttpApi('/tickets/ticket')
+const call = async () => {
+  const { data } = await useHttpApi('/tickets/ticket')
 }
 </script>

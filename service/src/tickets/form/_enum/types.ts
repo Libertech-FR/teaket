@@ -1,5 +1,5 @@
 export enum FormTypes {
-  'SIMPLE' = 0,
+  'BASE' = 0,
   'STEPS' = 1,
   'TABS' = 2,
 }

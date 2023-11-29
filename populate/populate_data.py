@@ -71,6 +71,11 @@ collections = [
         "file": "threads.json",
         "endpoint": "tickets/thread",
     },
+    {
+        "name": "form",
+        "file": "form.json",
+        "endpoint": "tickets/form",
+    }
 ]
 
 # async def populate_collection(collection_name, db):

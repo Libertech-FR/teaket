@@ -12,9 +12,19 @@ export class FormSectionPart {
   @Prop({
     type: Number,
     enum: FormTypes,
-    default: FormTypes.SIMPLE,
+    default: FormTypes.BASE,
   })
   type: FormTypes
+
+  @Prop({
+    type: String,
+  })
+  icon?: string
+
+  @Prop({
+    type: String,
+  })
+  description?: string
 
   @Prop({ type: Map })
   sections?: Map<string, FormSectionPart>

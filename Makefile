@@ -1,3 +1,4 @@
+include .env
 IMGNAME?=ghcr.io/libertech-fr/teaket
 APPNAME?=teaket
 APP_PORT?=7000
@@ -78,7 +79,7 @@ dbs: ## Start databases
 	@docker volume create $(APPNAME)-mongodb
 	@docker run -d --rm \
 		--name $(APPNAME)-mongodb \
-		-v $(APPNAME)-mongodb:/data/db \
+		-v $(APPNAME)-mongodb:/data/db 
 		-p 27017:27017 \
 		-e MONGODB_REPLICA_SET_MODE=primary \
 		-e MONGODB_REPLICA_SET_NAME=rs0 \

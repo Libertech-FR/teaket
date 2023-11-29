@@ -1,6 +1,6 @@
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto'
 import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
-import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, ValidateNested, IsNotEmpty } from 'class-validator'
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
 import { Type } from 'class-transformer'
 import { EnvelopePartDto } from '~/tickets/ticket/_dto/parts/envelope.part.dto'
@@ -9,18 +9,22 @@ import { TagPartDto } from '~/tickets/ticket/_dto/parts/tag.part.dto'
 import { TicketLifestep, TicketLifestepList } from '~/tickets/ticket/_enum/ticket-lifestep.enum'
 import { IdnamePartDto } from '~/_common/dto/parts/idname.part.dto'
 import { SlaPartDto } from '~/tickets/ticket/_dto/parts/sla.part.dto'
+import { IsEnveloppePartDto } from '~/_common/decorators/is-enveloppe-part.decorator'
 
 export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
-  @IsObject()
-  @ValidateNested()
+  @IsEnveloppePartDto({ message: 'Appelant obligatoire' })
+  @ValidateNested({ each: true })
   @Type(() => EnvelopePartDto)
   @ApiProperty({ type: EnvelopePartDto })
   public envelope: EnvelopePartDto
 
+  @IsNotEmpty()
   @IsString()
   @ApiProperty()
   public subject: string
 
+  @IsNotEmpty()
+  @IsNumber()
   @IsEnum(TicketTypeList, { message: 'Type de ticket invalide' })
   @ApiProperty({ enum: TicketTypeList })
   public type: TicketType
@@ -31,6 +35,7 @@ export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @ApiProperty({ type: [TagPartDto] })
   public tags: TagPartDto[]
 
+  @IsNotEmpty()
   @IsEnum(TicketLifestepList)
   @ApiProperty({ enum: TicketLifestepList })
   public lifestep: TicketLifestep
@@ -61,18 +66,21 @@ export class TicketCreateDto extends IntersectionType(CustomFieldsDto, MetadataD
   @ApiProperty({ type: IdnamePartDto })
   public project?: IdnamePartDto
 
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => IdnamePartDto)
   @ApiProperty({ type: IdnamePartDto })
   public priority: IdnamePartDto
 
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => IdnamePartDto)
   @ApiProperty({ type: IdnamePartDto })
   public impact: IdnamePartDto
 
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => SlaPartDto)

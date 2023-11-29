@@ -156,7 +156,7 @@ const columns = ref<QTableProps['columns']>([
     label: 'Actions',
     field: 'actions',
     align: 'left',
-  }
+  },
 ])
 const tab = ref('email')
 const goToMail = async (mail: Mail) => {

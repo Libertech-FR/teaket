@@ -1,3 +1,4 @@
+/* eslint-disable */
 // noinspection JSUnusedGlobalSymbols
 
 // @ts-ignore
@@ -6,7 +7,7 @@ import { paths } from '@/../.nuxt/types/service-api'
 import { Ref } from 'vue'
 import { FetchError } from 'ofetch/dist/node'
 import { AvailableRouterMethod, NitroFetchRequest } from 'nitropack'
-import { AsyncData, FetchResult, NuxtError, UseFetchOptions } from 'nuxt/app'
+import { AsyncData, FetchResult, NuxtError } from 'nuxt/app'
 import { KeysOf } from 'nuxt/dist/app/composables/asyncData'
 import { Notify } from 'quasar'
 
@@ -88,6 +89,29 @@ type BodyType<ResT extends keyof Paths & string, Method extends HttpMethod> = Pa
 type ResponseType<ResT extends keyof Paths & string, Method extends HttpMethod> = OpenApiResponse<Paths[ResT][Lowercase<Method>]>
 const $q = useQuasar()
 
+export type UseFetchOptions<
+  ResT,
+  DataT,
+  PickKeys extends KeysOf<DataT>,
+  DefaultT,
+  ReqT extends NitroFetchRequest,
+  Method extends AvailableRouterMethod<ReqT>,
+> = {
+  pick?: PickKeys
+  default?: DefaultT
+  headers?: HeadersInit
+  query?: Record<string, any>
+  body?: any
+  pathParams?: Record<string, any>
+} & ReqT &
+  (
+    | {
+        method?: Method
+      }
+    | {
+      }
+  )
+
 export async function useHttpApi<
   ResT extends keyof Paths & string,
   ErrorT = FetchError,
@@ -101,30 +125,40 @@ export async function useHttpApi<
   path: MaybeRefOrGetter2<ResT>,
   opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method> & {
     method: Method
-    body?: Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']
-    pathParams?: Record<string, string>
+    body?: Partial<Paths[ResT][Lowercase<Method>]['requestBody']['content']['application/json']>
+    pathParams?: Record<string, any>
   },
   errorParams?: {
+    silent?: boolean
     redirect?: boolean
     message?: string
     color?: string
   },
-): Promise<AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]> | undefined, FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>> | NuxtError> {
-  // ): Promise<AsyncData<PickFrom<DataT, PickKeys> | DefaultT, ErrorT | null>> {
+): Promise<AsyncData<OpenApiResponse<Paths[ResT][Lowercase<Method>]>, 
+  FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>>| NuxtError >  {
   const response = await useHttp(resolvePath(path, opts?.pathParams), {
     baseURL: 'http://localhost:7100',
-    ...opts,
+    ...opts
   })
-  if (response.error.value) {
-    console.log(response.error.value)
+
+  if (response.error?.value) {
     if (errorParams?.redirect) {
-      return showError({ statusCode: response.error.value.statusCode, statusMessage: response.error.value.statusMessage })
+      const errorData = {
+        statusCode: response.error.value.statusCode,
+        statusMessage: response.error.value.statusMessage,
+      };
+      return showError(errorData);
     }
-    Notify.create({
-      message: errorParams?.message ?? 'Une erreur est survenue',
-      type: errorParams?.color ?? 'negative',
-    })
+    if (!errorParams?.silent) {
+      Notify.create({
+        message: errorParams?.message ?? 'Une erreur est survenue',
+        type: errorParams?.color ?? 'negative',
+      })
+    }
   }
 
-  return response
+  return response as AsyncData<
+    OpenApiResponse<Paths[ResT][Lowercase<Method>]>,
+    FetchError<OpenApiError<Paths[ResT][Lowercase<Method>]>>
+  >;
 }
