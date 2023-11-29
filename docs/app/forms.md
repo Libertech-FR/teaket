@@ -550,9 +550,13 @@ Disposition de formulaire de base avec un système de grille pour le placement d
 
 #### `FormTypes`
 Définit différents types de dispositions de formulaire : Base, Étapes, Onglets.
+'BASE' = 0,
+'STEPS' = 1,
+'TABS' = 2,
 
 #### `CRUDMode`
 Définit les opérations CRUD : Créer, Lire, Mettre à jour.
+
 
 #### `TicketFormField` et `TicketFormSection`
 Types définissant la structure des champs de formulaire et des sections.
