@@ -111,6 +111,8 @@ export default defineNuxtConfig({
   typescript: {
     // typeCheck: 'build,
     shim: false,
+    // typeCheck: true,
+    // strict: true,
   },
   hooks: {
     ready: async () => {

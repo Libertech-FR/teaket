@@ -4,6 +4,10 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "types": ["./types/auth.d.ts", ".nuxt/types/service-api.d.ts"]
+    "esModuleInterop": true
+    //"types": ["./types/auth.d.ts"]
+  },
+  "vueCompilerOptions": {
+    "plugins": ["@vue/language-plugin-pug"]
   }
 }
