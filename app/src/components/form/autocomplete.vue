@@ -21,6 +21,7 @@ import { useQuasar } from 'quasar'
 import { useHttpApi } from '~/composables/useHttpApi'
 import { get } from 'radash'
 import type { PropType } from 'vue'
+import type { AutocompleteFilter } from '~/types'
 
 const $q = useQuasar()
 const emit = defineEmits(['update:modelValue'])
@@ -72,26 +73,22 @@ const props = defineProps({
     description: 'The keys to transform, ex: [{ "keyToChange": "newKey"}]',
   },
   additionalFilters: {
-    type: Object as PropType<Filter[]>,
+    type: Object as PropType<AutocompleteFilter[]>,
     default: [],
     description: 'Additional filters to add to the query',
   },
 })
-
-type Filter = {
-  field: string
-  value: string
-  operator: string
-}
 
 const errorMessage = ref()
 const modelValueInternal = ref()
 const modelValue = computed({
   // eslint-disable-next-line
   get(): any {
+    modelValueInternal.value = props.modelValue
     return props.modelValue
   },
   set(val: object) {
+    console.log('set', val)
     errorMessage.value = null
     modelValueInternal.value = val
     emit('update:modelValue', props.emitValue ? val[`${props.optionValue}`] : val)
@@ -125,7 +122,8 @@ if (props.emitValue) {
 }
 
 const selectedLabel = computed(() => {
-  if (!modelValueInternal.value) return ''
+  console.log('selectedLabel', modelValueInternal.value, props.modelLabel)
+  if (!modelValueInternal.value || !props.modelLabel) return ''
   return get(modelValueInternal.value, props.modelLabel, '')
 })
 

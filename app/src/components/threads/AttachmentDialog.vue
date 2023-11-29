@@ -30,18 +30,10 @@ import { useDropZone } from '@vueuse/core'
 import { FsType } from '~/utils'
 import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
+import type { MailInfo, Attachement } from '/types'
 
 type FsPart = components['schemas']['FsPart']
 type Thread = components['schemas']['Thread']
-type MailInfo = {
-    to: string[],
-    cc: string[],
-    subject: string
-}
-type Attachement = {
-    id: string,
-    name: string
-}
 const props = defineProps({
     modelValue: {
         type: Boolean as PropType<boolean>,

@@ -20,7 +20,7 @@ div
                     flat
                 )
         q-step(v-for="section in sectionsLabel" :key="section" :name="section" :title="props.sections[section].label" :done="doneSteps[section]")
-            tk-form-type(:type="section.type" :sections="props.sections[section].sections" :fields="props.sections[section].fields")
+            tk-form-type(:type="props.sections[section].type" :sections="props.sections[section].sections" :fields="props.sections[section].fields")
     
 
 
@@ -28,9 +28,15 @@ div
 
 <script lang="ts" setup>
 import { defineProps } from 'vue'
+import type { PropType } from 'vue'
+import type { TicketFormSection } from '~/types'
+
+
+
+
 const props = defineProps({
     sections: {
-        type: Object,
+        type: Object as PropType<{ [key: string]: TicketFormSection }>,
         required: true
     }
 })

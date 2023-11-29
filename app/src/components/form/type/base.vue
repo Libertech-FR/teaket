@@ -1,13 +1,13 @@
 <template lang="pug">
 q-card(flat)
-  .row(v-for="row in rows" :key="row")
-    div(v-for="field in row" :key="field" :class="`col-${field.col}`").q-pa-xs
+  .row(v-for="(row, index) in rows" :key="index")
+    div(v-for="(field, index) in row" :key="index" :class="`col-${field.col}`").q-pa-xs
       component(
         :is="`tk-form-${field.component}`"
         :label="field.label"
-        v-bind="getAttrs(field, 'Create')"
-        :error-message="validations[field['model-value']]"
-        :error="validations.hasOwnProperty(field['model-value'])"
+        v-bind="getAttrs(field)"
+        :error-message="validations ? validations[field['model-value']] : ''"
+        :error="validations?.hasOwnProperty(field['model-value'])"
         @update:model-value="resetValidation(field['model-value'])"
         v-model="data[field['model-value']]"
       )
@@ -16,9 +16,12 @@ q-card(flat)
 <script lang="ts" setup>
 import { Types } from 'mongoose'
 import type { components } from "#build/types/service-api"
-
+import { computed, inject, ref } from 'vue'
+import type { MixedValue, TicketFormField } from '~/types'
+import { CRUDMode } from '~/enums'
+const mode = inject<Ref<CRUDMode>>("mode")
 type Form = components['schemas']['FormDto']
-const validations = inject("validations")
+const validations = inject<{ [key: string]: MixedValue }>("validations")
 
 const props = defineProps({
   fields: {
@@ -26,43 +29,6 @@ const props = defineProps({
     required: true
   }
 })
-
-type MixedValue =
-  | string
-  | Types.ObjectId
-  | Date
-  | number
-  | boolean
-  | null
-  | object
-  | Array<MixedValue>
-  | {
-    [key: string | number]: MixedValue
-  }
-
-
-interface TicketFormField {
-  component: string
-  label: string
-  'model-value': string
-  row: number
-  col: number
-  attrsOnDefault: {
-    [attr: string]: MixedValue
-  }
-  attrsOnCreate: {
-    [attr: string]: MixedValue
-  }
-  attrsOnRead: {
-    [attr: string]: MixedValue
-  }
-  attrsOnUpdate: {
-    [attr: string]: MixedValue
-  }
-  attrsOnDelete: {
-    [attr: string]: MixedValue
-  }
-}
 
 const rows = computed(() => {
   return Object.values(props.fields).reduce((acc: { [key: string]: TicketFormField[] }, cur) => {
@@ -76,13 +42,13 @@ const rows = computed(() => {
 })
 
 function resetValidation(field: string) {
-  delete validations.value[field]
+  if (validations?.value) delete validations.value[field]
 }
 
-function getAttrs(field: TicketFormField, mode: string) {
+function getAttrs(field: TicketFormField) {
   return {
     ...field.attrsOnDefault ?? {},
-    ...field[`attrsOn${mode}`]
+    ...field[`attrsOn${mode?.value}`]
   }
 }
 

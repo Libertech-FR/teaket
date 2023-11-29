@@ -44,7 +44,7 @@ q-dialog(:model-value="modelValue" @update:model-value="emit('update:model-value
                     :readonly="isDisabledTicket" ref="dropZoneRef"
                 )
             .q-pa-sm
-                div(ref="dropZoneRef").row.center(:class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}')
+                div(ref="dropZoneRef" :class='{"bg-grey-2": !$q.dark.isActive, "bg-grey-14": $q.dark.isActive}').row.center
                     .col.text-center
                         q-icon(name="mdi-paperclip" size="md" :class="isOverDropZone || isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'")
                         span.q-ml-md(:class="isOverDropZone || isOverDropZoneDialog ? 'text-primary' : 'text-grey-5'") Déposer un fichier
@@ -70,18 +70,11 @@ import { useDropZone } from '@vueuse/core'
 import { FsType } from '~/utils'
 import { useQuasar } from 'quasar'
 import ObjectID from 'bson-objectid'
+import type { MailInfo, Attachement } from '/types'
 
 type FsPart = components['schemas']['FsPart']
 type Thread = components['schemas']['Thread']
-type MailInfo = {
-    to: string[],
-    cc: string[],
-    subject: string
-}
-type Attachement = {
-    id: string,
-    name: string
-}
+
 const props = defineProps({
     threadId: {
         type: Object as PropType<ObjectID>,

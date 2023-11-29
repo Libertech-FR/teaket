@@ -20,7 +20,7 @@ enum FormTypes {
 
 const props = defineProps({
     type: {
-        type: Object as PropType<FormTypes>,
+        type: Number as PropType<FormTypes>,
         required: true
     },
     sections: {
