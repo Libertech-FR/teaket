@@ -1,0 +1,10 @@
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - /app/HOOKS.md
+  - /app/NUXTAPIPARTY.md
+  - /app/2pan.md
+  - /service/dto/NEW_DTO.md

@@ -232,8 +232,7 @@ const importMail = async (mail: any) => {
     color: 'positive',
     message: 'Email importé avec succès',
   })
-  await refresh()
-  return null
+  return mail
 }
 
 const save = async (mail: Mail) => {
