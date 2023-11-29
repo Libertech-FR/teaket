@@ -46,6 +46,7 @@ q-card(style="height: 100%" flat).column.q-col-gutter-none
                 tk-form-autocomplete.q-my-xs(
                   apiUrl="/core/entities"
                   optionLabel="name"
+                  modelLabel="name"
                   searchField="profile.commonName"
                   dense
                   @update:model-value="updateData({field: 'envelope.observers', value: $event})"
@@ -58,6 +59,7 @@ q-card(style="height: 100%" flat).column.q-col-gutter-none
                 tk-form-autocomplete.q-my-xs(
                   apiUrl="/core/entities"
                   optionLabel="name"
+                  modelLabel="name"
                   searchField="profile.commonName"
                   dense
                   @update:model-value="updateData({field: 'envelope.assigned', value: $event})"
