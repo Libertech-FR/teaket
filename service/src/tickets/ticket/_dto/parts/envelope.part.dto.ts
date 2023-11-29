@@ -12,14 +12,14 @@ export class EnvelopePartDto {
   public senders: EntityPartDto[]
 
   // @IsArray()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => EntityPartDto)
   @ApiProperty({ type: [EntityPartDto] })
   public observers: EntityPartDto[]
 
   // @IsArray()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => EntityPartDto)
   @ApiProperty({ type: [EntityPartDto] })
