@@ -36,6 +36,9 @@ export class Form extends AbstractSchema {
 
   @Prop()
   submitApiUrl: string
+
+  @Prop()
+  redirectUrl: string
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form)

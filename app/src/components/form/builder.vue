@@ -43,9 +43,13 @@ import type { PropType } from 'vue'
 import type { components } from "#build/types/service-api"
 import { construct, crush, set } from 'radash';
 import { CRUDMode, CRUDModesList } from '~/enums';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar()
+const router = useRouter()
 const mode = ref<CRUDMode>(CRUDMode.Create)
 type Form = components['schemas']['FormDto']
+const emit = defineEmits(['submit'])
 const props = defineProps({
   json: {
     type: Object as PropType<Form>,
@@ -62,9 +66,6 @@ const sectionsLabel = computed(() => {
 
 
 function resetValidation() {
-  //triggers v-model
-
-  //reset values
   validations.value = {}
 }
 
@@ -82,8 +83,9 @@ function reset() {
 
 let validations = ref({})
 async function submit(): Promise<void> {
+  const method = mode.value === CRUDMode.Create ? 'post' : 'put'
   const response = await useHttpApi(props.json.submitApiUrl, {
-    method: 'post',
+    method,
     body: {
       ...form.value,
       ...props.json.defaultValues
@@ -95,6 +97,19 @@ async function submit(): Promise<void> {
 
   if (response.error.value) {
     validations.value = response.error.value.data.validations
+  }
+
+  if (response.data.value) {
+    reset()
+    resetValidation()
+    emit('submit', response.data.value)
+    $q.notify({
+      message: 'La création a réussi',
+      color: 'positive'
+    })
+    if (props.json.redirectUrl) {
+      router.push(props.json.redirectUrl + '/' + response.data.value.data._id)
+    }
   }
 
 }

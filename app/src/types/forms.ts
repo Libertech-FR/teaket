@@ -44,6 +44,7 @@ type TicketForm = {
     }
     submitButtonText: string
     submitApiUrl: string
+    redirectUrl?: string
 }
   
 export { TicketFormField, TicketFormSection, TicketForm }
